@@ -4,6 +4,7 @@ main window widgets
 """
 
 import webbrowser
+import qdarkstyle
 from PyQt5.QtWidgets import QMainWindow, QStyle, QMenu, QAction, QSystemTrayIcon, QStackedWidget, QMessageBox
 from PyQt5.QtCore import QSize
 from sample.settings.settings_widget import SettingsWidget
@@ -18,10 +19,12 @@ class MainWindow(QMainWindow):
     APP_TITLE = "Checkout Timer"
     NOTIFICATION_MESSAGE = "The checkout Timer app is still here on tray!"
 
-    def __init__(self, parent=None):
+    def __init__(self, application_object, parent=None):
         super(MainWindow, self).__init__(parent)
 
+        self.application_object = application_object
         self.close_flag = False
+        self.dark_mode_flag = False
 
         self.setWindowTitle(self.APP_TITLE)
         self.setWindowIcon(self.style().standardIcon(QStyle.SP_MessageBoxInformation))
@@ -43,6 +46,10 @@ class MainWindow(QMainWindow):
         settings_action_one = QAction('Edit notifications', self)
         settings_action_one.triggered.connect(self.open_settings)
         settings_menu.addAction(settings_action_one)
+
+        settings_action_two = QAction('Toggle Dark mode', self)
+        settings_action_two.triggered.connect(self.toggle_dark_mode)
+        settings_menu.addAction(settings_action_two)
 
         exit_action = QAction('Exit', self)
         exit_action.triggered.connect(self.close_window)
@@ -151,6 +158,17 @@ class MainWindow(QMainWindow):
         """
         if value:
             self.central_widget.setCurrentWidget(self.times_widget)
+
+    def toggle_dark_mode(self):
+        """
+        This method handles the dark mode change
+        """
+        if not self.dark_mode_flag:
+            self.application_object.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+            self.dark_mode_flag = True
+        else:
+            self.application_object.setStyleSheet("")
+            self.dark_mode_flag = False
 
     def close_window(self):
         """
