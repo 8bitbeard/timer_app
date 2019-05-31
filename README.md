@@ -8,6 +8,7 @@ Python packages you will need:
 
 - PyQt5
 - pyinstaller
+- qdarkstyle
 
 I suggest you to install the virtualenv and virtualenvwrapper packages too, and create a python virtual environment on your machine. This way, you can have different python interpreters for each project you are working on.
 
@@ -31,20 +32,48 @@ And... you are done!
 
 ./requirements.txt   -> File used to install all the project python packages  
 ./**timer_app.py**   -> Project main file  
-./build/*   -> Automatically generated build files (pyinstaller)  
+./**timer_app.spec**  -> Build configuration file
 ./dist/**timer_app.exe**   -> Executable builded with the pyinstaller command  
+./sample/resources/images  -> Folder to store all the app images  
 ./sample/**main_window.py**   -> Python class for the main app window  
 ./sample/settings/**settings_widget.py**   -> Python class for the settings page widget  
 ./sample/times/**times_widget.py**   -> Python class for the checkout time calculator widget  
+./sample/utils/**utils.py**  -> Python file containing all the util functions used on the app  
 
 # Building a new executable file
 
 After making the changes on the source code (timer_app.py), to build the new application, you will have to run the following command:
 
 ```bash
-pyinstaller --onefile -w timer_app.app
+pyinstaller --onefile -w timer_app.spec
 ```
 
-The --onefile flag will create a one file bundled executable
+The --onefile flag will create a one file bundled executable  
+The -w flag will hide the console when the app open  
+The timer_app.spec is the configuration file that stores all the build configuration
 
-The -w flag will hide the console when the app open
+
+# Setting a nice python development environment on vscode
+
+If you use vscode, you can paste this on your .vscode/settings.json, located on this project folder:
+
+```json
+{
+ "python.linting.pylintArgs": [
+      "--extension-pkg-whitelist=PyQt5",
+      "--max-line-length=120"
+  ],
+  "python.formatting.autopep8Args": [
+      "--max-line-length=120"
+  ],
+  "python.linting.maxNumberOfProblems": 120,
+  "[python]": {
+      "editor.rulers": [
+          120
+      ],
+      "editor.tabSize": 4
+  }
+}
+```
+
+This will setup some flags for the python linter i use (Pylint, you should install it on vscode!) and modify the max line lenght and tabsize

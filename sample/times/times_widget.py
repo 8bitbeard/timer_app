@@ -2,12 +2,16 @@
 This file implements the CheckoutCalculatorWidget Class, which is responsible for all the checkout
 calculator widgets
 """
-import datetime
+
 import re
+from time import localtime
+from time import strftime
+
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QCheckBox, QGridLayout, QApplication
 from PyQt5.QtCore import QTimer, Qt, QRegExp
 from PyQt5.QtGui import QRegExpValidator
-from sample.times import aux_functions
+from sample.utils import utils
+
 
 # pylint: disable=too-many-instance-attributes
 # 10 instance attributes seems to be reasonably ok for this class
@@ -105,12 +109,12 @@ class TimesWidget(QWidget):
             checkout_lunch = times[1]
             checkin_lunch = times[2]
 
-            assert aux_functions.time_is_greater(checkout_lunch, checkin_work)
-            assert aux_functions.time_is_greater(checkin_lunch, checkout_lunch)
+            assert utils.time_is_greater(checkout_lunch, checkin_work)
+            assert utils.time_is_greater(checkin_lunch, checkout_lunch)
 
-            checkout_time = aux_functions.sum_times(checkin_work, self.journey_times_checkbox.text())
-            lunch_time = aux_functions.sub_times(checkout_lunch, checkin_lunch)
-            checkout_time = aux_functions.sum_times(checkout_time, lunch_time)
+            checkout_time = utils.sum_times(checkin_work, self.journey_times_checkbox.text())
+            lunch_time = utils.sub_times(checkout_lunch, checkin_lunch)
+            checkout_time = utils.sum_times(checkout_time, lunch_time)
 
             self.checkout_time_checkbox.setText(checkout_time)
             self.checkout_time_checkbox.setStyleSheet("color: black;")
@@ -175,7 +179,7 @@ class TimesWidget(QWidget):
         This function is responsible for the Checkout time notification event
         """
         checkout_time = self.checkout_time_checkbox.text()
-        current_time = str(datetime.datetime.now().time())[0:5]
+        current_time = strftime('%H:%M', localtime())
         if checkout_time == current_time and self.toggle_notifications.isChecked():
             self.tray_icon.showMessage(self.APP_TITLE, self.notification_text)
             self.timer.stop()

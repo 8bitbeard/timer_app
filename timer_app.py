@@ -5,6 +5,7 @@ This project started at 05/2019 as a python study and a team collaboration initi
 """
 
 import sys
+
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 from sample.main_window import MainWindow

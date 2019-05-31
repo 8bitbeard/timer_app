@@ -5,10 +5,13 @@ main window widgets
 
 import webbrowser
 import qdarkstyle
+
 from PyQt5.QtWidgets import QMainWindow, QStyle, QMenu, QAction, QSystemTrayIcon, QStackedWidget, QMessageBox
 from PyQt5.QtCore import QSize
+from PyQt5.QtGui import QIcon
 from sample.settings.settings_widget import SettingsWidget
 from sample.times.times_widget import TimesWidget
+from sample.utils import utils
 
 
 class MainWindow(QMainWindow):
@@ -27,7 +30,7 @@ class MainWindow(QMainWindow):
         self.dark_mode_flag = False
 
         self.setWindowTitle(self.APP_TITLE)
-        self.setWindowIcon(self.style().standardIcon(QStyle.SP_MessageBoxInformation))
+        self.setWindowIcon(QIcon(utils.get_absolute_resource_path("resources/images/clock.png")))
         self.setFixedSize(self.APP_DIMENSIONS)
 
         self.init_menu_bar()
@@ -75,7 +78,7 @@ class MainWindow(QMainWindow):
         This method handles the creation of the tray icon
         """
         self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setIcon(self.style().standardIcon(QStyle.SP_MessageBoxInformation))
+        self.tray_icon.setIcon(QIcon(utils.get_absolute_resource_path("resources/images/clock.png")))
         show_action = QAction("Show", self)
         quit_action = QAction("Exit", self)
         hide_action = QAction("Hide", self)
