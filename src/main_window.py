@@ -53,9 +53,11 @@ class MainWindow(QMainWindow):
         settings_action_one.triggered.connect(self.open_settings)
         settings_menu.addAction(settings_action_one)
 
-        settings_action_two = QAction('Toggle Dark mode', self)
-        settings_action_two.triggered.connect(self.toggle_dark_mode)
-        settings_menu.addAction(settings_action_two)
+        settings_menu_two = QMenu('Theme', self)
+        settings_action_two = QAction('Default', self)
+        settings_action_two.triggered.connect(lambda: self.toggle_dark_mode(False))
+        settings_action_three = QAction('Dark mode', self)
+        settings_action_three.triggered.connect(lambda: self.toggle_dark_mode(True))
 
         exit_action = QAction('Exit', self)
         exit_action.triggered.connect(self.close_window)
@@ -71,6 +73,9 @@ class MainWindow(QMainWindow):
 
         file_menu.addMenu(settings_menu)
         file_menu.addAction(exit_action)
+        settings_menu.addMenu(settings_menu_two)
+        settings_menu_two.addAction(settings_action_two)
+        settings_menu_two.addAction(settings_action_three)
         help_menu.addAction(documentation_action)
         help_menu.addAction(report_issue_action)
         help_menu.addAction(suggestions_action)
@@ -137,10 +142,10 @@ class MainWindow(QMainWindow):
         This function handles the About popup
         """
         github_url = "If you are interested, you can find the GitHub project link "\
-                    "<a href='https://github.com/8bitbeard/timer_app'>Here</a>"
+                     "<a href='https://github.com/8bitbeard/timer_app'>Here</a>"
 
         about_text = "At first this app was created in a few minutes of python playing..."\
-                    "but with colaboration i wonder... HOW FAR CAN WE GO?!'"
+                     "but with colaboration i wonder... HOW FAR CAN WE GO?!'"
 
         message_box = QMessageBox()
         message_box.setIcon(QMessageBox.NoIcon)
@@ -165,16 +170,18 @@ class MainWindow(QMainWindow):
         if value:
             self.central_widget.setCurrentWidget(self.times_widget)
 
-    def toggle_dark_mode(self):
+    def toggle_dark_mode(self, value):
         """
         This method handles the dark mode change
         """
-        if not self.dark_mode_flag:
-            self.application_object.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-            self.dark_mode_flag = True
+        if value:
+            if not self.dark_mode_flag:
+                self.application_object.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+                self.dark_mode_flag = True
         else:
-            self.application_object.setStyleSheet("")
-            self.dark_mode_flag = False
+            if self.dark_mode_flag:
+                self.application_object.setStyleSheet("")
+                self.dark_mode_flag = False
 
     def close_window(self):
         """

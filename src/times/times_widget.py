@@ -81,8 +81,8 @@ class TimesWidget(QWidget):
         self.toggle_notifications = QCheckBox('Enable notification')
         self.toggle_notifications.setChecked(True)
 
-        calculate_button = QPushButton('Calculate', self)
-        calculate_button.clicked.connect(self.calculate_time)
+        self.calculate_button = QPushButton('Calculate', self)
+        self.calculate_button.clicked.connect(self.calculate_time)
 
         app_layout = QGridLayout()
 
@@ -94,7 +94,7 @@ class TimesWidget(QWidget):
         app_layout.addWidget(self.checkout_time_checkbox, 2, 1)
         app_layout.addWidget(self.clear_data_button, 3, 0)
         app_layout.addWidget(self.toggle_notifications, 3, 1)
-        app_layout.addWidget(calculate_button, 4, 0, 1, 2)
+        app_layout.addWidget(self.calculate_button, 4, 0, 1, 2)
 
         self.setLayout(app_layout)
 
@@ -118,14 +118,12 @@ class TimesWidget(QWidget):
             checkout_time = utils.sum_times(checkout_time, lunch_time)
 
             self.checkout_time_checkbox.setText(checkout_time)
-            self.checkout_time_checkbox.setStyleSheet("color: black;")
 
             self.timer.start(self.TIMER_VALUE)
 
         except AssertionError:
             self.clear_fields()
             self.checkout_time_checkbox.setText('Time input error!')
-            self.checkout_time_checkbox.setStyleSheet("color: red;")
 
     def change_notification_text(self, text):
         """

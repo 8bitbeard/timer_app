@@ -17,6 +17,7 @@ from src.main_window import MainWindow
 
 app = QApplication(sys.argv)
 
+
 class TimerAppTest(unittest.TestCase):
     """
     Testing the timer_app GUI
@@ -27,7 +28,7 @@ class TimerAppTest(unittest.TestCase):
         Creating the GUI to be tested
         """
 
-        self.gui = MainWindow()
+        self.gui = MainWindow(app)
 
     def clear_all_data(self):
         """
@@ -44,7 +45,7 @@ class TimerAppTest(unittest.TestCase):
         self.assertEqual(self.gui.times_widget.checkout_time_checkbox.text(), '')
         self.assertEqual(self.gui.times_widget.toggle_notifications.isEnabled(), True)
         self.assertEqual(self.gui.times_widget.clear_data_button.isEnabled(), False)
-        self.assertEqual(self.gui.times_widget.calculate_button.isEnabled(), False)
+        self.assertEqual(self.gui.times_widget.calculate_button.isEnabled(), True)
 
     def test_calculate_button_valid_data(self):
         """
@@ -58,9 +59,12 @@ class TimerAppTest(unittest.TestCase):
         """
         # Method still needs to be implemented
 
-
     def test_clear_data_button(self):
         """
         Method to test the clear data button
         """
         # Method still needs to be implemented
+
+
+if __name__ == "__main__":
+    unittest.main()
