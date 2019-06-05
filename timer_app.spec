@@ -20,11 +20,11 @@ exe = EXE(pyz,
           a.scripts,
           a.binaries,
           a.zipfiles,
-          a.datas + [('resources/images/clock.png', 'sample/resources/images/clock.png', 'DATA')],
+          a.datas + [('resources/images/clock.png', 'src/resources/images/clock.png', 'DATA')],
           name='timer_app',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          console=False , icon='sample\\resources\\images\\clock.ico')
+          console=False , icon='src\\resources\\images\\clock.ico')

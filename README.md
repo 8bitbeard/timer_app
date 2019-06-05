@@ -34,11 +34,11 @@ And... you are done!
 ./**timer_app.py**   -> Project main file  
 ./**timer_app.spec**  -> Build configuration file
 ./dist/**timer_app.exe**   -> Executable builded with the pyinstaller command  
-./sample/resources/images  -> Folder to store all the app images  
-./sample/**main_window.py**   -> Python class for the main app window  
-./sample/settings/**settings_widget.py**   -> Python class for the settings page widget  
-./sample/times/**times_widget.py**   -> Python class for the checkout time calculator widget  
-./sample/utils/**utils.py**  -> Python file containing all the util functions used on the app  
+./src/resources/images  -> Folder to store all the app images  
+./src/**main_window.py**   -> Python class for the main app window  
+./src/settings/**settings_widget.py**   -> Python class for the settings page widget  
+./src/times/**times_widget.py**   -> Python class for the checkout time calculator widget  
+./src/utils/**utils.py**  -> Python file containing all the util functions used on the app  
 
 # Building a new executable file
 

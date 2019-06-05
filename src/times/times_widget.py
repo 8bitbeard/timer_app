@@ -10,7 +10,7 @@ from time import strftime
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QCheckBox, QGridLayout, QApplication
 from PyQt5.QtCore import QTimer, Qt, QRegExp
 from PyQt5.QtGui import QRegExpValidator
-from sample.utils import utils
+from src.utils import utils
 
 
 # pylint: disable=too-many-instance-attributes
@@ -66,6 +66,7 @@ class TimesWidget(QWidget):
         self.worked_times_checkbox.setFixedWidth(170)
         self.worked_times_checkbox.setPlaceholderText('09:00  12:00  13:00')
         self.worked_times_checkbox.textChanged.connect(self.has_data)
+        self.worked_times_checkbox.text()
 
         textbox_three_label = QLabel(text='Checkout time:')
         textbox_three_label.setAlignment(Qt.AlignRight)

@@ -4,14 +4,17 @@ main window widgets
 """
 
 import webbrowser
-import qdarkstyle
 
 from PyQt5.QtWidgets import QMainWindow, QStyle, QMenu, QAction, QSystemTrayIcon, QStackedWidget, QMessageBox
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
-from sample.settings.settings_widget import SettingsWidget
-from sample.times.times_widget import TimesWidget
-from sample.utils import utils
+
+import qdarkstyle
+
+from src.settings.settings_widget import SettingsWidget
+from src.times.times_widget import TimesWidget
+from src.utils import utils
+
 
 
 class MainWindow(QMainWindow):

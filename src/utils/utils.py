@@ -64,12 +64,12 @@ def get_absolute_resource_path(relative_path):
         base_path = sys._MEIPASS
     except Exception:
         try:
-            base_path = os.path.dirname(sys.modules['sample'].__file__)
+            base_path = os.path.dirname(sys.modules['src'].__file__)
         except Exception:
             base_path = ''
 
         if not os.path.exists(os.path.join(base_path, relative_path)):
-            base_path = 'sample'
+            base_path = 'src'
 
     path = os.path.join(base_path, relative_path)
 

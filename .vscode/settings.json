@@ -1,0 +1,16 @@
+{
+  "python.linting.pylintArgs": [
+      "--extension-pkg-whitelist=PyQt5",
+      "--max-line-length=120"
+  ],
+  "python.formatting.autopep8Args": [
+      "--max-line-length=120"
+  ],
+  "python.linting.maxNumberOfProblems": 120,
+  "[python]": {
+      "editor.rulers": [
+          120
+      ],
+      "editor.tabSize": 4
+  }
+}
