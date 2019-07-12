@@ -37,13 +37,16 @@ def time_is_greater(time_one, time_two):
     """
     return change_to_minutes(time_one) > change_to_minutes(time_two)
 
-def sum_times(time_one, time_two):
+def sum_times(time_one, time_two, *args):
     """
-    This function is responsible to add two times
+    This function is responsible to add as many times as the user passes
     """
     time_minutes_one = change_to_minutes(time_one)
     time_minutes_two = change_to_minutes(time_two)
-    return change_to_hours(time_minutes_two + time_minutes_one)
+    total_sum = time_minutes_one + time_minutes_two
+    for arg in args:
+        total_sum += change_to_minutes(arg)
+    return change_to_hours(total_sum)
 
 def sub_times(time_one, time_two):
     """
@@ -52,6 +55,12 @@ def sub_times(time_one, time_two):
     time_minutes_one = change_to_minutes(time_one)
     time_minutes_two = change_to_minutes(time_two)
     return change_to_hours(time_minutes_two - time_minutes_one)
+
+def total_worked_time(time_one, time_two, time_three, time_four):
+    """
+    This function is responsible for calculating the total time worked on a day
+    """
+    return sum_times(sub_times(time_one, time_two), sub_times(time_three, time_four))
 
 # pylint: disable=no-member
 # pylint: disable=protected-access

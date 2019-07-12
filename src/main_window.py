@@ -11,17 +11,17 @@ from PyQt5.QtGui import QIcon
 
 import qdarkstyle
 
-from src.settings.settings_widget import SettingsWidget
-from src.times.times_widget import TimesWidget
+from src.widgets.settings_widget import SettingsWidget
+from src.widgets.times_widget import TimesWidget
+from src.widgets.worked_log_widget import WorkedLogWidget
 from src.utils import utils
-
 
 
 class MainWindow(QMainWindow):
     """
     MainWindow docstring
     """
-    APP_DIMENSIONS = QSize(380, 250)
+    APP_DIMENSIONS = QSize(400, 300)
     APP_TITLE = "Checkout Timer"
     NOTIFICATION_MESSAGE = "The checkout Timer app is still here on tray!"
 
@@ -59,6 +59,9 @@ class MainWindow(QMainWindow):
         settings_action_three = QAction('Dark mode', self)
         settings_action_three.triggered.connect(lambda: self.toggle_dark_mode(True))
 
+        worked_log_action = QAction('Worked log', self)
+        worked_log_action.triggered.connect(self.open_worked_log)
+
         exit_action = QAction('Exit', self)
         exit_action.triggered.connect(self.close_window)
 
@@ -72,6 +75,7 @@ class MainWindow(QMainWindow):
         about_action.triggered.connect(self.about_popup)
 
         file_menu.addMenu(settings_menu)
+        file_menu.addAction(worked_log_action)
         file_menu.addAction(exit_action)
         settings_menu.addMenu(settings_menu_two)
         settings_menu_two.addAction(settings_action_two)
@@ -108,8 +112,9 @@ class MainWindow(QMainWindow):
         self.central_widget = QStackedWidget()
         self.setCentralWidget(self.central_widget)
 
+        self.worked_log_widget = WorkedLogWidget(self)
         self.settings_widget = SettingsWidget(self)
-        self.times_widget = TimesWidget(self, self.tray_icon, self.settings_widget)
+        self.times_widget = TimesWidget(self, self.tray_icon, self.settings_widget, self.worked_log_widget)
         self.central_widget.addWidget(self.times_widget)
         self.central_widget.setCurrentWidget(self.times_widget)
 
@@ -155,15 +160,23 @@ class MainWindow(QMainWindow):
         message_box.setWindowTitle("About")
         message_box.exec_()
 
+    def open_worked_log(self):
+        """
+        This method handles the "Work log" press on the Toolbar menu
+        """
+        self.worked_log_widget.close_worked_log_signal.connect(self.close_widget)
+        self.central_widget.addWidget(self.worked_log_widget)
+        self.central_widget.setCurrentWidget(self.worked_log_widget)
+
     def open_settings(self):
         """
         This function handles the "Edit notification" press on the Toolbar menu
         """
-        self.settings_widget.close_settings_signal.connect(self.close_settings)
+        self.settings_widget.close_settings_signal.connect(self.close_widget)
         self.central_widget.addWidget(self.settings_widget)
         self.central_widget.setCurrentWidget(self.settings_widget)
 
-    def close_settings(self, value):
+    def close_widget(self, value):
         """
         This function handles the "Apply changes" button press on the settings page
         """

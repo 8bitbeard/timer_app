@@ -24,12 +24,13 @@ class TimesWidget(QWidget):
     APP_TITLE = "Checkout Timer"
     NOTIFICATION_TEXT = "Hey, time is up, Time to go home!"
 
-    def __init__(self, parent, tray_icon, settings_widget):
+    def __init__(self, parent, tray_icon, settings_widget, worked_log_widget):
         super(TimesWidget, self).__init__(parent)
 
         self.notification_text = self.NOTIFICATION_TEXT
 
         self.settings_widget = settings_widget
+        self.worked_log_widget = worked_log_widget
         self.tray_icon = tray_icon
 
         self.init_user_interface()
@@ -42,6 +43,7 @@ class TimesWidget(QWidget):
         self.timer.timeout.connect(self.notification_event)
         self.timer.start(self.TIMER_VALUE)
 
+        self.worked_log_widget.hide()
         self.settings_widget.hide()
         self.settings_widget.notification_text_signal.connect(self.change_notification_text)
 
