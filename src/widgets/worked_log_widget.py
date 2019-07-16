@@ -29,6 +29,14 @@ class WorkedLogWidget(QWidget):
 
         self.work_log_data = self.csv_to_dict('test_file.csv')
 
+        self.total_work_days = utils.count_dict_value(self.work_log_data, 'work_day', 'True')
+        self.total_worked_times_list = utils.get_dict_values_list(self.work_log_data, 'total_time')
+        self.total_workable_time = utils.mult_time('08:00', self.total_work_days)
+        self.total_worked_time = utils.sum_times_list(self.total_worked_times_list)
+
+        self.value_hours_bank = utils.sub_times(self.total_worked_time, self.total_workable_time)
+        print(self.value_hours_bank)
+
         self.first_log_week = list(self.work_log_data.keys())[0]
         self.last_log_week = list(self.work_log_data.keys())[-1]
 
@@ -46,18 +54,14 @@ class WorkedLogWidget(QWidget):
         bold_font = QFont()
         bold_font.setBold(True)
 
-        self.week_text_label = QLabel(text='Week:')
-        self.week_text_label.setAlignment(Qt.AlignRight)
-        # self.week_value_label = QLabel(self.work_log_data['data'].iloc[-5] + '-' + self.work_log_data['data'].iloc[-4])
-        # self.week_value_label.setFont(bold_font)
         self.total_week_text_label = QLabel(text='Total Week:')
         self.total_week_text_label.setAlignment(Qt.AlignRight)
         self.total_week_time_value = QLabel()
         self.total_week_time_value.setFont(bold_font)
-        self.total_month_text_label = QLabel(text='Total Month:')
-        self.total_month_text_label.setAlignment(Qt.AlignRight)
-        self.total_month_time_value = QLabel()
-        self.total_month_time_value.setFont(bold_font)
+        self.hours_bank_text_label = QLabel(text='Hours bank:')
+        self.hours_bank_text_label.setAlignment(Qt.AlignRight)
+        self.hours_bank_value_label = QLabel()
+        self.hours_bank_value_label.setFont(bold_font)
 
         self.checkin_time_text_label = QLabel(text='Work in:')
         self.checkin_time_text_label.setAlignment(Qt.AlignRight)
@@ -242,8 +246,8 @@ class WorkedLogWidget(QWidget):
 
         self.widget_layout.addWidget(self.total_week_text_label, 0, 0, 1, 2)
         self.widget_layout.addWidget(self.total_week_time_value, 0, 2)
-        self.widget_layout.addWidget(self.total_month_text_label, 0, 3, 1, 2)
-        self.widget_layout.addWidget(self.total_month_time_value, 0, 5)
+        self.widget_layout.addWidget(self.hours_bank_text_label, 0, 3, 1, 2)
+        self.widget_layout.addWidget(self.hours_bank_value_label, 0, 5)
 
         # self.widget_layout.addWidget(self.week_value_label, 2, 0)
         # self.widget_layout.addWidget(self.checkin_time_text_label, 3, 0)
