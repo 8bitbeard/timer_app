@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
     """
     MainWindow docstring
     """
-    APP_DIMENSIONS = QSize(480, 350)
+    APP_DIMENSIONS = QSize(495, 350)
     APP_TITLE = "Checkout Timer"
     NOTIFICATION_MESSAGE = "The checkout Timer app is still here on tray!"
 
