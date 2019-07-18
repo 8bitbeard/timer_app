@@ -134,7 +134,47 @@ def csv_to_dict(csv_file):
                                                                       row[14] : row[15]}
     return dict_from_csv
 
-def dict_to_csv(dict):
+def dict_to_csv(input_dict):
     """
     Method to convert the dict to csv file
     """
+    print(input_dict)
+
+def count_csv_values_from(csv_file, index, value):
+    """
+    Method to return the amount of values from a specified index
+    """
+    temp_list = []
+    for i in range(0, csv_file.shape[0]):
+        if csv_file.iloc[i][index] == value:
+            temp_list.append(csv_file.iloc[i][index])
+    return len(temp_list)
+
+def get_current_week_data(csv_file, week):
+    """
+    Method to return a pandas archive containing only the current week data
+    """
+    current_week_data = csv_file[csv_file['week'] == week]
+    return current_week_data
+
+def  get_total_time_from(csv_file, week=None, month=None):
+    """
+    Method to return the total time by month or week
+    """
+    temp_list = []
+    if week:
+        search_type = 'week'
+        value = week
+    elif month:
+        search_type = 'month'
+        value = month
+    else:
+        for i in range(0, csv_file.shape[0]):
+            if csv_file.iloc[i]['total_time']:
+                temp_list.append(csv_file.iloc[i]['total_time'])
+        return sum_times_list(temp_list)
+    temp_df = csv_file[csv_file[search_type] == value]
+    for i in range(0, temp_df.shape[0]):
+        if temp_df.iloc[i]['total_time']:
+            temp_list.append(temp_df.iloc[i]['total_time'])
+    return sum_times_list(temp_list)

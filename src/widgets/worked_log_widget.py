@@ -6,6 +6,8 @@ calculator widgets
 import re
 from datetime import date, timedelta
 
+import pandas
+
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QGridLayout, QPushButton, QCheckBox
 from PyQt5.QtCore import QRegExp, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QRegExpValidator
@@ -27,21 +29,23 @@ class WorkedLogWidget(QWidget):
     def __init__(self, parent=None):
         super(WorkedLogWidget, self).__init__(parent)
 
-        self.work_log_data = self.csv_to_dict('test_file.csv')
+        self.work_log_data = pandas.read_csv(utils.get_absolute_resource_path("resources/dictionaries/test_file_two.csv"))
 
-        self.total_work_days = utils.count_dict_value(self.work_log_data, 'work_day', 'True')
-        self.total_worked_times_list = utils.get_dict_values_list(self.work_log_data, 'total_time')
+        self.total_work_days = utils.count_csv_values_from(self.work_log_data, 'work_day', True)
         self.total_workable_time = utils.mult_time('08:00', self.total_work_days)
-        self.total_worked_time = utils.sum_times_list(self.total_worked_times_list)
+        self.total_worked_time = utils.get_total_time_from(self.work_log_data)
 
         self.value_hours_bank = utils.sub_times(self.total_worked_time, self.total_workable_time)
-        print(self.value_hours_bank)
 
-        self.first_log_week = list(self.work_log_data.keys())[0]
-        self.last_log_week = list(self.work_log_data.keys())[-1]
+        self.first_log_week = self.work_log_data.iloc[0]['week']
+        self.last_log_week = self.work_log_data.iloc[-1]['week']
 
-        dt = date.today()
-        year, self.week, self.dow = dt.isocalendar()
+        actual_day = date.today()
+        self.month = actual_day.month
+        self.day = actual_day.day
+        self.year, self.week, self.day_of_week = actual_day.isocalendar()
+
+        self.current_week_log_data = utils.get_current_week_data(self.work_log_data, self.week)
 
         self.init_user_interface()
         self.update_log_data()
@@ -81,157 +85,192 @@ class WorkedLogWidget(QWidget):
 
         self.monday_check_box = QCheckBox(text='Mon')
         self.monday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.monday_check_box.setChecked(self.work_log_data[self.week][1]['work_day'] in 'True')
-        self.monday_week_day_label = QLabel(text=self.work_log_data[self.week][1]['day'])
-        self.monday_checkin_label = QLineEdit(text=self.work_log_data[self.week][1]['work_in'])
+        self.monday_check_box.setChecked(self.current_week_log_data.iloc[0]['work_day'])
+        self.monday_check_box.stateChanged.connect(self.monday_checkbox_status_change)
+        self.monday_week_day_label = QLabel(text=self.current_week_log_data.iloc[0]['day'])
+        self.monday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[0]['work_in'])
         self.monday_checkin_label.setValidator(worked_time_validator)
         self.monday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.monday_checkin_label.textChanged.connect(self.calculate_sunday_total_time)
-        self.monday_lunch_checkin_label = QLineEdit(text=self.work_log_data[self.week][1]['lunch_in'])
+        self.monday_checkin_label.setEnabled(self.current_week_log_data.iloc[0]['work_day'])
+        self.monday_checkin_label.textChanged.connect(self.calculate_monday_total_time)
+        self.monday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[0]['lunch_in'])
         self.monday_lunch_checkin_label.setValidator(worked_time_validator)
         self.monday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.monday_lunch_checkin_label.textChanged.connect(self.calculate_sunday_total_time)
-        self.monday_lunch_checkout_label = QLineEdit(text=self.work_log_data[self.week][1]['lunch_out'])
+        self.monday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[0]['work_day'])
+        self.monday_lunch_checkin_label.textChanged.connect(self.calculate_monday_total_time)
+        self.monday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[0]['lunch_out'])
         self.monday_lunch_checkout_label.setValidator(worked_time_validator)
         self.monday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.monday_lunch_checkout_label.textChanged.connect(self.calculate_sunday_total_time)
-        self.monday_checkout_label = QLineEdit(text=self.work_log_data[self.week][1]['work_out'])
+        self.monday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[0]['work_day'])
+        self.monday_lunch_checkout_label.textChanged.connect(self.calculate_monday_total_time)
+        self.monday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[0]['work_out'])
         self.monday_checkout_label.setValidator(worked_time_validator)
         self.monday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.monday_checkout_label.textChanged.connect(self.calculate_sunday_total_time)
-        self.monday_worked_time_label = QLabel(text=self.work_log_data[self.week][1]['total_time'])
+        self.monday_checkout_label.setEnabled(self.current_week_log_data.iloc[0]['work_day'])
+        self.monday_checkout_label.textChanged.connect(self.calculate_monday_total_time)
+        self.monday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[0]['total_time'])
 
         self.tuesday_check_box = QCheckBox(text='Tue')
         self.tuesday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.tuesday_check_box.setChecked(self.work_log_data[self.week][2]['work_day'] in 'True')
-        self.tuesday_week_day_label = QLabel(text=self.work_log_data[self.week][2]['day'])
-        self.tuesday_checkin_label = QLineEdit(text=self.work_log_data[self.week][2]['work_in'])
+        self.tuesday_check_box.setChecked(self.current_week_log_data.iloc[1]['work_day'])
+        self.tuesday_check_box.stateChanged.connect(self.tuesday_checkbox_status_change)
+        self.tuesday_week_day_label = QLabel(text=self.current_week_log_data.iloc[1]['day'])
+        self.tuesday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[1]['work_in'])
         self.tuesday_checkin_label.setValidator(worked_time_validator)
         self.tuesday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.tuesday_checkin_label.textChanged.connect(self.calculate_monday_total_time)
-        self.tuesday_lunch_checkin_label = QLineEdit(text=self.work_log_data[self.week][2]['lunch_in'])
+        self.tuesday_checkin_label.setEnabled(self.current_week_log_data.iloc[1]['work_day'])
+        self.tuesday_checkin_label.textChanged.connect(self.calculate_tuesday_total_time)
+        self.tuesday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[1]['lunch_in'])
         self.tuesday_lunch_checkin_label.setValidator(worked_time_validator)
         self.tuesday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.tuesday_lunch_checkin_label.textChanged.connect(self.calculate_monday_total_time)
-        self.tuesday_lunch_checkout_label = QLineEdit(text=self.work_log_data[self.week][2]['lunch_out'])
+        self.tuesday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[1]['work_day'])
+        self.tuesday_lunch_checkin_label.textChanged.connect(self.calculate_tuesday_total_time)
+        self.tuesday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[1]['lunch_out'])
         self.tuesday_lunch_checkout_label.setValidator(worked_time_validator)
         self.tuesday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.tuesday_lunch_checkout_label.textChanged.connect(self.calculate_monday_total_time)
-        self.tuesday_checkout_label = QLineEdit(text=self.work_log_data[self.week][2]['work_out'])
+        self.tuesday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[1]['work_day'])
+        self.tuesday_lunch_checkout_label.textChanged.connect(self.calculate_tuesday_total_time)
+        self.tuesday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[1]['work_out'])
         self.tuesday_checkout_label.setValidator(worked_time_validator)
         self.tuesday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.tuesday_checkout_label.textChanged.connect(self.calculate_monday_total_time)
-        self.tuesday_worked_time_label = QLabel(text=self.work_log_data[self.week][2]['total_time'])
+        self.tuesday_checkout_label.setEnabled(self.current_week_log_data.iloc[1]['work_day'])
+        self.tuesday_checkout_label.textChanged.connect(self.calculate_tuesday_total_time)
+        self.tuesday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[1]['total_time'])
 
         self.wednesday_check_box = QCheckBox(text='Wed')
         self.wednesday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.wednesday_check_box.setChecked(self.work_log_data[self.week][3]['work_day'] in 'True')
-        self.wednesday_week_day_label = QLabel(text=self.work_log_data[self.week][3]['day'])
-        self.wednesday_checkin_label = QLineEdit(text=self.work_log_data[self.week][3]['work_in'])
+        self.wednesday_check_box.setChecked(self.current_week_log_data.iloc[2]['work_day'])
+        self.wednesday_check_box.stateChanged.connect(self.wednesday_checkbox_status_change)
+        self.wednesday_week_day_label = QLabel(text=self.current_week_log_data.iloc[2]['day'])
+        self.wednesday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[2]['work_in'])
         self.wednesday_checkin_label.setValidator(worked_time_validator)
         self.wednesday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.wednesday_checkin_label.textChanged.connect(self.calculate_tuesday_total_time)
-        self.wednesday_lunch_checkin_label = QLineEdit(text=self.work_log_data[self.week][3]['lunch_in'])
+        self.wednesday_checkin_label.setEnabled(self.current_week_log_data.iloc[2]['work_day'])
+        self.wednesday_checkin_label.textChanged.connect(self.calculate_wednesday_total_time)
+        self.wednesday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[2]['lunch_in'])
         self.wednesday_lunch_checkin_label.setValidator(worked_time_validator)
         self.wednesday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.wednesday_lunch_checkin_label.textChanged.connect(self.calculate_tuesday_total_time)
-        self.wednesday_lunch_checkout_label = QLineEdit(text=self.work_log_data[self.week][3]['lunch_out'])
+        self.wednesday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[2]['work_day'])
+        self.wednesday_lunch_checkin_label.textChanged.connect(self.calculate_wednesday_total_time)
+        self.wednesday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[2]['lunch_out'])
         self.wednesday_lunch_checkout_label.setValidator(worked_time_validator)
         self.wednesday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.wednesday_lunch_checkout_label.textChanged.connect(self.calculate_tuesday_total_time)
-        self.wednesday_checkout_label = QLineEdit(text=self.work_log_data[self.week][3]['work_out'])
+        self.wednesday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[2]['work_day'])
+        self.wednesday_lunch_checkout_label.textChanged.connect(self.calculate_wednesday_total_time)
+        self.wednesday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[2]['work_out'])
         self.wednesday_checkout_label.setValidator(worked_time_validator)
         self.wednesday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.wednesday_checkout_label.textChanged.connect(self.calculate_tuesday_total_time)
-        self.wednesday_worked_time_label = QLabel(text=self.work_log_data[self.week][3]['total_time'])
+        self.wednesday_checkout_label.setEnabled(self.current_week_log_data.iloc[2]['work_day'])
+        self.wednesday_checkout_label.textChanged.connect(self.calculate_wednesday_total_time)
+        self.wednesday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[2]['total_time'])
 
         self.thursday_check_box = QCheckBox(text='Thu')
         self.thursday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.thursday_check_box.setChecked(self.work_log_data[self.week][4]['work_day'] in 'True')
-        self.thursday_week_day_label = QLabel(text=self.work_log_data[self.week][4]['day'])
-        self.thursday_checkin_label = QLineEdit(text=self.work_log_data[self.week][4]['work_in'])
+        self.thursday_check_box.setChecked(self.current_week_log_data.iloc[3]['work_day'])
+        self.thursday_check_box.stateChanged.connect(self.thursday_checkbox_status_change)
+        self.thursday_week_day_label = QLabel(text=self.current_week_log_data.iloc[3]['day'])
+        self.thursday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[3]['work_in'])
         self.thursday_checkin_label.setValidator(worked_time_validator)
         self.thursday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.thursday_checkin_label.textChanged.connect(self.calculate_wednesday_total_time)
-        self.thursday_lunch_checkin_label = QLineEdit(text=self.work_log_data[self.week][4]['lunch_in'])
+        self.thursday_checkin_label.setEnabled(self.current_week_log_data.iloc[3]['work_day'])
+        self.thursday_checkin_label.textChanged.connect(self.calculate_thursday_total_time)
+        self.thursday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[3]['lunch_in'])
         self.thursday_lunch_checkin_label.setValidator(worked_time_validator)
         self.thursday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.thursday_lunch_checkin_label.textChanged.connect(self.calculate_wednesday_total_time)
-        self.thursday_lunch_checkout_label = QLineEdit(text=self.work_log_data[self.week][4]['lunch_out'])
+        self.thursday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[3]['work_day'])
+        self.thursday_lunch_checkin_label.textChanged.connect(self.calculate_thursday_total_time)
+        self.thursday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[3]['lunch_out'])
         self.thursday_lunch_checkout_label.setValidator(worked_time_validator)
         self.thursday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.thursday_lunch_checkout_label.textChanged.connect(self.calculate_wednesday_total_time)
-        self.thursday_checkout_label = QLineEdit(text=self.work_log_data[self.week][4]['work_out'])
+        self.thursday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[3]['work_day'])
+        self.thursday_lunch_checkout_label.textChanged.connect(self.calculate_thursday_total_time)
+        self.thursday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[3]['work_out'])
         self.thursday_checkout_label.setValidator(worked_time_validator)
         self.thursday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.thursday_checkout_label.textChanged.connect(self.calculate_wednesday_total_time)
-        self.thursday_worked_time_label = QLabel(text=self.work_log_data[self.week][4]['total_time'])
+        self.thursday_checkout_label.setEnabled(self.current_week_log_data.iloc[3]['work_day'])
+        self.thursday_checkout_label.textChanged.connect(self.calculate_thursday_total_time)
+        self.thursday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[3]['total_time'])
 
         self.friday_check_box = QCheckBox(text='Fri')
         self.friday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.friday_check_box.setChecked(self.work_log_data[self.week][5]['work_day'] in 'True')
-        self.friday_week_day_label = QLabel(text=self.work_log_data[self.week][5]['day'])
-        self.friday_checkin_label = QLineEdit(text=self.work_log_data[self.week][5]['work_in'])
+        self.friday_check_box.setChecked(self.current_week_log_data.iloc[4]['work_day'])
+        self.friday_check_box.stateChanged.connect(self.friday_checkbox_status_change)
+        self.friday_week_day_label = QLabel(text=self.current_week_log_data.iloc[4]['day'])
+        self.friday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[4]['work_in'])
         self.friday_checkin_label.setValidator(worked_time_validator)
         self.friday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.friday_checkin_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.friday_lunch_checkin_label = QLineEdit(text=self.work_log_data[self.week][5]['lunch_in'])
+        self.friday_checkin_label.setEnabled(self.current_week_log_data.iloc[4]['work_day'])
+        self.friday_checkin_label.textChanged.connect(self.calculate_friday_total_time)
+        self.friday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[4]['lunch_in'])
         self.friday_lunch_checkin_label.setValidator(worked_time_validator)
         self.friday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.friday_lunch_checkin_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.friday_lunch_checkout_label = QLineEdit(text=self.work_log_data[self.week][5]['lunch_out'])
+        self.friday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[4]['work_day'])
+        self.friday_lunch_checkin_label.textChanged.connect(self.calculate_friday_total_time)
+        self.friday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[4]['lunch_out'])
         self.friday_lunch_checkout_label.setValidator(worked_time_validator)
         self.friday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.friday_lunch_checkout_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.friday_checkout_label = QLineEdit(text=self.work_log_data[self.week][5]['work_out'])
+        self.friday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[4]['work_day'])
+        self.friday_lunch_checkout_label.textChanged.connect(self.calculate_friday_total_time)
+        self.friday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[4]['work_out'])
         self.friday_checkout_label.setValidator(worked_time_validator)
         self.friday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.friday_checkout_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.friday_worked_time_label = QLabel(text=self.work_log_data[self.week][5]['total_time'])
+        self.friday_checkout_label.setEnabled(self.current_week_log_data.iloc[4]['work_day'])
+        self.friday_checkout_label.textChanged.connect(self.calculate_friday_total_time)
+        self.friday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[4]['total_time'])
 
         self.saturday_check_box = QCheckBox(text='Sat')
         self.saturday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.saturday_check_box.setChecked(self.work_log_data[self.week][6]['work_day'] in 'True')
-        self.saturday_week_day_label = QLabel(text=self.work_log_data[self.week][6]['day'])
-        self.saturday_checkin_label = QLineEdit(text=self.work_log_data[self.week][6]['work_in'])
+        self.saturday_check_box.setChecked(self.current_week_log_data.iloc[5]['work_day'])
+        self.saturday_check_box.stateChanged.connect(self.saturday_checkbox_status_change)
+        self.saturday_week_day_label = QLabel(text=self.current_week_log_data.iloc[5]['day'])
+        self.saturday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[5]['work_in'])
         self.saturday_checkin_label.setValidator(worked_time_validator)
         self.saturday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.saturday_checkin_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.saturday_lunch_checkin_label = QLineEdit(text=self.work_log_data[self.week][6]['lunch_in'])
+        self.saturday_checkin_label.setEnabled(self.current_week_log_data.iloc[5]['work_day'])
+        self.saturday_checkin_label.textChanged.connect(self.calculate_saturday_total_time)
+        self.saturday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[5]['lunch_in'])
         self.saturday_lunch_checkin_label.setValidator(worked_time_validator)
         self.saturday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.saturday_lunch_checkin_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.saturday_lunch_checkout_label = QLineEdit(text=self.work_log_data[self.week][6]['lunch_out'])
+        self.saturday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[5]['work_day'])
+        self.saturday_lunch_checkin_label.textChanged.connect(self.calculate_saturday_total_time)
+        self.saturday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[5]['lunch_out'])
         self.saturday_lunch_checkout_label.setValidator(worked_time_validator)
         self.saturday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.saturday_lunch_checkout_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.saturday_checkout_label = QLineEdit(text=self.work_log_data[self.week][6]['work_out'])
+        self.saturday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[5]['work_day'])
+        self.saturday_lunch_checkout_label.textChanged.connect(self.calculate_saturday_total_time)
+        self.saturday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[5]['work_out'])
         self.saturday_checkout_label.setValidator(worked_time_validator)
         self.saturday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.saturday_checkout_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.saturday_worked_time_label = QLabel(text=self.work_log_data[self.week][6]['total_time'])
+        self.saturday_checkout_label.setEnabled(self.current_week_log_data.iloc[5]['work_day'])
+        self.saturday_checkout_label.textChanged.connect(self.calculate_saturday_total_time)
+        self.saturday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[5]['total_time'])
 
         self.sunday_check_box = QCheckBox(text='Sun')
         self.sunday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.sunday_check_box.setChecked(self.work_log_data[self.week][7]['work_day'] in 'True')
-        self.sunday_week_day_label = QLabel(text=self.work_log_data[self.week][7]['day'])
-        self.sunday_checkin_label = QLineEdit(text=self.work_log_data[self.week][7]['work_in'])
+        self.sunday_check_box.setChecked(self.current_week_log_data.iloc[6]['work_day'])
+        self.sunday_check_box.stateChanged.connect(self.sunday_checkbox_status_change)
+        self.sunday_week_day_label = QLabel(text=self.current_week_log_data.iloc[6]['day'])
+        self.sunday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[6]['work_in'])
         self.sunday_checkin_label.setValidator(worked_time_validator)
         self.sunday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.sunday_checkin_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.sunday_lunch_checkin_label = QLineEdit(text=self.work_log_data[self.week][7]['lunch_in'])
+        self.sunday_checkin_label.setEnabled(self.current_week_log_data.iloc[6]['work_day'])
+        self.sunday_checkin_label.textChanged.connect(self.calculate_sunday_total_time)
+        self.sunday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[6]['lunch_in'])
         self.sunday_lunch_checkin_label.setValidator(worked_time_validator)
         self.sunday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.sunday_lunch_checkin_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.sunday_lunch_checkout_label = QLineEdit(text=self.work_log_data[self.week][7]['lunch_out'])
+        self.sunday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[6]['work_day'])
+        self.sunday_lunch_checkin_label.textChanged.connect(self.calculate_sunday_total_time)
+        self.sunday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[6]['lunch_out'])
         self.sunday_lunch_checkout_label.setValidator(worked_time_validator)
         self.sunday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.sunday_lunch_checkout_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.sunday_checkout_label = QLineEdit(text=self.work_log_data[self.week][7]['work_out'])
+        self.sunday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[6]['work_day'])
+        self.sunday_lunch_checkout_label.textChanged.connect(self.calculate_sunday_total_time)
+        self.sunday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[6]['work_out'])
         self.sunday_checkout_label.setValidator(worked_time_validator)
         self.sunday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.sunday_checkout_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.sunday_worked_time_label = QLabel(text=self.work_log_data[self.week][7]['total_time'])
+        self.sunday_checkout_label.setEnabled(self.current_week_log_data.iloc[6]['work_day'])
+        self.sunday_checkout_label.textChanged.connect(self.calculate_sunday_total_time)
+        self.sunday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[6]['total_time'])
 
         self.week_backward_button = QPushButton('<<', self)
         self.week_backward_button.clicked.connect(lambda: self.change_week_display(False))
@@ -248,13 +287,6 @@ class WorkedLogWidget(QWidget):
         self.widget_layout.addWidget(self.total_week_time_value, 0, 2)
         self.widget_layout.addWidget(self.hours_bank_text_label, 0, 3, 1, 2)
         self.widget_layout.addWidget(self.hours_bank_value_label, 0, 5)
-
-        # self.widget_layout.addWidget(self.week_value_label, 2, 0)
-        # self.widget_layout.addWidget(self.checkin_time_text_label, 3, 0)
-        # self.widget_layout.addWidget(self.lunch_checkin_time_text_label, 4, 0)
-        # self.widget_layout.addWidget(self.lunch_checkout_time_text_label, 5, 0)
-        # self.widget_layout.addWidget(self.checkout_time_text_label, 6, 0)
-        # self.widget_layout.addWidget(self.day_journey_time_text_label, 7, 0)
 
         self.widget_layout.addWidget(self.monday_week_day_label, 1 ,0)
         self.widget_layout.addWidget(self.monday_check_box, 2, 0)
@@ -322,70 +354,197 @@ class WorkedLogWidget(QWidget):
         """
         Method to update the
         """
-        self.monday_check_box.setChecked(self.work_log_data[self.week][1]['work_day'] in 'True')
-        self.monday_week_day_label.setText(self.work_log_data[self.week][1]['day'])
-        self.monday_checkin_label.setText(self.work_log_data[self.week][1]['work_in'])
-        self.monday_lunch_checkin_label.setText(self.work_log_data[self.week][1]['lunch_in'])
-        self.monday_lunch_checkout_label.setText(self.work_log_data[self.week][1]['lunch_out'])
-        self.monday_checkout_label.setText(self.work_log_data[self.week][1]['work_out'])
-        self.monday_worked_time_label.setText(self.work_log_data[self.week][1]['total_time'])
-        self.tuesday_check_box.setChecked(self.work_log_data[self.week][2]['work_day'] in 'True')
-        self.tuesday_week_day_label.setText(self.work_log_data[self.week][2]['day'])
-        self.tuesday_checkin_label.setText(self.work_log_data[self.week][2]['work_in'])
-        self.tuesday_lunch_checkin_label.setText(self.work_log_data[self.week][2]['lunch_in'])
-        self.tuesday_lunch_checkout_label.setText(self.work_log_data[self.week][2]['lunch_out'])
-        self.tuesday_checkout_label.setText(self.work_log_data[self.week][2]['work_out'])
-        self.tuesday_worked_time_label.setText(self.work_log_data[self.week][2]['total_time'])
-        self.wednesday_check_box.setChecked(self.work_log_data[self.week][3]['work_day'] in 'True')
-        self.wednesday_week_day_label.setText(self.work_log_data[self.week][3]['day'])
-        self.wednesday_checkin_label.setText(self.work_log_data[self.week][3]['work_in'])
-        self.wednesday_lunch_checkin_label.setText(self.work_log_data[self.week][3]['lunch_in'])
-        self.wednesday_lunch_checkout_label.setText(self.work_log_data[self.week][3]['lunch_out'])
-        self.wednesday_checkout_label.setText(self.work_log_data[self.week][3]['work_out'])
-        self.wednesday_worked_time_label.setText(self.work_log_data[self.week][3]['total_time'])
-        self.thursday_check_box.setChecked(self.work_log_data[self.week][4]['work_day'] in 'True')
-        self.thursday_week_day_label.setText(self.work_log_data[self.week][4]['day'])
-        self.thursday_checkin_label.setText(self.work_log_data[self.week][4]['work_in'])
-        self.thursday_lunch_checkin_label.setText(self.work_log_data[self.week][4]['lunch_in'])
-        self.thursday_lunch_checkout_label.setText(self.work_log_data[self.week][4]['lunch_out'])
-        self.thursday_checkout_label.setText(self.work_log_data[self.week][4]['work_out'])
-        self.thursday_worked_time_label.setText(self.work_log_data[self.week][4]['total_time'])
-        self.friday_check_box.setChecked(self.work_log_data[self.week][5]['work_day'] in 'True')
-        self.friday_week_day_label.setText(self.work_log_data[self.week][5]['day'])
-        self.friday_checkin_label.setText(self.work_log_data[self.week][5]['work_in'])
-        self.friday_lunch_checkin_label.setText(self.work_log_data[self.week][5]['lunch_in'])
-        self.friday_lunch_checkout_label.setText(self.work_log_data[self.week][5]['lunch_out'])
-        self.friday_checkout_label.setText(self.work_log_data[self.week][5]['work_out'])
-        self.friday_worked_time_label.setText(self.work_log_data[self.week][5]['total_time'])
-        self.saturday_check_box.setChecked(self.work_log_data[self.week][6]['work_day'] in 'True')
-        self.saturday_week_day_label.setText(self.work_log_data[self.week][6]['day'])
-        self.saturday_checkin_label.setText(self.work_log_data[self.week][6]['work_in'])
-        self.saturday_lunch_checkin_label.setText(self.work_log_data[self.week][6]['lunch_in'])
-        self.saturday_lunch_checkout_label.setText(self.work_log_data[self.week][6]['lunch_out'])
-        self.saturday_checkout_label.setText(self.work_log_data[self.week][6]['work_out'])
-        self.saturday_worked_time_label.setText(self.work_log_data[self.week][6]['total_time'])
-        self.sunday_check_box.setChecked(self.work_log_data[self.week][7]['work_day'] in 'True')
-        self.sunday_week_day_label.setText(self.work_log_data[self.week][7]['day'])
-        self.sunday_checkin_label.setText(self.work_log_data[self.week][7]['work_in'])
-        self.sunday_lunch_checkin_label.setText(self.work_log_data[self.week][7]['lunch_in'])
-        self.sunday_lunch_checkout_label.setText(self.work_log_data[self.week][7]['lunch_out'])
-        self.sunday_checkout_label.setText(self.work_log_data[self.week][7]['work_out'])
-        self.sunday_worked_time_label.setText(self.work_log_data[self.week][7]['total_time'])
-        self.calculate_week_total_time(self.week)
+        self.current_week_log_data = utils.get_current_week_data(self.work_log_data, self.week)
+        self.monday_check_box.setChecked(self.current_week_log_data.iloc[0]['work_day'])
+        self.monday_week_day_label.setText(self.current_week_log_data.iloc[0]['day'])
+        self.monday_checkin_label.setText(self.current_week_log_data.iloc[0]['work_in'])
+        self.monday_lunch_checkin_label.setText(self.current_week_log_data.iloc[0]['lunch_in'])
+        self.monday_lunch_checkout_label.setText(self.current_week_log_data.iloc[0]['lunch_out'])
+        self.monday_checkout_label.setText(self.current_week_log_data.iloc[0]['work_out'])
+        self.monday_worked_time_label.setText(self.current_week_log_data.iloc[0]['total_time'])
+        self.tuesday_check_box.setChecked(self.current_week_log_data.iloc[1]['work_day'])
+        self.tuesday_week_day_label.setText(self.current_week_log_data.iloc[1]['day'])
+        self.tuesday_checkin_label.setText(self.current_week_log_data.iloc[1]['work_in'])
+        self.tuesday_lunch_checkin_label.setText(self.current_week_log_data.iloc[1]['lunch_in'])
+        self.tuesday_lunch_checkout_label.setText(self.current_week_log_data.iloc[1]['lunch_out'])
+        self.tuesday_checkout_label.setText(self.current_week_log_data.iloc[1]['work_out'])
+        self.tuesday_worked_time_label.setText(self.current_week_log_data.iloc[1]['total_time'])
+        self.wednesday_check_box.setChecked(self.current_week_log_data.iloc[2]['work_day'])
+        self.wednesday_week_day_label.setText(self.current_week_log_data.iloc[2]['day'])
+        self.wednesday_checkin_label.setText(self.current_week_log_data.iloc[2]['work_in'])
+        self.wednesday_lunch_checkin_label.setText(self.current_week_log_data.iloc[2]['lunch_in'])
+        self.wednesday_lunch_checkout_label.setText(self.current_week_log_data.iloc[2]['lunch_out'])
+        self.wednesday_checkout_label.setText(self.current_week_log_data.iloc[2]['work_out'])
+        self.wednesday_worked_time_label.setText(self.current_week_log_data.iloc[2]['total_time'])
+        self.thursday_check_box.setChecked(self.current_week_log_data.iloc[3]['work_day'])
+        self.thursday_week_day_label.setText(self.current_week_log_data.iloc[3]['day'])
+        self.thursday_checkin_label.setText(self.current_week_log_data.iloc[3]['work_in'])
+        self.thursday_lunch_checkin_label.setText(self.current_week_log_data.iloc[3]['lunch_in'])
+        self.thursday_lunch_checkout_label.setText(self.current_week_log_data.iloc[3]['lunch_out'])
+        self.thursday_checkout_label.setText(self.current_week_log_data.iloc[3]['work_out'])
+        self.thursday_worked_time_label.setText(self.current_week_log_data.iloc[3]['total_time'])
+        self.friday_check_box.setChecked(self.current_week_log_data.iloc[4]['work_day'])
+        self.friday_week_day_label.setText(self.current_week_log_data.iloc[4]['day'])
+        self.friday_checkin_label.setText(self.current_week_log_data.iloc[4]['work_in'])
+        self.friday_lunch_checkin_label.setText(self.current_week_log_data.iloc[4]['lunch_in'])
+        self.friday_lunch_checkout_label.setText(self.current_week_log_data.iloc[4]['lunch_out'])
+        self.friday_checkout_label.setText(self.current_week_log_data.iloc[4]['work_out'])
+        self.friday_worked_time_label.setText(self.current_week_log_data.iloc[4]['total_time'])
+        self.saturday_check_box.setChecked(self.current_week_log_data.iloc[5]['work_day'])
+        self.saturday_week_day_label.setText(self.current_week_log_data.iloc[5]['day'])
+        self.saturday_checkin_label.setText(self.current_week_log_data.iloc[5]['work_in'])
+        self.saturday_lunch_checkin_label.setText(self.current_week_log_data.iloc[5]['lunch_in'])
+        self.saturday_lunch_checkout_label.setText(self.current_week_log_data.iloc[5]['lunch_out'])
+        self.saturday_checkout_label.setText(self.current_week_log_data.iloc[5]['work_out'])
+        self.saturday_worked_time_label.setText(self.current_week_log_data.iloc[5]['total_time'])
+        self.sunday_check_box.setChecked(self.current_week_log_data.iloc[6]['work_day'])
+        self.sunday_week_day_label.setText(self.current_week_log_data.iloc[6]['day'])
+        self.sunday_checkin_label.setText(self.current_week_log_data.iloc[6]['work_in'])
+        self.sunday_lunch_checkin_label.setText(self.current_week_log_data.iloc[6]['lunch_in'])
+        self.sunday_lunch_checkout_label.setText(self.current_week_log_data.iloc[6]['lunch_out'])
+        self.sunday_checkout_label.setText(self.current_week_log_data.iloc[6]['work_out'])
+        self.sunday_worked_time_label.setText(self.current_week_log_data.iloc[6]['total_time'])
+        self.calculate_week_total_time(self.current_week_log_data)
 
-    def calculate_sunday_total_time(self, text):
+    def monday_checkbox_status_change(self, value):
         """
-        Method to calculate the total worked time on sunday
+        Temp
         """
-        regex = re.compile('([0-9]{2}:[0-9]{2})')
-        if regex.match(text):
-            total = utils.total_worked_time(self.sunday_checkin_label.text(),
-                                            self.sunday_lunch_checkin_label.text(),
-                                            self.sunday_lunch_checkout_label.text(),
-                                            self.sunday_checkout_label.text())
-            if '-' not in total:
-                self.sunday_worked_time_label.setText(total)
-                # self.calculate_week_total_time()
+        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[0]
+        self.work_log_data.at[index, 'work_day'] = bool(value)
+        self.monday_checkin_label.setEnabled(bool(value))
+        self.monday_lunch_checkin_label.setEnabled(bool(value))
+        self.monday_lunch_checkout_label.setEnabled(bool(value))
+        self.monday_checkout_label.setEnabled(bool(value))
+        self.update_csv_data()
+
+    def tuesday_checkbox_status_change(self, value):
+        """
+        Temp
+        """
+        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[1]
+        self.work_log_data.at[index, 'work_day'] = bool(value)
+        self.tuesday_checkin_label.setEnabled(bool(value))
+        self.tuesday_lunch_checkin_label.setEnabled(bool(value))
+        self.tuesday_lunch_checkout_label.setEnabled(bool(value))
+        self.tuesday_checkout_label.setEnabled(bool(value))
+        self.update_csv_data()
+
+    def wednesday_checkbox_status_change(self, value):
+        """
+        Temp
+        """
+        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[2]
+        self.work_log_data.at[index, 'work_day'] = bool(value)
+        self.wednesday_checkin_label.setEnabled(bool(value))
+        self.wednesday_lunch_checkin_label.setEnabled(bool(value))
+        self.wednesday_lunch_checkout_label.setEnabled(bool(value))
+        self.wednesday_checkout_label.setEnabled(bool(value))
+        self.update_csv_data()
+
+    def thursday_checkbox_status_change(self, value):
+        """
+        Temp
+        """
+        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[3]
+        self.work_log_data.at[index, 'work_day'] = bool(value)
+        self.thursday_checkin_label.setEnabled(bool(value))
+        self.thursday_lunch_checkin_label.setEnabled(bool(value))
+        self.thursday_lunch_checkout_label.setEnabled(bool(value))
+        self.thursday_checkout_label.setEnabled(bool(value))
+        self.update_csv_data()
+
+    def friday_checkbox_status_change(self, value):
+        """
+        Temp
+        """
+        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[4]
+        self.work_log_data.at[index, 'work_day'] = bool(value)
+        self.friday_checkin_label.setEnabled(bool(value))
+        self.friday_lunch_checkin_label.setEnabled(bool(value))
+        self.friday_lunch_checkout_label.setEnabled(bool(value))
+        self.friday_checkout_label.setEnabled(bool(value))
+        self.update_csv_data()
+
+    def saturday_checkbox_status_change(self, value):
+        """
+        Temp
+        """
+        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[5]
+        self.work_log_data.at[index, 'work_day'] = bool(value)
+        self.saturday_checkin_label.setEnabled(bool(value))
+        self.saturday_lunch_checkin_label.setEnabled(bool(value))
+        self.saturday_lunch_checkout_label.setEnabled(bool(value))
+        self.saturday_checkout_label.setEnabled(bool(value))
+        self.update_csv_data()
+
+    def sunday_checkbox_status_change(self, value):
+        """
+        Temp
+        """
+        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[6]
+        self.work_log_data.at[index, 'work_day'] = bool(value)
+        self.sunday_checkin_label.setEnabled(bool(value))
+        self.sunday_lunch_checkin_label.setEnabled(bool(value))
+        self.sunday_lunch_checkout_label.setEnabled(bool(value))
+        self.sunday_checkout_label.setEnabled(bool(value))
+        self.update_csv_data()
+
+    def update_csv_data(self):
+        """
+        Method to update the csv stored data
+        """
+        index_list = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()
+        self.work_log_data.at[index_list[0], 'work_day'] = bool(self.monday_check_box.isChecked())
+        self.work_log_data.at[index_list[0], 'work_in'] = self.monday_checkin_label.text()
+        self.work_log_data.at[index_list[0], 'lunch_in'] = self.monday_lunch_checkin_label.text()
+        self.work_log_data.at[index_list[0], 'lunch_out'] = self.monday_lunch_checkout_label.text()
+        self.work_log_data.at[index_list[0], 'work_out'] = self.monday_checkout_label.text()
+        self.work_log_data.at[index_list[0], 'total_time'] = self.monday_worked_time_label.text()
+
+        self.work_log_data.at[index_list[1], 'work_day'] = bool(self.tuesday_check_box.isChecked())
+        self.work_log_data.at[index_list[1], 'work_in'] = self.tuesday_checkin_label.text()
+        self.work_log_data.at[index_list[1], 'lunch_in'] = self.tuesday_lunch_checkin_label.text()
+        self.work_log_data.at[index_list[1], 'lunch_out'] = self.tuesday_lunch_checkout_label.text()
+        self.work_log_data.at[index_list[1], 'work_out'] = self.tuesday_checkout_label.text()
+        self.work_log_data.at[index_list[1], 'total_time'] = self.tuesday_worked_time_label.text()
+
+        self.work_log_data.at[index_list[2], 'work_day'] = bool(self.wednesday_check_box.isChecked())
+        self.work_log_data.at[index_list[2], 'work_in'] = self.wednesday_checkin_label.text()
+        self.work_log_data.at[index_list[2], 'lunch_in'] = self.wednesday_lunch_checkin_label.text()
+        self.work_log_data.at[index_list[2], 'lunch_out'] = self.wednesday_lunch_checkout_label.text()
+        self.work_log_data.at[index_list[2], 'work_out'] = self.wednesday_checkout_label.text()
+        self.work_log_data.at[index_list[2], 'total_time'] = self.wednesday_worked_time_label.text()
+
+        self.work_log_data.at[index_list[3], 'work_day'] = bool(self.thursday_check_box.isChecked())
+        self.work_log_data.at[index_list[3], 'work_in'] = self.thursday_checkin_label.text()
+        self.work_log_data.at[index_list[3], 'lunch_in'] = self.thursday_lunch_checkin_label.text()
+        self.work_log_data.at[index_list[3], 'lunch_out'] = self.thursday_lunch_checkout_label.text()
+        self.work_log_data.at[index_list[3], 'work_out'] = self.thursday_checkout_label.text()
+        self.work_log_data.at[index_list[3], 'total_time'] = self.thursday_worked_time_label.text()
+
+        self.work_log_data.at[index_list[4], 'work_day'] = bool(self.friday_check_box.isChecked())
+        self.work_log_data.at[index_list[4], 'work_in'] = self.friday_checkin_label.text()
+        self.work_log_data.at[index_list[4], 'lunch_in'] = self.friday_lunch_checkin_label.text()
+        self.work_log_data.at[index_list[4], 'lunch_out'] = self.friday_lunch_checkout_label.text()
+        self.work_log_data.at[index_list[4], 'work_out'] =  self.friday_checkout_label.text()
+        self.work_log_data.at[index_list[4], 'total_time'] = self.friday_worked_time_label.text()
+
+        self.work_log_data.at[index_list[5], 'work_day'] = bool(self.saturday_check_box.isChecked())
+        self.work_log_data.at[index_list[5], 'work_in'] = self.saturday_checkin_label.text()
+        self.work_log_data.at[index_list[5], 'lunch_in'] = self.saturday_lunch_checkin_label.text()
+        self.work_log_data.at[index_list[5], 'lunch_out'] = self.saturday_lunch_checkout_label.text()
+        self.work_log_data.at[index_list[5], 'work_out'] = self.saturday_checkout_label.text()
+        self.work_log_data.at[index_list[5], 'total_time'] = self.saturday_worked_time_label.text()
+
+        self.work_log_data.at[index_list[6], 'work_day'] = bool(self.sunday_check_box.isChecked())
+        self.work_log_data.at[index_list[6], 'work_in'] = self.sunday_checkin_label.text()
+        self.work_log_data.at[index_list[6], 'lunch_in'] = self.sunday_lunch_checkin_label.text()
+        self.work_log_data.at[index_list[6], 'lunch_out'] = self.sunday_lunch_checkout_label.text()
+        self.work_log_data.at[index_list[6], 'work_out'] = self.sunday_checkout_label.text()
+        self.work_log_data.at[index_list[6], 'total_time'] = self.sunday_worked_time_label.text()
+
+        self.work_log_data.to_csv(utils.get_absolute_resource_path("resources/dictionaries/test_file_two.csv"), index=False)
 
     def calculate_monday_total_time(self, text):
         """
@@ -399,7 +558,8 @@ class WorkedLogWidget(QWidget):
                                             self.monday_checkout_label.text())
             if '-' not in total:
                 self.monday_worked_time_label.setText(total)
-                # self.calculate_week_total_time()
+                self.calculate_week_total_time(self.current_week_log_data)
+                self.update_csv_data()
 
     def calculate_tuesday_total_time(self, text):
         """
@@ -413,7 +573,8 @@ class WorkedLogWidget(QWidget):
                                             self.tuesday_checkout_label.text())
             if '-' not in total:
                 self.tuesday_worked_time_label.setText(total)
-                # self.calculate_week_total_time()
+                self.calculate_week_total_time(self.current_week_log_data)
+                self.update_csv_data()
 
     def calculate_wednesday_total_time(self, text):
         """
@@ -427,7 +588,8 @@ class WorkedLogWidget(QWidget):
                                             self.wednesday_checkout_label.text())
             if '-' not in total:
                 self.wednesday_worked_time_label.setText(total)
-                # self.calculate_week_total_time()
+                self.calculate_week_total_time(self.current_week_log_data)
+                self.update_csv_data()
 
     def calculate_thursday_total_time(self, text):
         """
@@ -441,19 +603,65 @@ class WorkedLogWidget(QWidget):
                                             self.thursday_checkout_label.text())
             if '-' not in total:
                 self.thursday_worked_time_label.setText(total)
-                # self.calculate_week_total_time()
+                self.calculate_week_total_time(self.current_week_log_data)
+                self.update_csv_data()
 
-    def calculate_week_total_time(self, week_no):
+    def calculate_friday_total_time(self, text):
+        """
+        Method to calculate the total worked time on friday
+        """
+        regex = re.compile('([0-9]{2}:[0-9]{2})')
+        if regex.match(text):
+            total = utils.total_worked_time(self.friday_checkin_label.text(),
+                                            self.friday_lunch_checkin_label.text(),
+                                            self.friday_lunch_checkout_label.text(),
+                                            self.friday_checkout_label.text())
+            if '-' not in total:
+                self.friday_worked_time_label.setText(total)
+                self.calculate_week_total_time(self.current_week_log_data)
+                self.update_csv_data()
+
+    def calculate_saturday_total_time(self, text):
+        """
+        Method to calculate the total worked time on sunday
+        """
+        regex = re.compile('([0-9]{2}:[0-9]{2})')
+        if regex.match(text):
+            total = utils.total_worked_time(self.saturday_checkin_label.text(),
+                                            self.saturday_lunch_checkin_label.text(),
+                                            self.saturday_lunch_checkout_label.text(),
+                                            self.saturday_checkout_label.text())
+            if '-' not in total:
+                self.saturday_worked_time_label.setText(total)
+                self.calculate_week_total_time(self.current_week_log_data)
+                self.update_csv_data()
+
+    def calculate_sunday_total_time(self, text):
+        """
+        Method to calculate the total worked time on sunday
+        """
+        regex = re.compile('([0-9]{2}:[0-9]{2})')
+        if regex.match(text):
+            total = utils.total_worked_time(self.sunday_checkin_label.text(),
+                                            self.sunday_lunch_checkin_label.text(),
+                                            self.sunday_lunch_checkout_label.text(),
+                                            self.sunday_checkout_label.text())
+            if '-' not in total:
+                self.sunday_worked_time_label.setText(total)
+                self.calculate_week_total_time(self.current_week_log_data)
+                self.update_csv_data()
+
+    def calculate_week_total_time(self, week_data):
         """
         Method to calculate the total time worked on the week
         """
-        total = utils.sum_times(self.work_log_data[week_no][1]['total_time'],
-                                self.work_log_data[week_no][2]['total_time'],
-                                self.work_log_data[week_no][3]['total_time'],
-                                self.work_log_data[week_no][4]['total_time'],
-                                self.work_log_data[week_no][5]['total_time'],
-                                self.work_log_data[week_no][6]['total_time'],
-                                self.work_log_data[week_no][7]['total_time'])
+        total = utils.sum_times(week_data.iloc[0]['total_time'],
+                                week_data.iloc[1]['total_time'],
+                                week_data.iloc[2]['total_time'],
+                                week_data.iloc[3]['total_time'],
+                                week_data.iloc[4]['total_time'],
+                                week_data.iloc[5]['total_time'],
+                                week_data.iloc[6]['total_time'])
         self.total_week_time_value.setText(total)
 
     def calculate_month_total_time(self, month):
@@ -465,12 +673,12 @@ class WorkedLogWidget(QWidget):
         """
         Method to calculate the week range days
         """
-        year, week, dow = input_date.isocalendar()
+        year, week, day_of_week = input_date.isocalendar()
 
-        if dow == 7:
+        if day_of_week == 7:
             start_date = input_date
         else:
-            start_date = input_date - timedelta(dow)
+            start_date = input_date - timedelta(day_of_week)
 
         end_date = start_date + timedelta(6)
 
@@ -483,6 +691,7 @@ class WorkedLogWidget(QWidget):
         """
         Method to change the week being displayed on the work log
         """
+
         if value:
             if self.week < self.last_log_week:
                 self.week += 1
