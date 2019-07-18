@@ -35,6 +35,7 @@ class WorkedLogWidget(QWidget):
         self.total_workable_time = utils.mult_time('08:00', self.total_work_days)
         self.total_worked_time = utils.get_total_time_from(self.work_log_data)
 
+
         self.value_hours_bank = utils.sub_times(self.total_worked_time, self.total_workable_time)
 
         self.first_log_week = self.work_log_data.iloc[0]['week']
@@ -45,7 +46,10 @@ class WorkedLogWidget(QWidget):
         self.day = actual_day.day
         self.year, self.week, self.day_of_week = actual_day.isocalendar()
 
+        self.total_month_time = utils.get_total_time_from(self.work_log_data, month=self.month)
+
         self.current_week_log_data = utils.get_current_week_data(self.work_log_data, self.week)
+        self.current_month_log_data = utils.get_current_month_data(self.work_log_data, self.month)
 
         self.init_user_interface()
         self.update_log_data()
@@ -64,7 +68,7 @@ class WorkedLogWidget(QWidget):
         self.total_week_time_value.setFont(bold_font)
         self.hours_bank_text_label = QLabel(text='Hours bank:')
         self.hours_bank_text_label.setAlignment(Qt.AlignRight)
-        self.hours_bank_value_label = QLabel()
+        self.hours_bank_value_label = QLabel(self.total_month_time)
         self.hours_bank_value_label.setFont(bold_font)
 
         self.checkin_time_text_label = QLabel(text='Work in:')
@@ -355,6 +359,7 @@ class WorkedLogWidget(QWidget):
         Method to update the
         """
         self.current_week_log_data = utils.get_current_week_data(self.work_log_data, self.week)
+        self.hours_bank_value_label.setText(self.total_month_time)
         self.monday_check_box.setChecked(self.current_week_log_data.iloc[0]['work_day'])
         self.monday_week_day_label.setText(self.current_week_log_data.iloc[0]['day'])
         self.monday_checkin_label.setText(self.current_week_log_data.iloc[0]['work_in'])
@@ -669,24 +674,6 @@ class WorkedLogWidget(QWidget):
         Method to calculate the total time worked on the month
         """
 
-    def calculate_week_range(self, input_date):
-        """
-        Method to calculate the week range days
-        """
-        year, week, day_of_week = input_date.isocalendar()
-
-        if day_of_week == 7:
-            start_date = input_date
-        else:
-            start_date = input_date - timedelta(day_of_week)
-
-        end_date = start_date + timedelta(6)
-
-        formated_start_date = '{:02d}/{:02d}'.format(start_date.day, start_date.month)
-        formated_end_date = '{:02d}/{:02d}'.format(end_date.day, end_date.month)
-
-        return (formated_start_date, formated_end_date)
-
     def change_week_display(self, value):
         """
         Method to change the week being displayed on the work log
@@ -706,7 +693,8 @@ class WorkedLogWidget(QWidget):
         """
         self.close_worked_log_signal.emit(True)
 
-    def csv_to_dict(self, csv_file):
+    @staticmethod
+    def csv_to_dict(csv_file):
         """
         Method to convert the csv file to a dict
         """

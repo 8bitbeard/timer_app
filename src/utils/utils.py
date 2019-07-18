@@ -157,6 +157,13 @@ def get_current_week_data(csv_file, week):
     current_week_data = csv_file[csv_file['week'] == week]
     return current_week_data
 
+def get_current_month_data(csv_file, month):
+    """
+    Method to return a pandas archive containing only the current month data
+    """
+    current_month_data = csv_file[csv_file['month'] == month]
+    return current_month_data
+
 def  get_total_time_from(csv_file, week=None, month=None):
     """
     Method to return the total time by month or week
