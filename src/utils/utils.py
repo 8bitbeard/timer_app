@@ -6,6 +6,7 @@ basic operations to them
 
 import os
 import sys
+from datetime import date, timedelta
 
 
 def convert_to_int(time):
@@ -164,6 +165,20 @@ def get_current_month_data(csv_file, month):
     current_month_data = csv_file[csv_file['month'] == month]
     return current_month_data
 
+def parse_log_data_by(csv_file, day=None, week=None, month=None, year=None):
+    """
+    Method to parse the csv_data from work log data, returning a new pandas data with the required information
+    """
+    if day:
+        return csv_file[csv_file['day'] == day]
+    elif week:
+        return csv_file[csv_file['week'] == week]
+    elif month:
+        return csv_file[csv_file['month'] == month]
+    else:
+        return csv_file[csv_file['year'] == year]
+
+
 def  get_total_time_from(csv_file, week=None, month=None):
     """
     Method to return the total time by month or week
@@ -185,3 +200,16 @@ def  get_total_time_from(csv_file, week=None, month=None):
         if temp_df.iloc[i]['total_time']:
             temp_list.append(temp_df.iloc[i]['total_time'])
     return sum_times_list(temp_list)
+
+def get_month_from_week(year, week):
+    """
+    Method to get the month from a passed week number
+    The returned month number will be the one most present on the week range
+    """
+    temp_date = date(year, 1, 1)
+    delta = timedelta(days=(week-1)*7)
+    first = temp_date + delta
+    last = temp_date + delta + timedelta(days=6)
+    if 4 < last.day < 7:
+        return last.month
+    return first.month

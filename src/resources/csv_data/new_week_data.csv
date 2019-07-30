@@ -1,0 +1,9 @@
+
+year,month,week,dow,day,work_day,work_in,lunch_in,lunch_out,work_out,total_time
+xxxx,x,xx,1,xx/xx,True,00:00,00:00,00:00,00:00,00:00
+xxxx,x,xx,2,xx/xx,True,00:00,00:00,00:00,00:00,00:00
+xxxx,x,xx,3,xx/xx,True,00:00,00:00,00:00,00:00,00:00
+xxxx,x,xx,4,xx/xx,True,00:00,00:00,00:00,00:00,00:00
+xxxx,x,xx,5,xx/xx,True,00:00,00:00,00:00,00:00,00:00
+xxxx,x,xx,6,xx/xx,False,00:00,00:00,00:00,00:00,00:00
+xxxx,x,xx,7,xx/xx,False,00:00,00:00,00:00,00:00,00:00

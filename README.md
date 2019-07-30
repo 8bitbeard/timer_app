@@ -37,7 +37,7 @@ And... you are done!
 ./src/resources/images  -> Folder to store all the app images  
 ./src/**main_window.py**   -> Python class for the main app window  
 ./src/settings/**settings_widget.py**   -> Python class for the settings page widget  
-./src/times/**times_widget.py**   -> Python class for the checkout time calculator widget  
+./src/times/**checkout_calculator_widget.py**   -> Python class for the checkout time calculator widget  
 ./src/utils/**utils.py**  -> Python file containing all the util functions used on the app  
 
 # Building a new executable file

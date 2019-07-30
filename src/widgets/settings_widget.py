@@ -20,8 +20,6 @@ class SettingsWidget(QWidget):
         self.change_notification_label.setAlignment(Qt.AlignCenter)
 
         self.change_notification_textbox = QPlainTextEdit(self)
-        self.change_notification_textbox.setFixedWidth(300)
-        self.change_notification_textbox.setFixedHeight(120)
 
         self.apply_changes_button = QPushButton('Apply changes', self)
         self.apply_changes_button.clicked.connect(self.apply_settings_changes)

@@ -12,7 +12,7 @@ from PyQt5.QtGui import QIcon
 import qdarkstyle
 
 from src.widgets.settings_widget import SettingsWidget
-from src.widgets.times_widget import TimesWidget
+from src.widgets.checkout_calculator_widget import CheckoutCalculatorWidget
 from src.widgets.worked_log_widget import WorkedLogWidget
 from src.utils import utils
 
@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
     """
     MainWindow docstring
     """
-    APP_DIMENSIONS = QSize(495, 350)
+    APP_DIMENSIONS = QSize(495, 400)
     APP_TITLE = "Checkout Timer"
     NOTIFICATION_MESSAGE = "The checkout Timer app is still here on tray!"
 
@@ -114,9 +114,10 @@ class MainWindow(QMainWindow):
 
         self.worked_log_widget = WorkedLogWidget(self)
         self.settings_widget = SettingsWidget(self)
-        self.times_widget = TimesWidget(self, self.tray_icon, self.settings_widget, self.worked_log_widget)
-        self.central_widget.addWidget(self.times_widget)
-        self.central_widget.setCurrentWidget(self.times_widget)
+        self.checkout_calculator_wiedget = CheckoutCalculatorWidget(self, self.tray_icon, self.settings_widget,
+                                                                    self.worked_log_widget)
+        self.central_widget.addWidget(self.checkout_calculator_wiedget)
+        self.central_widget.setCurrentWidget(self.checkout_calculator_wiedget)
 
     @staticmethod
     def report_issue():
@@ -181,7 +182,7 @@ class MainWindow(QMainWindow):
         This function handles the "Apply changes" button press on the settings page
         """
         if value:
-            self.central_widget.setCurrentWidget(self.times_widget)
+            self.central_widget.setCurrentWidget(self.checkout_calculator_wiedget)
 
     def toggle_dark_mode(self, value):
         """

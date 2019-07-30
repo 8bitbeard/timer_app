@@ -40,12 +40,12 @@ class TimerAppTest(unittest.TestCase):
         """
         Method to test all the GUI default values
         """
-        self.assertEqual(self.gui.times_widget.journey_times_checkbox.text(), '08:00')
-        self.assertEqual(self.gui.times_widget.worked_times_checkbox.text(), '')
-        self.assertEqual(self.gui.times_widget.checkout_time_checkbox.text(), '')
-        self.assertEqual(self.gui.times_widget.toggle_notifications.isEnabled(), True)
-        self.assertEqual(self.gui.times_widget.clear_data_button.isEnabled(), False)
-        self.assertEqual(self.gui.times_widget.calculate_button.isEnabled(), True)
+        self.assertEqual(self.gui.checkout_calculator_widget.journey_times_checkbox.text(), '08:00')
+        self.assertEqual(self.gui.checkout_calculator_widget.worked_times_checkbox.text(), '')
+        self.assertEqual(self.gui.checkout_calculator_widget.checkout_time_checkbox.text(), '')
+        self.assertEqual(self.gui.checkout_calculator_widget.toggle_notifications.isEnabled(), True)
+        self.assertEqual(self.gui.checkout_calculator_widget.clear_data_button.isEnabled(), False)
+        self.assertEqual(self.gui.checkout_calculator_widget.calculate_button.isEnabled(), True)
 
     def test_calculate_button_valid_data(self):
         """

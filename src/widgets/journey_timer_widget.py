@@ -4,7 +4,7 @@ calculator widgets
 """
 
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import Qt
 
 
 # pylint: disable=too-many-instance-attributes
@@ -28,7 +28,6 @@ class JourneyTimerWidget(QWidget):
 
         self.play_pause_button = QPushButton()
         self.play_pause_button.clicked.connect(self.start_journey_timer)
-        self.play_pause_button
         self.stop_button = QPushButton()
         self.reset_button = QPushButton()
 
@@ -37,8 +36,14 @@ class JourneyTimerWidget(QWidget):
         self.timer.timeout.connect(self.update_time)
 
     def start_journey_timer(self):
+        """
+        Method to start the journey timer
+        """
         self.timer.start()
 
     def  update_time(self):
+        """
+        Method to update the journey timer
+        """
         self.journey_time_text_label.setText()
         print('tick!')
