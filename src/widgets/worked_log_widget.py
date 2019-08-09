@@ -4,16 +4,19 @@ calculator widgets
 """
 
 import re
-from datetime import date
+# import time
+import datetime
+# import calendar
 
-import pandas
+# import pandas
+
+import dill as pickle
 
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QGridLayout, QPushButton, QCheckBox, QFrame
 from PyQt5.QtCore import QRegExp, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QRegExpValidator
 
 from src.utils import utils
-
 
 # pylint: disable=too-many-instance-attributes
 # 10 instance attributes seems to be reasonably ok for this class
@@ -30,35 +33,31 @@ class WorkedLogWidget(QWidget):
     def __init__(self, parent=None):
         super(WorkedLogWidget, self).__init__(parent)
 
-        self.work_log_data = pandas.read_csv(utils.get_absolute_resource_path("resources/csv_data/log_data.csv"))
-
-        self.total_work_days = utils.count_csv_values_from(self.work_log_data, 'work_day', True)
-        self.total_workable_time = utils.mult_time('08:00', self.total_work_days)
-        self.total_worked_time = utils.get_total_time_from(self.work_log_data)
-
-        self.value_hours_bank = utils.sub_times(self.total_worked_time, self.total_workable_time)
-
-        self.first_log_week = self.work_log_data.iloc[0]['week']
-        self.last_log_week = self.work_log_data.iloc[-1]['week']
-
-        actual_day = date.today()
+        actual_day = datetime.date.today()
         self.month = actual_day.month
         self.day = actual_day.day
         self.year, self.week, self.day_of_week = actual_day.isocalendar()
 
-        self.get_week_and_month_data()
+        self.first_log_week = 20
+        self.last_log_week = self.week
+
+        self.data_dict = None
+
+        self.get_log_data()
+
+        self.curr_week = utils.get_week_days_list(self.year, self.week)
+        self.current_month_days = utils.get_month_days_list(self.year, self.month)
+
         self.init_user_interface()
-        self.check_work_time_status()
-        # self.check_interjourney_frames_status()
         self.update_log_data()
 
-    def get_week_and_month_data(self):
+    def get_log_data(self):
         """
-        Method to create the week and month datastructure from the data_log csv file
+        Method to get the log data
         """
-        self.current_week_log_data = utils.get_current_week_data(self.work_log_data, self.week)
-        self.current_month_log_data = utils.get_current_month_data(self.work_log_data, self.month)
-        self.total_month_time = utils.get_total_time_from(self.work_log_data, month=self.month)
+        with open(utils.get_absolute_resource_path('resources/csv_data/log_data.pkl'), 'rb') as pickle_file:
+            self.data_dict = pickle.load(pickle_file)
+        pickle_file.close()
 
     def init_user_interface(self):
         """
@@ -68,386 +67,328 @@ class WorkedLogWidget(QWidget):
         bold_font = QFont()
         bold_font.setBold(True)
 
-        self.total_week_text_label = QLabel(text='Total Week:')
-        self.total_week_text_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.total_week_time_value = QLabel()
-        self.total_week_time_value.setFont(bold_font)
-        self.hours_bank_text_label = QLabel(text='Hours bank:')
-        self.hours_bank_text_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.hours_bank_value_label = QLabel(self.total_month_time)
-        self.hours_bank_value_label.setFont(bold_font)
+        self.week_total_lbl = QLabel(text='Total Month:')
+        self.week_total_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.week_total_val = QLabel(self.data_dict[self.year][self.month]['total_time'])
+        self.week_total_val.setFont(bold_font)
+        self.bank_total_lbl = QLabel(text='Hours bank:')
+        self.bank_total_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.hours_bank_val = QLabel()
+        self.hours_bank_val.setFont(bold_font)
 
-        self.checkin_time_text_label = QLabel(text='Work in:')
-        self.checkin_time_text_label.setAlignment(Qt.AlignRight)
-        self.lunch_checkin_time_text_label = QLabel(text='Lunch in:')
-        self.lunch_checkin_time_text_label.setAlignment(Qt.AlignRight)
-        self.lunch_checkout_time_text_label = QLabel(text='Lunch out:')
-        self.lunch_checkout_time_text_label.setAlignment(Qt.AlignRight)
-        self.checkout_time_text_label = QLabel(text='Work out:')
-        self.checkout_time_text_label.setAlignment(Qt.AlignRight)
-        self.day_journey_time_text_label = QLabel(text='Day total:')
-        self.day_journey_time_text_label.setAlignment(Qt.AlignRight)
+        self.checkin_time_text_lbl = QLabel(text='Work in:')
+        self.checkin_time_text_lbl.setAlignment(Qt.AlignRight)
+        self.lunch_checkin_time_text_lbl = QLabel(text='Lunch in:')
+        self.lunch_checkin_time_text_lbl.setAlignment(Qt.AlignRight)
+        self.lunch_checkout_time_text_lbl = QLabel(text='Lunch out:')
+        self.lunch_checkout_time_text_lbl.setAlignment(Qt.AlignRight)
+        self.checkout_time_text_lbl = QLabel(text='Work out:')
+        self.checkout_time_text_lbl.setAlignment(Qt.AlignRight)
+        self.day_journey_time_text_lbl = QLabel(text='Day total:')
+        self.day_journey_time_text_lbl.setAlignment(Qt.AlignRight)
 
-        hour_time_range = "(?:[0-1][0-9]|2[0-3])"
-        minute_time_range = "(?:[0-5][0-9]|2[0-3])"
+        hour_time_range = r"(?:[0-1][0-9]|2[0-3]|\-\-)"
+        minute_time_range = r"(?:[0-5][0-9]|2[0-3]|\-\-)"
         worked_time_range = QRegExp("^" + hour_time_range + "\\:" + minute_time_range + "$")
         worked_time_validator = QRegExpValidator(worked_time_range, self)
 
-        self.monday_check_box = QCheckBox(text='Mon')
-        self.monday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.monday_check_box.setChecked(self.current_week_log_data.iloc[0]['work_day'])
-        self.monday_check_box.stateChanged.connect(self.monday_checkbox_status_change)
-        self.monday_week_day_label = QLabel(text=self.current_week_log_data.iloc[0]['day'])
-        self.monday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[0]['work_in'])
-        self.monday_checkin_label.setValidator(worked_time_validator)
-        self.monday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.monday_checkin_label.setEnabled(self.current_week_log_data.iloc[0]['work_day'])
-        self.monday_checkin_label.textChanged.connect(self.calculate_monday_total_time)
-        self.monday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[0]['lunch_in'])
-        self.monday_lunch_checkin_label.setValidator(worked_time_validator)
-        self.monday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.monday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[0]['work_day'])
-        self.monday_lunch_checkin_label.textChanged.connect(self.calculate_monday_total_time)
-        self.monday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[0]['lunch_out'])
-        self.monday_lunch_checkout_label.setValidator(worked_time_validator)
-        self.monday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.monday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[0]['work_day'])
-        self.monday_lunch_checkout_label.textChanged.connect(self.calculate_monday_total_time)
-        self.monday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[0]['work_out'])
-        self.monday_checkout_label.setValidator(worked_time_validator)
-        self.monday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.monday_checkout_label.setEnabled(self.current_week_log_data.iloc[0]['work_day'])
-        self.monday_checkout_label.textChanged.connect(self.calculate_monday_total_time)
-        self.monday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[0]['total_time'])
-        self.monday_worked_time_label.setFont(bold_font)
-        self.monday_morning_interjourney_status = QFrame()
-        self.monday_morning_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.monday_morning_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.monday_morning_interjourney_status.setToolTip('Interjourney Ok: 03:00h')
-        self.monday_afternoon_interjourney_status = QFrame()
-        self.monday_afternoon_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.monday_afternoon_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.monday_lunch_interjourney_status = QFrame()
-        self.monday_lunch_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.monday_lunch_interjourney_status.setStyleSheet("QWidget { background-color: green}")
+        self.mon_checkbox = QCheckBox(text='Mon')
+        self.mon_checkbox.setLayoutDirection(Qt.LeftToRight)
+        self.mon_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 0))
+        self.mon_date_lbl = QLabel()
+        self.mon_workin_lbl = QLineEdit()
+        self.mon_workin_lbl.setValidator(worked_time_validator)
+        self.mon_workin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.mon_workin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 0, 0))
+        self.mon_lunchin_lbl = QLineEdit()
+        self.mon_lunchin_lbl.setValidator(worked_time_validator)
+        self.mon_lunchin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.mon_lunchin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 0, 1))
+        self.mon_lunchout_lbl = QLineEdit()
+        self.mon_lunchout_lbl.setValidator(worked_time_validator)
+        self.mon_lunchout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.mon_lunchout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 0, 2))
+        self.mon_workout_lbl = QLineEdit()
+        self.mon_workout_lbl.setValidator(worked_time_validator)
+        self.mon_workout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.mon_workout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 0, 3))
+        self.mon_total_lbl = QLabel()
+        self.mon_total_lbl.setFont(bold_font)
+        self.mon_morning_stat = QFrame()
+        self.mon_morning_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.mon_lunch_stat = QFrame()
+        self.mon_lunch_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.mon_afternoon_stat = QFrame()
+        self.mon_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.tuesday_check_box = QCheckBox(text='Tue')
-        self.tuesday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.tuesday_check_box.setChecked(self.current_week_log_data.iloc[1]['work_day'])
-        self.tuesday_check_box.stateChanged.connect(self.tuesday_checkbox_status_change)
-        self.tuesday_week_day_label = QLabel(text=self.current_week_log_data.iloc[1]['day'])
-        self.tuesday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[1]['work_in'])
-        self.tuesday_checkin_label.setValidator(worked_time_validator)
-        self.tuesday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.tuesday_checkin_label.setEnabled(self.current_week_log_data.iloc[1]['work_day'])
-        self.tuesday_checkin_label.textChanged.connect(self.calculate_tuesday_total_time)
-        self.tuesday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[1]['lunch_in'])
-        self.tuesday_lunch_checkin_label.setValidator(worked_time_validator)
-        self.tuesday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.tuesday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[1]['work_day'])
-        self.tuesday_lunch_checkin_label.textChanged.connect(self.calculate_tuesday_total_time)
-        self.tuesday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[1]['lunch_out'])
-        self.tuesday_lunch_checkout_label.setValidator(worked_time_validator)
-        self.tuesday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.tuesday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[1]['work_day'])
-        self.tuesday_lunch_checkout_label.textChanged.connect(self.calculate_tuesday_total_time)
-        self.tuesday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[1]['work_out'])
-        self.tuesday_checkout_label.setValidator(worked_time_validator)
-        self.tuesday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.tuesday_checkout_label.setEnabled(self.current_week_log_data.iloc[1]['work_day'])
-        self.tuesday_checkout_label.textChanged.connect(self.calculate_tuesday_total_time)
-        self.tuesday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[1]['total_time'])
-        self.tuesday_worked_time_label.setFont(bold_font)
-        self.tuesday_morning_interjourney_status = QFrame()
-        self.tuesday_morning_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.tuesday_morning_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.tuesday_afternoon_interjourney_status = QFrame()
-        self.tuesday_afternoon_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.tuesday_afternoon_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.tuesday_lunch_interjourney_status = QFrame()
-        self.tuesday_lunch_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.tuesday_lunch_interjourney_status.setStyleSheet("QWidget { background-color: green}")
+        self.tue_checkbox = QCheckBox(text='Tue')
+        self.tue_checkbox.setLayoutDirection(Qt.LeftToRight)
+        self.tue_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 1))
+        self.tue_date_lbl = QLabel()
+        self.tue_checkin_lbl = QLineEdit()
+        self.tue_checkin_lbl.setValidator(worked_time_validator)
+        self.tue_checkin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.tue_checkin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 1, 0))
+        self.tue_lunchin_lbl = QLineEdit()
+        self.tue_lunchin_lbl.setValidator(worked_time_validator)
+        self.tue_lunchin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.tue_lunchin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 1, 1))
+        self.tue_lunchout_lbl = QLineEdit()
+        self.tue_lunchout_lbl.setValidator(worked_time_validator)
+        self.tue_lunchout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.tue_lunchout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 1, 2))
+        self.tue_checkout_lbl = QLineEdit()
+        self.tue_checkout_lbl.setValidator(worked_time_validator)
+        self.tue_checkout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.tue_checkout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 1, 3))
+        self.tue_total_lbl = QLabel()
+        self.tue_total_lbl.setFont(bold_font)
+        self.tue_morning_stat = QFrame()
+        self.tue_morning_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.tue_lunch_stat = QFrame()
+        self.tue_lunch_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.tue_afternoon_stat = QFrame()
+        self.tue_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
+        self.wed_checkbox = QCheckBox(text='Wed')
+        self.wed_checkbox.setLayoutDirection(Qt.LeftToRight)
+        self.wed_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 2))
+        self.wed_date_lbl = QLabel()
+        self.wed_workin_lbl = QLineEdit()
+        self.wed_workin_lbl.setValidator(worked_time_validator)
+        self.wed_workin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.wed_workin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 2, 0))
+        self.wed_lunchin_lbl = QLineEdit()
+        self.wed_lunchin_lbl.setValidator(worked_time_validator)
+        self.wed_lunchin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.wed_lunchin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 2, 1))
+        self.wed_lunchout_lbl = QLineEdit()
+        self.wed_lunchout_lbl.setValidator(worked_time_validator)
+        self.wed_lunchout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.wed_lunchout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 2, 2))
+        self.wed_checkout_lbl = QLineEdit()
+        self.wed_checkout_lbl.setValidator(worked_time_validator)
+        self.wed_checkout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.wed_checkout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 2, 3))
+        self.wed_total_lbl = QLabel()
+        self.wed_total_lbl.setFont(bold_font)
+        self.wed_morning_stat = QFrame()
+        self.wed_morning_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.wed_lunch_stat = QFrame()
+        self.wed_lunch_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.wed_afternoon_stat = QFrame()
+        self.wed_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.wednesday_check_box = QCheckBox(text='Wed')
-        self.wednesday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.wednesday_check_box.setChecked(self.current_week_log_data.iloc[2]['work_day'])
-        self.wednesday_check_box.stateChanged.connect(self.wednesday_checkbox_status_change)
-        self.wednesday_week_day_label = QLabel(text=self.current_week_log_data.iloc[2]['day'])
-        self.wednesday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[2]['work_in'])
-        self.wednesday_checkin_label.setValidator(worked_time_validator)
-        self.wednesday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.wednesday_checkin_label.setEnabled(self.current_week_log_data.iloc[2]['work_day'])
-        self.wednesday_checkin_label.textChanged.connect(self.calculate_wednesday_total_time)
-        self.wednesday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[2]['lunch_in'])
-        self.wednesday_lunch_checkin_label.setValidator(worked_time_validator)
-        self.wednesday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.wednesday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[2]['work_day'])
-        self.wednesday_lunch_checkin_label.textChanged.connect(self.calculate_wednesday_total_time)
-        self.wednesday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[2]['lunch_out'])
-        self.wednesday_lunch_checkout_label.setValidator(worked_time_validator)
-        self.wednesday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.wednesday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[2]['work_day'])
-        self.wednesday_lunch_checkout_label.textChanged.connect(self.calculate_wednesday_total_time)
-        self.wednesday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[2]['work_out'])
-        self.wednesday_checkout_label.setValidator(worked_time_validator)
-        self.wednesday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.wednesday_checkout_label.setEnabled(self.current_week_log_data.iloc[2]['work_day'])
-        self.wednesday_checkout_label.textChanged.connect(self.calculate_wednesday_total_time)
-        self.wednesday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[2]['total_time'])
-        self.wednesday_worked_time_label.setFont(bold_font)
-        self.wednesday_morning_interjourney_status = QFrame()
-        self.wednesday_morning_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.wednesday_morning_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.wednesday_afternoon_interjourney_status = QFrame()
-        self.wednesday_afternoon_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.wednesday_afternoon_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.wednesday_lunch_interjourney_status = QFrame()
-        self.wednesday_lunch_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.wednesday_lunch_interjourney_status.setStyleSheet("QWidget { background-color: green}")
+        self.thu_checkbox = QCheckBox(text='Thu')
+        self.thu_checkbox.setLayoutDirection(Qt.LeftToRight)
+        self.thu_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 3))
+        self.thu_date_lbl = QLabel()
+        self.thu_workin_lbl = QLineEdit()
+        self.thu_workin_lbl.setValidator(worked_time_validator)
+        self.thu_workin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.thu_workin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 3, 0))
+        self.thu_lunchin_lbl = QLineEdit()
+        self.thu_lunchin_lbl.setValidator(worked_time_validator)
+        self.thu_lunchin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.thu_lunchin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 3, 1))
+        self.thu_lunchout_lbl = QLineEdit()
+        self.thu_lunchout_lbl.setValidator(worked_time_validator)
+        self.thu_lunchout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.thu_lunchout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 3, 2))
+        self.thu_workout_lbl = QLineEdit()
+        self.thu_workout_lbl.setValidator(worked_time_validator)
+        self.thu_workout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.thu_workout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 3, 3))
+        self.thu_total_lbl = QLabel()
+        self.thu_total_lbl.setFont(bold_font)
+        self.thu_morning_stat = QFrame()
+        self.thu_morning_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.thu_lunch_stat = QFrame()
+        self.thu_lunch_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.thu_afternoon_stat = QFrame()
+        self.thu_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.thursday_check_box = QCheckBox(text='Thu')
-        self.thursday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.thursday_check_box.setChecked(self.current_week_log_data.iloc[3]['work_day'])
-        self.thursday_check_box.stateChanged.connect(self.thursday_checkbox_status_change)
-        self.thursday_week_day_label = QLabel(text=self.current_week_log_data.iloc[3]['day'])
-        self.thursday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[3]['work_in'])
-        self.thursday_checkin_label.setValidator(worked_time_validator)
-        self.thursday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.thursday_checkin_label.setEnabled(self.current_week_log_data.iloc[3]['work_day'])
-        self.thursday_checkin_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.thursday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[3]['lunch_in'])
-        self.thursday_lunch_checkin_label.setValidator(worked_time_validator)
-        self.thursday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.thursday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[3]['work_day'])
-        self.thursday_lunch_checkin_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.thursday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[3]['lunch_out'])
-        self.thursday_lunch_checkout_label.setValidator(worked_time_validator)
-        self.thursday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.thursday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[3]['work_day'])
-        self.thursday_lunch_checkout_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.thursday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[3]['work_out'])
-        self.thursday_checkout_label.setValidator(worked_time_validator)
-        self.thursday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.thursday_checkout_label.setEnabled(self.current_week_log_data.iloc[3]['work_day'])
-        self.thursday_checkout_label.textChanged.connect(self.calculate_thursday_total_time)
-        self.thursday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[3]['total_time'])
-        self.thursday_worked_time_label.setFont(bold_font)
-        self.thursday_morning_interjourney_status = QFrame()
-        self.thursday_morning_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.thursday_morning_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.thursday_afternoon_interjourney_status = QFrame()
-        self.thursday_afternoon_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.thursday_afternoon_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.thursday_lunch_interjourney_status = QFrame()
-        self.thursday_lunch_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.thursday_lunch_interjourney_status.setStyleSheet("QWidget { background-color: green}")
+        self.fri_checkbox = QCheckBox(text='Fri')
+        self.fri_checkbox.setLayoutDirection(Qt.LeftToRight)
+        self.fri_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 4))
+        self.fri_date_lbl = QLabel()
+        self.fri_workin_lbl = QLineEdit()
+        self.fri_workin_lbl.setValidator(worked_time_validator)
+        self.fri_workin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.fri_workin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 4, 0))
+        self.fri_lunchin_lbl = QLineEdit()
+        self.fri_lunchin_lbl.setValidator(worked_time_validator)
+        self.fri_lunchin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.fri_lunchin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 4, 1))
+        self.fri_lunchout_lbl = QLineEdit()
+        self.fri_lunchout_lbl.setValidator(worked_time_validator)
+        self.fri_lunchout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.fri_lunchout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 4, 2))
+        self.fri_workout_lbl = QLineEdit()
+        self.fri_workout_lbl.setValidator(worked_time_validator)
+        self.fri_workout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.fri_workout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 4, 3))
+        self.fri_total_lbl = QLabel()
+        self.fri_total_lbl.setFont(bold_font)
+        self.fri_morning_stat = QFrame()
+        self.fri_morning_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.fri_lunch_stat = QFrame()
+        self.fri_lunch_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.fri_afternoon_stat = QFrame()
+        self.fri_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.friday_check_box = QCheckBox(text='Fri')
-        self.friday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.friday_check_box.setChecked(self.current_week_log_data.iloc[4]['work_day'])
-        self.friday_check_box.stateChanged.connect(self.friday_checkbox_status_change)
-        self.friday_week_day_label = QLabel(text=self.current_week_log_data.iloc[4]['day'])
-        self.friday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[4]['work_in'])
-        self.friday_checkin_label.setValidator(worked_time_validator)
-        self.friday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.friday_checkin_label.setEnabled(self.current_week_log_data.iloc[4]['work_day'])
-        self.friday_checkin_label.textChanged.connect(self.calculate_friday_total_time)
-        self.friday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[4]['lunch_in'])
-        self.friday_lunch_checkin_label.setValidator(worked_time_validator)
-        self.friday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.friday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[4]['work_day'])
-        self.friday_lunch_checkin_label.textChanged.connect(self.calculate_friday_total_time)
-        self.friday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[4]['lunch_out'])
-        self.friday_lunch_checkout_label.setValidator(worked_time_validator)
-        self.friday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.friday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[4]['work_day'])
-        self.friday_lunch_checkout_label.textChanged.connect(self.calculate_friday_total_time)
-        self.friday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[4]['work_out'])
-        self.friday_checkout_label.setValidator(worked_time_validator)
-        self.friday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.friday_checkout_label.setEnabled(self.current_week_log_data.iloc[4]['work_day'])
-        self.friday_checkout_label.textChanged.connect(self.calculate_friday_total_time)
-        self.friday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[4]['total_time'])
-        self.friday_worked_time_label.setFont(bold_font)
-        self.friday_morning_interjourney_status = QFrame()
-        self.friday_morning_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.friday_morning_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.friday_afternoon_interjourney_status = QFrame()
-        self.friday_afternoon_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.friday_afternoon_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.friday_lunch_interjourney_status = QFrame()
-        self.friday_lunch_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.friday_lunch_interjourney_status.setStyleSheet("QWidget { background-color: green}")
+        self.sat_checkbox = QCheckBox(text='Sat')
+        self.sat_checkbox.setLayoutDirection(Qt.LeftToRight)
+        self.sat_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 5))
+        self.sat_date_lbl = QLabel()
+        self.sat_workin_lbl = QLineEdit()
+        self.sat_workin_lbl.setValidator(worked_time_validator)
+        self.sat_workin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.sat_workin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 5, 0))
+        self.sat_lunchin_lbl = QLineEdit()
+        self.sat_lunchin_lbl.setValidator(worked_time_validator)
+        self.sat_lunchin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.sat_lunchin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 5, 1))
+        self.sat_lunchout_lbl = QLineEdit()
+        self.sat_lunchout_lbl.setValidator(worked_time_validator)
+        self.sat_lunchout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.sat_lunchout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 5, 2))
+        self.sat_workout_lbl = QLineEdit()
+        self.sat_workout_lbl.setValidator(worked_time_validator)
+        self.sat_workout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.sat_workout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 5, 2))
+        self.sat_total_lbl = QLabel()
+        self.sat_total_lbl.setFont(bold_font)
+        self.sat_morning_stat = QFrame()
+        self.sat_morning_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.sat_lunch_stat = QFrame()
+        self.sat_lunch_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.sat_afternoon_stat = QFrame()
+        self.sat_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.saturday_check_box = QCheckBox(text='Sat')
-        self.saturday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.saturday_check_box.setChecked(self.current_week_log_data.iloc[5]['work_day'])
-        self.saturday_check_box.stateChanged.connect(self.saturday_checkbox_status_change)
-        self.saturday_week_day_label = QLabel(text=self.current_week_log_data.iloc[5]['day'])
-        self.saturday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[5]['work_in'])
-        self.saturday_checkin_label.setValidator(worked_time_validator)
-        self.saturday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.saturday_checkin_label.setEnabled(self.current_week_log_data.iloc[5]['work_day'])
-        self.saturday_checkin_label.textChanged.connect(self.calculate_saturday_total_time)
-        self.saturday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[5]['lunch_in'])
-        self.saturday_lunch_checkin_label.setValidator(worked_time_validator)
-        self.saturday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.saturday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[5]['work_day'])
-        self.saturday_lunch_checkin_label.textChanged.connect(self.calculate_saturday_total_time)
-        self.saturday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[5]['lunch_out'])
-        self.saturday_lunch_checkout_label.setValidator(worked_time_validator)
-        self.saturday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.saturday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[5]['work_day'])
-        self.saturday_lunch_checkout_label.textChanged.connect(self.calculate_saturday_total_time)
-        self.saturday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[5]['work_out'])
-        self.saturday_checkout_label.setValidator(worked_time_validator)
-        self.saturday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.saturday_checkout_label.setEnabled(self.current_week_log_data.iloc[5]['work_day'])
-        self.saturday_checkout_label.textChanged.connect(self.calculate_saturday_total_time)
-        self.saturday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[5]['total_time'])
-        self.saturday_worked_time_label.setFont(bold_font)
-        self.saturday_morning_interjourney_status = QFrame()
-        self.saturday_morning_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.saturday_morning_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.saturday_afternoon_interjourney_status = QFrame()
-        self.saturday_afternoon_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.saturday_afternoon_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.saturday_lunch_interjourney_status = QFrame()
-        self.saturday_lunch_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.saturday_lunch_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-
-        self.sunday_check_box = QCheckBox(text='Sun')
-        self.sunday_check_box.setLayoutDirection(Qt.LeftToRight)
-        self.sunday_check_box.setChecked(self.current_week_log_data.iloc[6]['work_day'])
-        self.sunday_check_box.stateChanged.connect(self.sunday_checkbox_status_change)
-        self.sunday_week_day_label = QLabel(text=self.current_week_log_data.iloc[6]['day'])
-        self.sunday_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[6]['work_in'])
-        self.sunday_checkin_label.setValidator(worked_time_validator)
-        self.sunday_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.sunday_checkin_label.setEnabled(self.current_week_log_data.iloc[6]['work_day'])
-        self.sunday_checkin_label.textChanged.connect(self.calculate_sunday_total_time)
-        self.sunday_lunch_checkin_label = QLineEdit(text=self.current_week_log_data.iloc[6]['lunch_in'])
-        self.sunday_lunch_checkin_label.setValidator(worked_time_validator)
-        self.sunday_lunch_checkin_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.sunday_lunch_checkin_label.setEnabled(self.current_week_log_data.iloc[6]['work_day'])
-        self.sunday_lunch_checkin_label.textChanged.connect(self.calculate_sunday_total_time)
-        self.sunday_lunch_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[6]['lunch_out'])
-        self.sunday_lunch_checkout_label.setValidator(worked_time_validator)
-        self.sunday_lunch_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.sunday_lunch_checkout_label.setEnabled(self.current_week_log_data.iloc[6]['work_day'])
-        self.sunday_lunch_checkout_label.textChanged.connect(self.calculate_sunday_total_time)
-        self.sunday_checkout_label = QLineEdit(text=self.current_week_log_data.iloc[6]['work_out'])
-        self.sunday_checkout_label.setValidator(worked_time_validator)
-        self.sunday_checkout_label.setFixedSize(self.TIME_BOX_SIZE)
-        self.sunday_checkout_label.setEnabled(self.current_week_log_data.iloc[6]['work_day'])
-        self.sunday_checkout_label.textChanged.connect(self.calculate_sunday_total_time)
-        self.sunday_worked_time_label = QLabel(text=self.current_week_log_data.iloc[6]['total_time'])
-        self.sunday_worked_time_label.setFont(bold_font)
-        self.sunday_morning_interjourney_status = QFrame()
-        self.sunday_morning_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.sunday_morning_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.sunday_afternoon_interjourney_status = QFrame()
-        self.sunday_afternoon_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.sunday_afternoon_interjourney_status.setStyleSheet("QWidget { background-color: green}")
-        self.sunday_lunch_interjourney_status = QFrame()
-        self.sunday_lunch_interjourney_status.setFixedSize(self.COLOR_FRAME_SIZE)
-        self.sunday_lunch_interjourney_status.setStyleSheet("QWidget { background-color: green}")
+        self.sun_checkbox = QCheckBox(text='Sun')
+        self.sun_checkbox.setLayoutDirection(Qt.LeftToRight)
+        self.sun_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 6))
+        self.sun_date_lbl = QLabel()
+        self.sun_workin_lbl = QLineEdit()
+        self.sun_workin_lbl.setValidator(worked_time_validator)
+        self.sun_workin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.sun_workin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 6, 0))
+        self.sun_lunchin_lbl = QLineEdit()
+        self.sun_lunchin_lbl.setValidator(worked_time_validator)
+        self.sun_lunchin_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.sun_lunchin_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 6, 1))
+        self.sun_lunchout_lbl = QLineEdit()
+        self.sun_lunchout_lbl.setValidator(worked_time_validator)
+        self.sun_lunchout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.sun_lunchout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 6, 2))
+        self.sun_workout_lbl = QLineEdit()
+        self.sun_workout_lbl.setValidator(worked_time_validator)
+        self.sun_workout_lbl.setFixedSize(self.TIME_BOX_SIZE)
+        self.sun_workout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 6, 3))
+        self.sun_total_lbl = QLabel()
+        self.sun_total_lbl.setFont(bold_font)
+        self.sun_morning_stat = QFrame()
+        self.sun_morning_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.sun_lunch_stat = QFrame()
+        self.sun_lunch_stat.setFixedSize(self.COLOR_FRAME_SIZE)
+        self.sun_afternoon_stat = QFrame()
+        self.sun_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
         self.week_backward_button = QPushButton('<<', self)
         self.week_backward_button.clicked.connect(lambda: self.change_week_display(False))
-        self.week_foward_button = QPushButton('>>', self)
-        self.week_foward_button.clicked.connect(lambda: self.change_week_display(True))
+        self.week_forward_button = QPushButton('>>', self)
+        self.week_forward_button.clicked.connect(lambda: self.change_week_display(True))
         self.back_to_main_button = QPushButton('Go back', self)
         self.back_to_main_button.clicked.connect(self.close_widget)
 
         self.widget_layout = QGridLayout()
 
-        self.widget_layout.addWidget(self.total_week_text_label, 0, 0, 1, 2)
-        self.widget_layout.addWidget(self.total_week_time_value, 0, 2)
-        self.widget_layout.addWidget(self.hours_bank_text_label, 0, 3, 1, 2)
-        self.widget_layout.addWidget(self.hours_bank_value_label, 0, 5)
+        self.widget_layout.addWidget(self.week_total_lbl, 0, 0, 1, 2)
+        self.widget_layout.addWidget(self.week_total_val, 0, 2)
+        self.widget_layout.addWidget(self.bank_total_lbl, 0, 3, 1, 2)
+        self.widget_layout.addWidget(self.hours_bank_val, 0, 5)
 
-        self.widget_layout.addWidget(self.monday_week_day_label, 1, 0)
-        self.widget_layout.addWidget(self.monday_check_box, 2, 0)
-        self.widget_layout.addWidget(self.monday_checkin_label, 3, 0)
-        self.widget_layout.addWidget(self.monday_morning_interjourney_status, 4, 0)
-        self.widget_layout.addWidget(self.monday_lunch_checkin_label, 5, 0)
-        self.widget_layout.addWidget(self.monday_lunch_interjourney_status, 6, 0)
-        self.widget_layout.addWidget(self.monday_lunch_checkout_label, 7, 0)
-        self.widget_layout.addWidget(self.monday_afternoon_interjourney_status, 8, 0)
-        self.widget_layout.addWidget(self.monday_checkout_label, 9, 0)
-        self.widget_layout.addWidget(self.monday_worked_time_label, 10, 0)
+        self.widget_layout.addWidget(self.mon_date_lbl, 1, 0)
+        self.widget_layout.addWidget(self.mon_checkbox, 2, 0)
+        self.widget_layout.addWidget(self.mon_workin_lbl, 3, 0)
+        self.widget_layout.addWidget(self.mon_morning_stat, 4, 0)
+        self.widget_layout.addWidget(self.mon_lunchin_lbl, 5, 0)
+        self.widget_layout.addWidget(self.mon_lunch_stat, 6, 0)
+        self.widget_layout.addWidget(self.mon_lunchout_lbl, 7, 0)
+        self.widget_layout.addWidget(self.mon_afternoon_stat, 8, 0)
+        self.widget_layout.addWidget(self.mon_workout_lbl, 9, 0)
+        self.widget_layout.addWidget(self.mon_total_lbl, 10, 0)
 
-        self.widget_layout.addWidget(self.tuesday_week_day_label, 1, 1)
-        self.widget_layout.addWidget(self.tuesday_check_box, 2, 1)
-        self.widget_layout.addWidget(self.tuesday_checkin_label, 3, 1)
-        self.widget_layout.addWidget(self.tuesday_morning_interjourney_status, 4, 1)
-        self.widget_layout.addWidget(self.tuesday_lunch_checkin_label, 5, 1)
-        self.widget_layout.addWidget(self.tuesday_lunch_interjourney_status, 6, 1)
-        self.widget_layout.addWidget(self.tuesday_lunch_checkout_label, 7, 1)
-        self.widget_layout.addWidget(self.tuesday_afternoon_interjourney_status, 8, 1)
-        self.widget_layout.addWidget(self.tuesday_checkout_label, 9, 1)
-        self.widget_layout.addWidget(self.tuesday_worked_time_label, 10, 1)
+        self.widget_layout.addWidget(self.tue_date_lbl, 1, 1)
+        self.widget_layout.addWidget(self.tue_checkbox, 2, 1)
+        self.widget_layout.addWidget(self.tue_checkin_lbl, 3, 1)
+        self.widget_layout.addWidget(self.tue_morning_stat, 4, 1)
+        self.widget_layout.addWidget(self.tue_lunchin_lbl, 5, 1)
+        self.widget_layout.addWidget(self.tue_lunch_stat, 6, 1)
+        self.widget_layout.addWidget(self.tue_lunchout_lbl, 7, 1)
+        self.widget_layout.addWidget(self.tue_afternoon_stat, 8, 1)
+        self.widget_layout.addWidget(self.tue_checkout_lbl, 9, 1)
+        self.widget_layout.addWidget(self.tue_total_lbl, 10, 1)
 
-        self.widget_layout.addWidget(self.wednesday_week_day_label, 1, 2)
-        self.widget_layout.addWidget(self.wednesday_check_box, 2, 2)
-        self.widget_layout.addWidget(self.wednesday_checkin_label, 3, 2)
-        self.widget_layout.addWidget(self.wednesday_morning_interjourney_status, 4, 2)
-        self.widget_layout.addWidget(self.wednesday_lunch_checkin_label, 5, 2)
-        self.widget_layout.addWidget(self.wednesday_lunch_interjourney_status, 6, 2)
-        self.widget_layout.addWidget(self.wednesday_lunch_checkout_label, 7, 2)
-        self.widget_layout.addWidget(self.wednesday_afternoon_interjourney_status, 8, 2)
-        self.widget_layout.addWidget(self.wednesday_checkout_label, 9, 2)
-        self.widget_layout.addWidget(self.wednesday_worked_time_label, 10, 2)
+        self.widget_layout.addWidget(self.wed_date_lbl, 1, 2)
+        self.widget_layout.addWidget(self.wed_checkbox, 2, 2)
+        self.widget_layout.addWidget(self.wed_workin_lbl, 3, 2)
+        self.widget_layout.addWidget(self.wed_morning_stat, 4, 2)
+        self.widget_layout.addWidget(self.wed_lunchin_lbl, 5, 2)
+        self.widget_layout.addWidget(self.wed_lunch_stat, 6, 2)
+        self.widget_layout.addWidget(self.wed_lunchout_lbl, 7, 2)
+        self.widget_layout.addWidget(self.wed_afternoon_stat, 8, 2)
+        self.widget_layout.addWidget(self.wed_checkout_lbl, 9, 2)
+        self.widget_layout.addWidget(self.wed_total_lbl, 10, 2)
 
-        self.widget_layout.addWidget(self.thursday_week_day_label, 1, 3)
-        self.widget_layout.addWidget(self.thursday_check_box, 2, 3)
-        self.widget_layout.addWidget(self.thursday_checkin_label, 3, 3)
-        self.widget_layout.addWidget(self.thursday_morning_interjourney_status, 4, 3)
-        self.widget_layout.addWidget(self.thursday_lunch_checkin_label, 5, 3)
-        self.widget_layout.addWidget(self.thursday_lunch_interjourney_status, 6, 3)
-        self.widget_layout.addWidget(self.thursday_lunch_checkout_label, 7, 3)
-        self.widget_layout.addWidget(self.thursday_afternoon_interjourney_status, 8, 3)
-        self.widget_layout.addWidget(self.thursday_checkout_label, 9, 3)
-        self.widget_layout.addWidget(self.thursday_worked_time_label, 10, 3)
+        self.widget_layout.addWidget(self.thu_date_lbl, 1, 3)
+        self.widget_layout.addWidget(self.thu_checkbox, 2, 3)
+        self.widget_layout.addWidget(self.thu_workin_lbl, 3, 3)
+        self.widget_layout.addWidget(self.thu_morning_stat, 4, 3)
+        self.widget_layout.addWidget(self.thu_lunchin_lbl, 5, 3)
+        self.widget_layout.addWidget(self.thu_lunch_stat, 6, 3)
+        self.widget_layout.addWidget(self.thu_lunchout_lbl, 7, 3)
+        self.widget_layout.addWidget(self.thu_afternoon_stat, 8, 3)
+        self.widget_layout.addWidget(self.thu_workout_lbl, 9, 3)
+        self.widget_layout.addWidget(self.thu_total_lbl, 10, 3)
 
-        self.widget_layout.addWidget(self.friday_week_day_label, 1, 4)
-        self.widget_layout.addWidget(self.friday_check_box, 2, 4)
-        self.widget_layout.addWidget(self.friday_checkin_label, 3, 4)
-        self.widget_layout.addWidget(self.friday_morning_interjourney_status, 4, 4)
-        self.widget_layout.addWidget(self.friday_lunch_checkin_label, 5, 4)
-        self.widget_layout.addWidget(self.friday_lunch_interjourney_status, 6, 4)
-        self.widget_layout.addWidget(self.friday_lunch_checkout_label, 7, 4)
-        self.widget_layout.addWidget(self.friday_afternoon_interjourney_status, 8, 4)
-        self.widget_layout.addWidget(self.friday_checkout_label, 9, 4)
-        self.widget_layout.addWidget(self.friday_worked_time_label, 10, 4)
+        self.widget_layout.addWidget(self.fri_date_lbl, 1, 4)
+        self.widget_layout.addWidget(self.fri_checkbox, 2, 4)
+        self.widget_layout.addWidget(self.fri_workin_lbl, 3, 4)
+        self.widget_layout.addWidget(self.fri_morning_stat, 4, 4)
+        self.widget_layout.addWidget(self.fri_lunchin_lbl, 5, 4)
+        self.widget_layout.addWidget(self.fri_lunch_stat, 6, 4)
+        self.widget_layout.addWidget(self.fri_lunchout_lbl, 7, 4)
+        self.widget_layout.addWidget(self.fri_afternoon_stat, 8, 4)
+        self.widget_layout.addWidget(self.fri_workout_lbl, 9, 4)
+        self.widget_layout.addWidget(self.fri_total_lbl, 10, 4)
 
-        self.widget_layout.addWidget(self.saturday_week_day_label, 1, 5)
-        self.widget_layout.addWidget(self.saturday_check_box, 2, 5)
-        self.widget_layout.addWidget(self.saturday_checkin_label, 3, 5)
-        self.widget_layout.addWidget(self.saturday_morning_interjourney_status, 4, 5)
-        self.widget_layout.addWidget(self.saturday_lunch_checkin_label, 5, 5)
-        self.widget_layout.addWidget(self.saturday_lunch_interjourney_status, 6, 5)
-        self.widget_layout.addWidget(self.saturday_lunch_checkout_label, 7, 5)
-        self.widget_layout.addWidget(self.saturday_afternoon_interjourney_status, 8, 5)
-        self.widget_layout.addWidget(self.saturday_checkout_label, 9, 5)
-        self.widget_layout.addWidget(self.saturday_worked_time_label, 10, 5)
+        self.widget_layout.addWidget(self.sat_date_lbl, 1, 5)
+        self.widget_layout.addWidget(self.sat_checkbox, 2, 5)
+        self.widget_layout.addWidget(self.sat_workin_lbl, 3, 5)
+        self.widget_layout.addWidget(self.sat_morning_stat, 4, 5)
+        self.widget_layout.addWidget(self.sat_lunchin_lbl, 5, 5)
+        self.widget_layout.addWidget(self.sat_lunch_stat, 6, 5)
+        self.widget_layout.addWidget(self.sat_lunchout_lbl, 7, 5)
+        self.widget_layout.addWidget(self.sat_afternoon_stat, 8, 5)
+        self.widget_layout.addWidget(self.sat_workout_lbl, 9, 5)
+        self.widget_layout.addWidget(self.sat_total_lbl, 10, 5)
 
-        self.widget_layout.addWidget(self.sunday_week_day_label, 1, 6)
-        self.widget_layout.addWidget(self.sunday_check_box, 2, 6)
-        self.widget_layout.addWidget(self.sunday_checkin_label, 3, 6)
-        self.widget_layout.addWidget(self.sunday_morning_interjourney_status, 4, 6)
-        self.widget_layout.addWidget(self.sunday_lunch_checkin_label, 5, 6)
-        self.widget_layout.addWidget(self.sunday_lunch_interjourney_status, 6, 6)
-        self.widget_layout.addWidget(self.sunday_lunch_checkout_label, 7, 6)
-        self.widget_layout.addWidget(self.sunday_afternoon_interjourney_status, 8, 6)
-        self.widget_layout.addWidget(self.sunday_checkout_label, 9, 6)
-        self.widget_layout.addWidget(self.sunday_worked_time_label, 10, 6)
+        self.widget_layout.addWidget(self.sun_date_lbl, 1, 6)
+        self.widget_layout.addWidget(self.sun_checkbox, 2, 6)
+        self.widget_layout.addWidget(self.sun_workin_lbl, 3, 6)
+        self.widget_layout.addWidget(self.sun_morning_stat, 4, 6)
+        self.widget_layout.addWidget(self.sun_lunchin_lbl, 5, 6)
+        self.widget_layout.addWidget(self.sun_lunch_stat, 6, 6)
+        self.widget_layout.addWidget(self.sun_lunchout_lbl, 7, 6)
+        self.widget_layout.addWidget(self.sun_afternoon_stat, 8, 6)
+        self.widget_layout.addWidget(self.sun_workout_lbl, 9, 6)
+        self.widget_layout.addWidget(self.sun_total_lbl, 10, 6)
 
         self.widget_layout.addWidget(self.week_backward_button, 11, 0, 1, 2)
         self.widget_layout.addWidget(self.back_to_main_button, 11, 2, 1, 3)
-        self.widget_layout.addWidget(self.week_foward_button, 11, 5, 1, 2)
+        self.widget_layout.addWidget(self.week_forward_button, 11, 5, 1, 2)
 
         self.setLayout(self.widget_layout)
 
@@ -455,428 +396,153 @@ class WorkedLogWidget(QWidget):
         """
         Method to update the
         """
-        self.current_week_log_data = utils.get_current_week_data(self.work_log_data, self.week)
-        self.hours_bank_value_label.setText(self.total_month_time)
-        self.monday_check_box.setChecked(self.current_week_log_data.iloc[0]['work_day'])
-        self.monday_week_day_label.setText(self.current_week_log_data.iloc[0]['day'])
-        self.monday_checkin_label.setText(self.current_week_log_data.iloc[0]['work_in'])
-        self.monday_lunch_checkin_label.setText(self.current_week_log_data.iloc[0]['lunch_in'])
-        self.monday_lunch_checkout_label.setText(self.current_week_log_data.iloc[0]['lunch_out'])
-        self.monday_checkout_label.setText(self.current_week_log_data.iloc[0]['work_out'])
-        self.monday_worked_time_label.setText(self.current_week_log_data.iloc[0]['total_time'])
-        self.tuesday_check_box.setChecked(self.current_week_log_data.iloc[1]['work_day'])
-        self.tuesday_week_day_label.setText(self.current_week_log_data.iloc[1]['day'])
-        self.tuesday_checkin_label.setText(self.current_week_log_data.iloc[1]['work_in'])
-        self.tuesday_lunch_checkin_label.setText(self.current_week_log_data.iloc[1]['lunch_in'])
-        self.tuesday_lunch_checkout_label.setText(self.current_week_log_data.iloc[1]['lunch_out'])
-        self.tuesday_checkout_label.setText(self.current_week_log_data.iloc[1]['work_out'])
-        self.tuesday_worked_time_label.setText(self.current_week_log_data.iloc[1]['total_time'])
-        self.wednesday_check_box.setChecked(self.current_week_log_data.iloc[2]['work_day'])
-        self.wednesday_week_day_label.setText(self.current_week_log_data.iloc[2]['day'])
-        self.wednesday_checkin_label.setText(self.current_week_log_data.iloc[2]['work_in'])
-        self.wednesday_lunch_checkin_label.setText(self.current_week_log_data.iloc[2]['lunch_in'])
-        self.wednesday_lunch_checkout_label.setText(self.current_week_log_data.iloc[2]['lunch_out'])
-        self.wednesday_checkout_label.setText(self.current_week_log_data.iloc[2]['work_out'])
-        self.wednesday_worked_time_label.setText(self.current_week_log_data.iloc[2]['total_time'])
-        self.thursday_check_box.setChecked(self.current_week_log_data.iloc[3]['work_day'])
-        self.thursday_week_day_label.setText(self.current_week_log_data.iloc[3]['day'])
-        self.thursday_checkin_label.setText(self.current_week_log_data.iloc[3]['work_in'])
-        self.thursday_lunch_checkin_label.setText(self.current_week_log_data.iloc[3]['lunch_in'])
-        self.thursday_lunch_checkout_label.setText(self.current_week_log_data.iloc[3]['lunch_out'])
-        self.thursday_checkout_label.setText(self.current_week_log_data.iloc[3]['work_out'])
-        self.thursday_worked_time_label.setText(self.current_week_log_data.iloc[3]['total_time'])
-        self.friday_check_box.setChecked(self.current_week_log_data.iloc[4]['work_day'])
-        self.friday_week_day_label.setText(self.current_week_log_data.iloc[4]['day'])
-        self.friday_checkin_label.setText(self.current_week_log_data.iloc[4]['work_in'])
-        self.friday_lunch_checkin_label.setText(self.current_week_log_data.iloc[4]['lunch_in'])
-        self.friday_lunch_checkout_label.setText(self.current_week_log_data.iloc[4]['lunch_out'])
-        self.friday_checkout_label.setText(self.current_week_log_data.iloc[4]['work_out'])
-        self.friday_worked_time_label.setText(self.current_week_log_data.iloc[4]['total_time'])
-        self.saturday_check_box.setChecked(self.current_week_log_data.iloc[5]['work_day'])
-        self.saturday_week_day_label.setText(self.current_week_log_data.iloc[5]['day'])
-        self.saturday_checkin_label.setText(self.current_week_log_data.iloc[5]['work_in'])
-        self.saturday_lunch_checkin_label.setText(self.current_week_log_data.iloc[5]['lunch_in'])
-        self.saturday_lunch_checkout_label.setText(self.current_week_log_data.iloc[5]['lunch_out'])
-        self.saturday_checkout_label.setText(self.current_week_log_data.iloc[5]['work_out'])
-        self.saturday_worked_time_label.setText(self.current_week_log_data.iloc[5]['total_time'])
-        self.sunday_check_box.setChecked(self.current_week_log_data.iloc[6]['work_day'])
-        self.sunday_week_day_label.setText(self.current_week_log_data.iloc[6]['day'])
-        self.sunday_checkin_label.setText(self.current_week_log_data.iloc[6]['work_in'])
-        self.sunday_lunch_checkin_label.setText(self.current_week_log_data.iloc[6]['lunch_in'])
-        self.sunday_lunch_checkout_label.setText(self.current_week_log_data.iloc[6]['lunch_out'])
-        self.sunday_checkout_label.setText(self.current_week_log_data.iloc[6]['work_out'])
-        self.sunday_worked_time_label.setText(self.current_week_log_data.iloc[6]['total_time'])
-        self.calculate_week_total_time()
-        self.calculate_month_total_time()
+        self.week_total_val.setText(self.data_dict[self.year][self.month]['total_time'])
+        self.mon_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[0], 'work_day'))
+        self.mon_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'date'))
+        self.mon_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[0])
+        self.mon_workin_lbl.setEnabled(self.mon_checkbox.isChecked())
+        self.mon_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[1])
+        self.mon_lunchin_lbl.setEnabled(self.mon_checkbox.isChecked())
+        self.mon_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[2])
+        self.mon_lunchout_lbl.setEnabled(self.mon_checkbox.isChecked())
+        self.mon_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[3])
+        self.mon_workout_lbl.setEnabled(self.mon_checkbox.isChecked())
+        self.mon_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'total_time'))
+        self.mon_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'total_status'))
+        self.mon_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'ij_status')[0])
+        self.mon_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'ij_status')[1])
+        self.mon_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'ij_status')[2])
+        self.tue_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[1], 'work_day'))
+        self.tue_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'date'))
+        self.tue_checkin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[0])
+        self.tue_checkin_lbl.setEnabled(self.tue_checkbox.isChecked())
+        self.tue_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[1])
+        self.tue_lunchin_lbl.setEnabled(self.tue_checkbox.isChecked())
+        self.tue_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[2])
+        self.tue_lunchout_lbl.setEnabled(self.tue_checkbox.isChecked())
+        self.tue_checkout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[3])
+        self.tue_checkout_lbl.setEnabled(self.tue_checkbox.isChecked())
+        self.tue_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'total_time'))
+        self.tue_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'total_status'))
+        self.tue_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'ij_status')[0])
+        self.tue_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'ij_status')[1])
+        self.tue_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'ij_status')[2])
+        self.wed_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[2], 'work_day'))
+        self.wed_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'date'))
+        self.wed_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[0])
+        self.wed_workin_lbl.setEnabled(self.wed_checkbox.isChecked())
+        self.wed_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[1])
+        self.wed_lunchin_lbl.setEnabled(self.wed_checkbox.isChecked())
+        self.wed_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[2])
+        self.wed_lunchout_lbl.setEnabled(self.wed_checkbox.isChecked())
+        self.wed_checkout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[3])
+        self.wed_checkout_lbl.setEnabled(self.wed_checkbox.isChecked())
+        self.wed_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'total_time'))
+        self.wed_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'total_status'))
+        self.wed_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'ij_status')[0])
+        self.wed_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'ij_status')[1])
+        self.wed_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'ij_status')[2])
+        self.thu_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[3], 'work_day'))
+        self.thu_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'date'))
+        self.thu_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[0])
+        self.thu_workin_lbl.setEnabled(self.thu_checkbox.isChecked())
+        self.thu_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[1])
+        self.thu_lunchin_lbl.setEnabled(self.thu_checkbox.isChecked())
+        self.thu_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[2])
+        self.thu_lunchout_lbl.setEnabled(self.thu_checkbox.isChecked())
+        self.thu_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[3])
+        self.thu_workout_lbl.setEnabled(self.thu_checkbox.isChecked())
+        self.thu_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'total_time'))
+        self.thu_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'total_status'))
+        self.thu_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'ij_status')[0])
+        self.thu_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'ij_status')[1])
+        self.thu_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'ij_status')[2])
+        self.fri_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[4], 'work_day'))
+        self.fri_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'date'))
+        self.fri_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[0])
+        self.fri_workin_lbl.setEnabled(self.fri_checkbox.isChecked())
+        self.fri_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[1])
+        self.fri_lunchin_lbl.setEnabled(self.fri_checkbox.isChecked())
+        self.fri_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[2])
+        self.fri_lunchout_lbl.setEnabled(self.fri_checkbox.isChecked())
+        self.fri_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[3])
+        self.fri_workout_lbl.setEnabled(self.fri_checkbox.isChecked())
+        self.fri_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'total_time'))
+        self.fri_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'total_status'))
+        self.fri_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'ij_status')[0])
+        self.fri_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'ij_status')[1])
+        self.fri_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'ij_status')[2])
+        self.sat_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[5], 'work_day'))
+        self.sat_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'date'))
+        self.sat_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[0])
+        self.sat_workin_lbl.setEnabled(self.sat_checkbox.isChecked())
+        self.sat_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[1])
+        self.sat_lunchin_lbl.setEnabled(self.sat_checkbox.isChecked())
+        self.sat_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[2])
+        self.sat_lunchout_lbl.setEnabled(self.sat_checkbox.isChecked())
+        self.sat_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[3])
+        self.sat_workout_lbl.setEnabled(self.sat_checkbox.isChecked())
+        self.sat_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'total_time'))
+        self.sat_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'total_status'))
+        self.sat_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'ij_status')[0])
+        self.sat_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'ij_status')[1])
+        self.sat_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'ij_status')[2])
+        self.sun_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[6], 'work_day'))
+        self.sun_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'date'))
+        self.sun_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[0])
+        self.sun_workin_lbl.setEnabled(self.sun_checkbox.isChecked())
+        self.sun_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[1])
+        self.sun_lunchin_lbl.setEnabled(self.sun_checkbox.isChecked())
+        self.sun_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[2])
+        self.sun_lunchout_lbl.setEnabled(self.sun_checkbox.isChecked())
+        self.sun_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[3])
+        self.sun_workout_lbl.setEnabled(self.sun_checkbox.isChecked())
+        self.sun_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'total_time'))
+        self.sun_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'total_status'))
+        self.sun_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[0])
+        self.sun_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[1])
+        self.sun_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[2])
 
-    def check_interjourney_frames_status(self, dow, value):
+    def checkbox_change_stat(self, value, day):
         """
-        temp
+        Method to activate or deactivate the day labels
         """
-        list_of_frames = [[self.monday_morning_interjourney_status, self.monday_lunch_interjourney_status,
-                           self.monday_afternoon_interjourney_status],
-                          [self.tuesday_morning_interjourney_status, self.tuesday_lunch_interjourney_status,
-                           self.tuesday_afternoon_interjourney_status],
-                          [self.wednesday_morning_interjourney_status, self.wednesday_lunch_interjourney_status,
-                           self.wednesday_afternoon_interjourney_status],
-                          [self.thursday_morning_interjourney_status, self.thursday_lunch_interjourney_status,
-                           self.thursday_afternoon_interjourney_status],
-                          [self.friday_morning_interjourney_status, self.friday_lunch_interjourney_status,
-                           self.friday_afternoon_interjourney_status],
-                          [self.saturday_morning_interjourney_status, self.saturday_lunch_interjourney_status,
-                           self.saturday_afternoon_interjourney_status],
-                          [self.sunday_morning_interjourney_status, self.sunday_lunch_interjourney_status,
-                           self.sunday_afternoon_interjourney_status]]
         if value:
-            sts = self.calculate_interjouney_status(dow)
-            print(sts)
-            list_of_frames[dow][0].setStyleSheet("QWidget { background-color: " + ('green' if sts[0] else 'red') +" }")
-            list_of_frames[dow][1].setStyleSheet("QWidget { background-color: " + ('green' if sts[1] else 'red') +" }")
-            list_of_frames[dow][2].setStyleSheet("QWidget { background-color: " + ('green' if sts[2] else 'red') +" }")
+            utils.get_from_dict(self.data_dict, self.curr_week[day])['work_day'] = True
+            times_list = utils.get_from_dict(self.data_dict, self.curr_week[day])['times_list']
+            ij_status = list(utils.get_ij_status(times_list))
+            total_status = utils.get_work_time_status(times_list)
+            utils.get_from_dict(self.data_dict, self.curr_week[day])['ij_status'] = ij_status
+            utils.get_from_dict(self.data_dict, self.curr_week[day])['total_status'] = total_status
         else:
-            list_of_frames[dow][0].setStyleSheet("QWidget { background-color: gray}")
-            list_of_frames[dow][1].setStyleSheet("QWidget { background-color: gray}")
-            list_of_frames[dow][2].setStyleSheet("QWidget { background-color: gray}")
+            utils.get_from_dict(self.data_dict, self.curr_week[day])['work_day'] = False
+            utils.get_from_dict(self.data_dict, self.curr_week[day])['total_status'] = "color : gray"
+            utils.get_from_dict(self.data_dict, self.curr_week[day])['ij_status'] = ["background-color : gray",
+                                                                                     "background-color : gray",
+                                                                                     "background-color : gray"]
+        self.update_log_data()
 
-    def calculate_interjouney_status(self, dow):
-        """
-        Temp
-        """
-        index_list = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()
-        data = self.work_log_data
-        morning_journey = utils.sub_times(data.iloc[index_list[dow]]['work_in'], data.iloc[index_list[dow]]['lunch_in'])
-        lunch_journey = utils.sub_times(data.iloc[dow]['lunch_in'], data.iloc[dow]['lunch_out'])
-        afternoon_journey = utils.sub_times(data.iloc[dow]['lunch_out'], data.iloc[dow]['work_out'])
-        morning_status = utils.change_to_minutes(morning_journey) < 301
-        lunch_status = utils.change_to_minutes(lunch_journey) < 121
-        afternoon_status = utils.change_to_minutes(afternoon_journey) < 301
-        return (morning_status, lunch_status, afternoon_status)
-
-    def monday_checkbox_status_change(self, value):
-        """
-        Temp
-        """
-        if not value:
-            self.monday_worked_time_label.setStyleSheet('color: black')
-        self.check_interjourney_frames_status(dow=0, value=value)
-        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[0]
-        self.work_log_data.at[index, 'work_day'] = bool(value)
-        self.monday_checkin_label.setEnabled(bool(value))
-        self.monday_lunch_checkin_label.setEnabled(bool(value))
-        self.monday_lunch_checkout_label.setEnabled(bool(value))
-        self.monday_checkout_label.setEnabled(bool(value))
-        self.check_work_time_status()
-        self.update_csv_data()
-
-    def tuesday_checkbox_status_change(self, value):
-        """
-        Temp
-        """
-        if not value:
-            self.tuesday_worked_time_label.setStyleSheet('color: black')
-        self.check_interjourney_frames_status(dow=1, value=value)
-        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[1]
-        self.work_log_data.at[index, 'work_day'] = bool(value)
-        self.tuesday_checkin_label.setEnabled(bool(value))
-        self.tuesday_lunch_checkin_label.setEnabled(bool(value))
-        self.tuesday_lunch_checkout_label.setEnabled(bool(value))
-        self.tuesday_checkout_label.setEnabled(bool(value))
-        self.check_work_time_status()
-        self.update_csv_data()
-
-    def wednesday_checkbox_status_change(self, value):
-        """
-        Temp
-        """
-        if not value:
-            self.wednesday_worked_time_label.setStyleSheet('color: black')
-        self.check_interjourney_frames_status(dow=2, value=value)
-        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[2]
-        self.work_log_data.at[index, 'work_day'] = bool(value)
-        self.wednesday_checkin_label.setEnabled(bool(value))
-        self.wednesday_lunch_checkin_label.setEnabled(bool(value))
-        self.wednesday_lunch_checkout_label.setEnabled(bool(value))
-        self.wednesday_checkout_label.setEnabled(bool(value))
-        self.check_work_time_status()
-        self.update_csv_data()
-
-    def thursday_checkbox_status_change(self, value):
-        """
-        Temp
-        """
-        if not value:
-            self.friday_worked_time_label.setStyleSheet('color: black')
-        self.check_interjourney_frames_status(dow=3, value=value)
-        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[3]
-        self.work_log_data.at[index, 'work_day'] = bool(value)
-        self.thursday_checkin_label.setEnabled(bool(value))
-        self.thursday_lunch_checkin_label.setEnabled(bool(value))
-        self.thursday_lunch_checkout_label.setEnabled(bool(value))
-        self.thursday_checkout_label.setEnabled(bool(value))
-        self.check_work_time_status()
-        self.update_csv_data()
-
-    def friday_checkbox_status_change(self, value):
-        """
-        Temp
-        """
-        if not value:
-            self.friday_worked_time_label.setStyleSheet('color: black')
-        self.check_interjourney_frames_status(dow=4, value=value)
-        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[4]
-        self.work_log_data.at[index, 'work_day'] = bool(value)
-        self.friday_checkin_label.setEnabled(bool(value))
-        self.friday_lunch_checkin_label.setEnabled(bool(value))
-        self.friday_lunch_checkout_label.setEnabled(bool(value))
-        self.friday_checkout_label.setEnabled(bool(value))
-        self.check_work_time_status()
-        self.update_csv_data()
-
-    def saturday_checkbox_status_change(self, value):
-        """
-        Temp
-        """
-        if not value:
-            self.friday_worked_time_label.setStyleSheet('color: black')
-        self.check_interjourney_frames_status(dow=5, value=value)
-        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[5]
-        self.work_log_data.at[index, 'work_day'] = bool(value)
-        self.saturday_checkin_label.setEnabled(bool(value))
-        self.saturday_lunch_checkin_label.setEnabled(bool(value))
-        self.saturday_lunch_checkout_label.setEnabled(bool(value))
-        self.saturday_checkout_label.setEnabled(bool(value))
-        self.check_work_time_status()
-        self.update_csv_data()
-
-    def sunday_checkbox_status_change(self, value):
-        """
-        Temp
-        """
-        if not value:
-            self.friday_worked_time_label.setStyleSheet('color: black')
-        self.check_interjourney_frames_status(dow=6, value=value)
-        index = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()[6]
-        self.work_log_data.at[index, 'work_day'] = bool(value)
-        self.sunday_checkin_label.setEnabled(bool(value))
-        self.sunday_lunch_checkin_label.setEnabled(bool(value))
-        self.sunday_lunch_checkout_label.setEnabled(bool(value))
-        self.sunday_checkout_label.setEnabled(bool(value))
-        self.check_work_time_status()
-        self.update_csv_data()
-
-    def update_csv_data(self):
-        """
-        Method to update the csv stored data
-        """
-        index_list = self.work_log_data.index[self.work_log_data['week'] == self.week].tolist()
-        self.work_log_data.at[index_list[0], 'work_day'] = bool(self.monday_check_box.isChecked())
-        self.work_log_data.at[index_list[0], 'work_in'] = self.monday_checkin_label.text()
-        self.work_log_data.at[index_list[0], 'lunch_in'] = self.monday_lunch_checkin_label.text()
-        self.work_log_data.at[index_list[0], 'lunch_out'] = self.monday_lunch_checkout_label.text()
-        self.work_log_data.at[index_list[0], 'work_out'] = self.monday_checkout_label.text()
-        self.work_log_data.at[index_list[0], 'total_time'] = self.monday_worked_time_label.text()
-
-        self.work_log_data.at[index_list[1], 'work_day'] = bool(self.tuesday_check_box.isChecked())
-        self.work_log_data.at[index_list[1], 'work_in'] = self.tuesday_checkin_label.text()
-        self.work_log_data.at[index_list[1], 'lunch_in'] = self.tuesday_lunch_checkin_label.text()
-        self.work_log_data.at[index_list[1], 'lunch_out'] = self.tuesday_lunch_checkout_label.text()
-        self.work_log_data.at[index_list[1], 'work_out'] = self.tuesday_checkout_label.text()
-        self.work_log_data.at[index_list[1], 'total_time'] = self.tuesday_worked_time_label.text()
-
-        self.work_log_data.at[index_list[2], 'work_day'] = bool(self.wednesday_check_box.isChecked())
-        self.work_log_data.at[index_list[2], 'work_in'] = self.wednesday_checkin_label.text()
-        self.work_log_data.at[index_list[2], 'lunch_in'] = self.wednesday_lunch_checkin_label.text()
-        self.work_log_data.at[index_list[2], 'lunch_out'] = self.wednesday_lunch_checkout_label.text()
-        self.work_log_data.at[index_list[2], 'work_out'] = self.wednesday_checkout_label.text()
-        self.work_log_data.at[index_list[2], 'total_time'] = self.wednesday_worked_time_label.text()
-
-        self.work_log_data.at[index_list[3], 'work_day'] = bool(self.thursday_check_box.isChecked())
-        self.work_log_data.at[index_list[3], 'work_in'] = self.thursday_checkin_label.text()
-        self.work_log_data.at[index_list[3], 'lunch_in'] = self.thursday_lunch_checkin_label.text()
-        self.work_log_data.at[index_list[3], 'lunch_out'] = self.thursday_lunch_checkout_label.text()
-        self.work_log_data.at[index_list[3], 'work_out'] = self.thursday_checkout_label.text()
-        self.work_log_data.at[index_list[3], 'total_time'] = self.thursday_worked_time_label.text()
-
-        self.work_log_data.at[index_list[4], 'work_day'] = bool(self.friday_check_box.isChecked())
-        self.work_log_data.at[index_list[4], 'work_in'] = self.friday_checkin_label.text()
-        self.work_log_data.at[index_list[4], 'lunch_in'] = self.friday_lunch_checkin_label.text()
-        self.work_log_data.at[index_list[4], 'lunch_out'] = self.friday_lunch_checkout_label.text()
-        self.work_log_data.at[index_list[4], 'work_out'] = self.friday_checkout_label.text()
-        self.work_log_data.at[index_list[4], 'total_time'] = self.friday_worked_time_label.text()
-
-        self.work_log_data.at[index_list[5], 'work_day'] = bool(self.saturday_check_box.isChecked())
-        self.work_log_data.at[index_list[5], 'work_in'] = self.saturday_checkin_label.text()
-        self.work_log_data.at[index_list[5], 'lunch_in'] = self.saturday_lunch_checkin_label.text()
-        self.work_log_data.at[index_list[5], 'lunch_out'] = self.saturday_lunch_checkout_label.text()
-        self.work_log_data.at[index_list[5], 'work_out'] = self.saturday_checkout_label.text()
-        self.work_log_data.at[index_list[5], 'total_time'] = self.saturday_worked_time_label.text()
-
-        self.work_log_data.at[index_list[6], 'work_day'] = bool(self.sunday_check_box.isChecked())
-        self.work_log_data.at[index_list[6], 'work_in'] = self.sunday_checkin_label.text()
-        self.work_log_data.at[index_list[6], 'lunch_in'] = self.sunday_lunch_checkin_label.text()
-        self.work_log_data.at[index_list[6], 'lunch_out'] = self.sunday_lunch_checkout_label.text()
-        self.work_log_data.at[index_list[6], 'work_out'] = self.sunday_checkout_label.text()
-        self.work_log_data.at[index_list[6], 'total_time'] = self.sunday_worked_time_label.text()
-
-        self.work_log_data.to_csv(utils.get_absolute_resource_path("resources/csv_data/log_data.csv"), index=False)
-
-    def calculate_monday_total_time(self, text):
+    def calculate_total_time(self, text, day, time):
         """
         Method to calculate the total worked time on monday
         """
         regex = re.compile('([0-9]{2}:[0-9]{2})')
         if regex.match(text):
-            total = utils.total_worked_time(self.monday_checkin_label.text(),
-                                            self.monday_lunch_checkin_label.text(),
-                                            self.monday_lunch_checkout_label.text(),
-                                            self.monday_checkout_label.text())
+            day_times = utils.get_from_dict(self.data_dict, self.curr_week[day])['times_list']
+            day_times[time] = text
+            total = utils.total_worked_time(input_list=day_times)
+
             if '-' not in total:
-                self.monday_worked_time_label.setText(total)
-                self.calculate_week_total_time()
-                self.check_work_time_status()
-                self.check_interjourney_frames_status(dow=0, value=True)
-                self.update_csv_data()
-
-    def calculate_tuesday_total_time(self, text):
-        """
-        Method to calculate the total worked time on tuesday
-        """
-        regex = re.compile('([0-9]{2}:[0-9]{2})')
-        if regex.match(text):
-            total = utils.total_worked_time(self.tuesday_checkin_label.text(),
-                                            self.tuesday_lunch_checkin_label.text(),
-                                            self.tuesday_lunch_checkout_label.text(),
-                                            self.tuesday_checkout_label.text())
-            if '-' not in total:
-                self.tuesday_worked_time_label.setText(total)
-                self.calculate_week_total_time()
-                self.check_work_time_status()
-                self.check_interjourney_frames_status(dow=1, value=True)
-                self.update_csv_data()
-
-    def calculate_wednesday_total_time(self, text):
-        """
-        Method to calculate the total worked time on wednesday
-        """
-        regex = re.compile('([0-9]{2}:[0-9]{2})')
-        if regex.match(text):
-            total = utils.total_worked_time(self.wednesday_checkin_label.text(),
-                                            self.wednesday_lunch_checkin_label.text(),
-                                            self.wednesday_lunch_checkout_label.text(),
-                                            self.wednesday_checkout_label.text())
-            if '-' not in total:
-                self.wednesday_worked_time_label.setText(total)
-                self.calculate_week_total_time()
-                self.check_work_time_status()
-                self.check_interjourney_frames_status(dow=2, value=True)
-                self.update_csv_data()
-
-    def calculate_thursday_total_time(self, text):
-        """
-        Method to calculate the total worked time on thursday
-        """
-        regex = re.compile('([0-9]{2}:[0-9]{2})')
-        if regex.match(text):
-            total = utils.total_worked_time(self.thursday_checkin_label.text(),
-                                            self.thursday_lunch_checkin_label.text(),
-                                            self.thursday_lunch_checkout_label.text(),
-                                            self.thursday_checkout_label.text())
-            if '-' not in total:
-                self.thursday_worked_time_label.setText(total)
-                self.calculate_week_total_time()
-                self.check_work_time_status()
-                self.check_interjourney_frames_status(dow=3, value=True)
-                self.update_csv_data()
-
-    def calculate_friday_total_time(self, text):
-        """
-        Method to calculate the total worked time on friday
-        """
-        regex = re.compile('([0-9]{2}:[0-9]{2})')
-        if regex.match(text):
-            total = utils.total_worked_time(self.friday_checkin_label.text(),
-                                            self.friday_lunch_checkin_label.text(),
-                                            self.friday_lunch_checkout_label.text(),
-                                            self.friday_checkout_label.text())
-            if '-' not in total:
-                self.friday_worked_time_label.setText(total)
-                self.calculate_week_total_time()
-                self.check_work_time_status()
-                self.check_interjourney_frames_status(dow=4, value=True)
-                self.update_csv_data()
-
-    def calculate_saturday_total_time(self, text):
-        """
-        Method to calculate the total worked time on sunday
-        """
-        regex = re.compile('([0-9]{2}:[0-9]{2})')
-        if regex.match(text):
-            total = utils.total_worked_time(self.saturday_checkin_label.text(),
-                                            self.saturday_lunch_checkin_label.text(),
-                                            self.saturday_lunch_checkout_label.text(),
-                                            self.saturday_checkout_label.text())
-            if '-' not in total:
-                self.saturday_worked_time_label.setText(total)
-                self.calculate_week_total_time()
-                self.check_work_time_status()
-                self.check_interjourney_frames_status(dow=5, value=True)
-                self.update_csv_data()
-
-    def calculate_sunday_total_time(self, text):
-        """
-        Method to calculate the total worked time on sunday
-        """
-        regex = re.compile('([0-9]{2}:[0-9]{2})')
-        if regex.match(text):
-            total = utils.total_worked_time(self.sunday_checkin_label.text(),
-                                            self.sunday_lunch_checkin_label.text(),
-                                            self.sunday_lunch_checkout_label.text(),
-                                            self.sunday_checkout_label.text())
-            if '-' not in total:
-                self.sunday_worked_time_label.setText(total)
-                self.calculate_week_total_time()
-                self.check_work_time_status()
-                self.check_interjourney_frames_status(dow=6, value=True)
-                self.update_csv_data()
-
-    def check_work_time_status(self):
-        """
-        Method to check the total work time status from all week days
-        """
-        list_of_times = [self.monday_worked_time_label, self.tuesday_worked_time_label,
-                         self.wednesday_worked_time_label, self.thursday_worked_time_label,
-                         self.friday_worked_time_label, self.saturday_worked_time_label,
-                         self.sunday_worked_time_label]
-        list_of_checkboxes = [self.monday_check_box, self.tuesday_check_box, self.wednesday_check_box,
-                              self.thursday_check_box, self.friday_check_box, self.saturday_check_box,
-                              self.sunday_check_box]
-        for time in list_of_times:
-            if list_of_checkboxes[list_of_times.index(time)].isChecked():
-                time_in_minutes = utils.change_to_minutes(time.text())
-                if 300 < time_in_minutes < 480:
-                    time.setStyleSheet('color: orange')
-                elif time_in_minutes == 480:
-                    time.setStyleSheet('color: green')
-                elif 600 > time_in_minutes > 480:
-                    time.setStyleSheet('color: blue')
-                else:
-                    time.setStyleSheet('color: red')
-            else:
-                time.setStyleSheet('color: gray')
-
-    def calculate_week_total_time(self):
-        """
-        Method to calculate the total time worked on the week
-        """
-        total_week_time = utils.get_total_time_from(self.work_log_data, week=self.week)
-        self.total_week_time_value.setText(total_week_time)
-
-    def calculate_month_total_time(self):
-        """
-        Method to calculate the total time worked on the month
-        """
-        total_month_time = utils.get_total_time_from(self.work_log_data, month=self.month)
-        self.hours_bank_value_label.setText(total_month_time)
+                utils.get_from_dict(self.data_dict, self.curr_week[day])['times_list'][time] = text
+                utils.get_from_dict(self.data_dict, self.curr_week[day])['total_time'] = total
+                times_list = utils.get_from_dict(self.data_dict, self.curr_week[day])['times_list']
+                day_status = utils.get_from_dict(self.data_dict, self.curr_week[day])['work_day']
+                utils.get_from_dict(self.data_dict, self.curr_week[day])['total_status'] =\
+                    utils.get_work_time_status(times_list)
+                if day_status:
+                    ij_status = list(utils.get_ij_status(times_list))
+                    utils.get_from_dict(self.data_dict, self.curr_week[day])['ij_status'] = ij_status
+                self.update_log_data()
 
     def change_week_display(self, value):
         """
@@ -888,7 +554,7 @@ class WorkedLogWidget(QWidget):
         else:
             if self.week > self.first_log_week:
                 self.week -= 1
-        self.month = utils.get_month_from_week(self.year, self.week)
+        self.curr_week = utils.get_week_days_list(self.year, self.week)
         self.update_log_data()
 
     def close_widget(self):

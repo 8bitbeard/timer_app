@@ -6,22 +6,28 @@ basic operations to them
 
 import os
 import sys
-from datetime import date, timedelta
+# from datetime import date, timedelta
+import datetime
+import time
+import calendar
+import operator
+
+from functools import reduce
 
 
-def convert_to_int(time):
+def convert_to_int(input_time):
     """
     This function gets the time string and return the hrs and minutes as integers
     """
-    hrs = int(time[0:time.index(':')])
-    mins = int(time[time.index(':') + 1 :])
+    hrs = int(input_time[0:input_time.index(':')])
+    mins = int(input_time[input_time.index(':') + 1 :])
     return(hrs, mins)
 
-def change_to_minutes(time):
+def change_to_minutes(input_time):
     """
     This function converts the time from hrs:mins to minutes
     """
-    hrs, mins = convert_to_int(time)
+    hrs, mins = convert_to_int(input_time)
     return 60 * hrs + mins
 
 def change_to_hours(minutes):
@@ -38,11 +44,11 @@ def time_is_greater(time_one, time_two):
     """
     return change_to_minutes(time_one) > change_to_minutes(time_two)
 
-def mult_time(time, factor):
+def mult_time(input_time, factor):
     """
     This function is responsible to multiply the hour value
     """
-    minutes = change_to_minutes(time)
+    minutes = change_to_minutes(input_time)
     return change_to_hours(factor * minutes)
 
 def sum_times(time_one, time_two, *args):
@@ -61,8 +67,8 @@ def sum_times_list(input_list):
     This function sums all the times inside a given list
     """
     total_sum = '00:00'
-    for time in input_list:
-        total_sum = sum_times(total_sum, time)
+    for input_time in input_list:
+        total_sum = sum_times(total_sum, input_time)
     return total_sum
 
 def sub_times(time_one, time_two):
@@ -73,10 +79,15 @@ def sub_times(time_one, time_two):
     time_minutes_two = change_to_minutes(time_two)
     return change_to_hours(time_minutes_two - time_minutes_one)
 
-def total_worked_time(time_one, time_two, time_three, time_four):
+def total_worked_time(time_one=None, time_two=None, time_three=None, time_four=None, input_list=None):
     """
     This function is responsible for calculating the total time worked on a day
     """
+    if input_list:
+        time_one = input_list[0]
+        time_two = input_list[1]
+        time_three = input_list[2]
+        time_four = input_list[3]
     return sum_times(sub_times(time_one, time_two), sub_times(time_three, time_four))
 
 # pylint: disable=no-member
@@ -206,10 +217,73 @@ def get_month_from_week(year, week):
     Method to get the month from a passed week number
     The returned month number will be the one most present on the week range
     """
-    temp_date = date(year, 1, 1)
-    delta = timedelta(days=(week-1)*7)
+    temp_date = datetime.date(year, 1, 1)
+    delta = datetime.timedelta(days=(week-1)*7)
     first = temp_date + delta
-    last = temp_date + delta + timedelta(days=6)
+    last = temp_date + delta + datetime.timedelta(days=6)
     if 4 < last.day < 7:
         return last.month
     return first.month
+
+def get_ij_status(list_of_times):
+    """
+    Method to return all status from one day
+    """
+    work_one_ij = change_to_minutes(sub_times(list_of_times[0], list_of_times[1]))
+    lunch_ij = change_to_minutes(sub_times(list_of_times[1], list_of_times[2]))
+    work_two_ij = change_to_minutes(sub_times(list_of_times[2], list_of_times[3]))
+
+    work_one_ij_status = "background-color : green" if 0 < work_one_ij <= 360 else "background-color : red"
+    lunch_ij_status = "background-color : green" if 0 < lunch_ij <= 120 else "background-color : red"
+    work_two_ij_status = "background-color : green" if 0 < work_two_ij <= 360 else "background-color : red"
+
+    return work_one_ij_status, lunch_ij_status, work_two_ij_status
+
+def get_work_time_status(times_list):
+    """
+    Method to check the total work time status from all week days
+    """
+    if '00:00' in times_list:
+        return "color : gray"
+    total_time = change_to_minutes(total_worked_time(input_list=times_list))
+    if 300 < total_time < 480:
+        return "color : orange"
+    if total_time == 480:
+        return "color : green"
+    if 600 > total_time > 480:
+        return "color : blue"
+    return "color : red"
+
+def get_week_days_list(year, week):
+    """
+    Method to return a list of lists containing the days af a given week
+    """
+    startdate = time.asctime(time.strptime('{} {} 1'.format(year, week-1), '%Y %W %w'))
+    startdate = datetime.datetime.strptime(startdate, '%a %b %d %H:%M:%S %Y')
+    days = [[(startdate + datetime.timedelta(days=i)).year, (startdate + datetime.timedelta(days=i)).month,
+             (startdate + datetime.timedelta(days=i)).day] for i in range(0, 7)]
+    return days
+
+def get_month_days_list(year, month):
+    """
+    Method to return a list of lists containg the days of a given month
+    """
+    num_days = calendar.monthrange(year, month)[1]
+    days = [datetime.date(year, month, day) for day in range(1, num_days+1)]
+    return days
+
+def get_from_dict(data_dict, map_list, extra_key=None):
+    """
+    Method to return the values from a dict path specified on a list
+    """
+    input_list = map_list.copy()
+    if extra_key:
+        input_list.append(extra_key)
+    return reduce(operator.getitem, input_list, data_dict)
+
+def set_in_dict(data_dict, map_list, extra_key, value):
+    """
+    Method to set the values from a dict path specified on a list
+    """
+    # get_from_dict(data_dict, map_list[:-1])[map_list[-1]] = value
+    get_from_dict(data_dict, map_list)[extra_key] = value

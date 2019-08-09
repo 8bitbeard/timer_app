@@ -14,6 +14,7 @@ import qdarkstyle
 from src.widgets.settings_widget import SettingsWidget
 from src.widgets.checkout_calculator_widget import CheckoutCalculatorWidget
 from src.widgets.worked_log_widget import WorkedLogWidget
+from src.widgets.web_scrapper_widget import WebScrapperWidget
 from src.utils import utils
 
 
@@ -62,6 +63,9 @@ class MainWindow(QMainWindow):
         worked_log_action = QAction('Worked log', self)
         worked_log_action.triggered.connect(self.open_worked_log)
 
+        web_scrapper_action = QAction('WebScrapper', self)
+        web_scrapper_action.triggered.connect(self.open_web_scrapper)
+
         exit_action = QAction('Exit', self)
         exit_action.triggered.connect(self.close_window)
 
@@ -76,6 +80,7 @@ class MainWindow(QMainWindow):
 
         file_menu.addMenu(settings_menu)
         file_menu.addAction(worked_log_action)
+        file_menu.addAction(web_scrapper_action)
         file_menu.addAction(exit_action)
         settings_menu.addMenu(settings_menu_two)
         settings_menu_two.addAction(settings_action_two)
@@ -114,10 +119,11 @@ class MainWindow(QMainWindow):
 
         self.worked_log_widget = WorkedLogWidget(self)
         self.settings_widget = SettingsWidget(self)
-        self.checkout_calculator_wiedget = CheckoutCalculatorWidget(self, self.tray_icon, self.settings_widget,
-                                                                    self.worked_log_widget)
-        self.central_widget.addWidget(self.checkout_calculator_wiedget)
-        self.central_widget.setCurrentWidget(self.checkout_calculator_wiedget)
+        self.web_scrapper_widget = WebScrapperWidget(self)
+        self.checkout_calculator_widget = CheckoutCalculatorWidget(self, self.tray_icon, self.settings_widget,
+                                                                   self.worked_log_widget, self.web_scrapper_widget)
+        self.central_widget.addWidget(self.checkout_calculator_widget)
+        self.central_widget.setCurrentWidget(self.checkout_calculator_widget)
 
     @staticmethod
     def report_issue():
@@ -166,8 +172,17 @@ class MainWindow(QMainWindow):
         This method handles the "Work log" press on the Toolbar menu
         """
         self.worked_log_widget.close_worked_log_signal.connect(self.close_widget)
+        self.worked_log_widget.get_log_data()
         self.central_widget.addWidget(self.worked_log_widget)
         self.central_widget.setCurrentWidget(self.worked_log_widget)
+
+    def open_web_scrapper(self):
+        """
+        This method handles the "WebScrapper" press on the Toolbar menu
+        """
+        self.web_scrapper_widget.close_web_scrapper_signal.connect(self.close_widget)
+        self.central_widget.addWidget(self.web_scrapper_widget)
+        self.central_widget.setCurrentWidget(self.web_scrapper_widget)
 
     def open_settings(self):
         """
@@ -182,7 +197,7 @@ class MainWindow(QMainWindow):
         This function handles the "Apply changes" button press on the settings page
         """
         if value:
-            self.central_widget.setCurrentWidget(self.checkout_calculator_wiedget)
+            self.central_widget.setCurrentWidget(self.checkout_calculator_widget)
 
     def toggle_dark_mode(self, value):
         """
