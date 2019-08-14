@@ -4,12 +4,11 @@ calculator widgets
 """
 
 import re
-# import time
 import datetime
-# import calendar
 
-# import pandas
+from collections import defaultdict
 
+import json
 import dill as pickle
 
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QGridLayout, QPushButton, QCheckBox, QFrame
@@ -38,12 +37,18 @@ class WorkedLogWidget(QWidget):
         self.day = actual_day.day
         self.year, self.week, self.day_of_week = actual_day.isocalendar()
 
-        self.first_log_week = 20
-        self.last_log_week = self.week
-
         self.data_dict = None
+        self.week_total = []
 
         self.get_log_data()
+
+        first_log_year = min([val for val in list(self.data_dict.keys()) if isinstance(val, int)])
+        first_log_month = min([val for val in list(self.data_dict[first_log_year].keys()) if isinstance(val, int)])
+        first_log_day = min([val for val in list(self.data_dict[first_log_year][first_log_month].keys())
+                             if isinstance(val, int)])
+        self.first_log_week = datetime.date(first_log_year, first_log_month, first_log_day).isocalendar()[1]
+        self.last_log_week = self.week
+
 
         self.curr_week = utils.get_week_days_list(self.year, self.week)
         self.current_month_days = utils.get_month_days_list(self.year, self.month)
@@ -55,9 +60,33 @@ class WorkedLogWidget(QWidget):
         """
         Method to get the log data
         """
-        with open(utils.get_absolute_resource_path('resources/csv_data/log_data.pkl'), 'rb') as pickle_file:
-            self.data_dict = pickle.load(pickle_file)
-        pickle_file.close()
+        try:
+            with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'rb') as pickle_file:
+                self.data_dict = pickle.load(pickle_file)
+            pickle_file.close()
+        except (TypeError, FileNotFoundError):
+            data_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(dict))))
+            for year, month, day in utils.get_week_days_list(self.year, self.week):
+                __, week, day_of_week = datetime.date(year, month, day).isocalendar()
+                data_dict[year][month]['total_time'] = "00:00"
+                data_dict[year][month]['month_work_days'] = 0
+                data_dict[year][month]['hours_bank'] = '00:00'
+                data_dict[year][month][day]['date'] = str(day).zfill(2) + '/' + str(month).zfill(2)
+                data_dict[year][month][day]['day_of_week'] = day_of_week
+                data_dict[year][month][day]['week'] = week
+                data_dict[year][month][day]['work_day'] = False
+                data_dict[year][month][day]['times_list'] = ['00:00', '00:00', '00:00', '00:00']
+                data_dict[year][month][day]['ij_status'] = ["background-color : gray",
+                                                            "background-color : gray",
+                                                            "background-color : gray"]
+                data_dict[year][month][day]['total_time'] = "00:00"
+                data_dict[year][month][day]['total_status'] = "color : gray"
+
+            self.data_dict = data_dict
+
+            with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'wb') as pickle_file:
+                pickle.dump(data_dict, pickle_file, pickle.HIGHEST_PROTOCOL)
+            pickle_file.close()
 
     def init_user_interface(self):
         """
@@ -67,14 +96,14 @@ class WorkedLogWidget(QWidget):
         bold_font = QFont()
         bold_font.setBold(True)
 
-        self.week_total_lbl = QLabel(text='Total Month:')
+        self.week_total_lbl = QLabel(text='Total week:')
         self.week_total_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.week_total_val = QLabel(self.data_dict[self.year][self.month]['total_time'])
+        self.week_total_val = QLabel()
         self.week_total_val.setFont(bold_font)
         self.bank_total_lbl = QLabel(text='Hours bank:')
         self.bank_total_lbl.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-        self.hours_bank_val = QLabel()
-        self.hours_bank_val.setFont(bold_font)
+        self.bank_total_val = QLabel()
+        self.bank_total_val.setFont(bold_font)
 
         self.checkin_time_text_lbl = QLabel(text='Work in:')
         self.checkin_time_text_lbl.setAlignment(Qt.AlignRight)
@@ -256,7 +285,7 @@ class WorkedLogWidget(QWidget):
         self.sat_workout_lbl = QLineEdit()
         self.sat_workout_lbl.setValidator(worked_time_validator)
         self.sat_workout_lbl.setFixedSize(self.TIME_BOX_SIZE)
-        self.sat_workout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 5, 2))
+        self.sat_workout_lbl.textChanged.connect(lambda text: self.calculate_total_time(text, 5, 3))
         self.sat_total_lbl = QLabel()
         self.sat_total_lbl.setFont(bold_font)
         self.sat_morning_stat = QFrame()
@@ -307,7 +336,7 @@ class WorkedLogWidget(QWidget):
         self.widget_layout.addWidget(self.week_total_lbl, 0, 0, 1, 2)
         self.widget_layout.addWidget(self.week_total_val, 0, 2)
         self.widget_layout.addWidget(self.bank_total_lbl, 0, 3, 1, 2)
-        self.widget_layout.addWidget(self.hours_bank_val, 0, 5)
+        self.widget_layout.addWidget(self.bank_total_val, 0, 5)
 
         self.widget_layout.addWidget(self.mon_date_lbl, 1, 0)
         self.widget_layout.addWidget(self.mon_checkbox, 2, 0)
@@ -396,7 +425,10 @@ class WorkedLogWidget(QWidget):
         """
         Method to update the
         """
-        self.week_total_val.setText(self.data_dict[self.year][self.month]['total_time'])
+        # self.week_total_val.setText(utils.get_from_dict(self.data_dict, self.curr_week[0][1])['total_time'])
+        self.week_total_val.setText(utils.get_week_total_time(self.data_dict, self.curr_week))
+        self.bank_total_val.setText(self.data_dict[self.year][self.month]['hours_bank'])
+
         self.mon_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[0], 'work_day'))
         self.mon_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'date'))
         self.mon_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[0])
@@ -530,7 +562,7 @@ class WorkedLogWidget(QWidget):
         if regex.match(text):
             day_times = utils.get_from_dict(self.data_dict, self.curr_week[day])['times_list']
             day_times[time] = text
-            total = utils.total_worked_time(input_list=day_times)
+            total = utils.total_worked_time(day_times)
 
             if '-' not in total:
                 utils.get_from_dict(self.data_dict, self.curr_week[day])['times_list'][time] = text
@@ -555,10 +587,16 @@ class WorkedLogWidget(QWidget):
             if self.week > self.first_log_week:
                 self.week -= 1
         self.curr_week = utils.get_week_days_list(self.year, self.week)
+        self.month = self.curr_week[3][1]
         self.update_log_data()
 
     def close_widget(self):
         """
         Method to send the signal to close the worked log widget
         """
-        self.close_worked_log_signal.emit(True)
+        with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'wb') as pickle_file:
+            pickle.dump(self.data_dict, pickle_file, pickle.HIGHEST_PROTOCOL)
+        pickle_file.close()
+        with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.json', 'w') as json_file:
+            json.dump(self.data_dict, json_file, indent=4)
+        json_file.close()

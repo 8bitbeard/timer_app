@@ -173,6 +173,7 @@ class MainWindow(QMainWindow):
         """
         self.worked_log_widget.close_worked_log_signal.connect(self.close_widget)
         self.worked_log_widget.get_log_data()
+        self.worked_log_widget.update_log_data()
         self.central_widget.addWidget(self.worked_log_widget)
         self.central_widget.setCurrentWidget(self.worked_log_widget)
 
@@ -232,3 +233,4 @@ class MainWindow(QMainWindow):
                                        QSystemTrayIcon.Information, msecs=100)
         else:
             self.tray_icon.hide()
+        self.worked_log_widget.close_widget()

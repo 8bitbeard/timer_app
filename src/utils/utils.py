@@ -6,7 +6,6 @@ basic operations to them
 
 import os
 import sys
-# from datetime import date, timedelta
 import datetime
 import time
 import calendar
@@ -79,16 +78,15 @@ def sub_times(time_one, time_two):
     time_minutes_two = change_to_minutes(time_two)
     return change_to_hours(time_minutes_two - time_minutes_one)
 
-def total_worked_time(time_one=None, time_two=None, time_three=None, time_four=None, input_list=None):
+def total_worked_time(*args):
     """
     This function is responsible for calculating the total time worked on a day
     """
-    if input_list:
-        time_one = input_list[0]
-        time_two = input_list[1]
-        time_three = input_list[2]
-        time_four = input_list[3]
-    return sum_times(sub_times(time_one, time_two), sub_times(time_three, time_four))
+    if isinstance(args[0], list):
+        return sum_times(sub_times(args[0][0], args[0][1]), sub_times(args[0][2], args[0][3]))
+    if len(args) == 4:
+        return sum_times(sub_times(args[0], args[1]), sub_times(args[2], args[3]))
+    return '00:00'
 
 # pylint: disable=no-member
 # pylint: disable=protected-access
@@ -132,64 +130,6 @@ def count_dict_value(input_dict, key, value):
     values_list = get_dict_values_list(input_dict, key)
     return int(values_list.count(value))
 
-def csv_to_dict(csv_file):
-    """
-    Method to convert the csv file to a dict
-    """
-    dict_from_csv = {}
-    with open(get_absolute_resource_path("resources/dictionaries/{}".format(csv_file))) as data_file:
-        for row in data_file:
-            row = row.strip().split(',')
-            dict_from_csv.setdefault(int(row[0]), {})[int(row[1])] = {row[2] : row[3], row[4] : row[5],
-                                                                      row[6] : row[7], row[8] : row[9],
-                                                                      row[10] : row[11], row[12] : row[13],
-                                                                      row[14] : row[15]}
-    return dict_from_csv
-
-def dict_to_csv(input_dict):
-    """
-    Method to convert the dict to csv file
-    """
-    print(input_dict)
-
-def count_csv_values_from(csv_file, index, value):
-    """
-    Method to return the amount of values from a specified index
-    """
-    temp_list = []
-    for i in range(0, csv_file.shape[0]):
-        if csv_file.iloc[i][index] == value:
-            temp_list.append(csv_file.iloc[i][index])
-    return len(temp_list)
-
-def get_current_week_data(csv_file, week):
-    """
-    Method to return a pandas archive containing only the current week data
-    """
-    current_week_data = csv_file[csv_file['week'] == week]
-    return current_week_data
-
-def get_current_month_data(csv_file, month):
-    """
-    Method to return a pandas archive containing only the current month data
-    """
-    current_month_data = csv_file[csv_file['month'] == month]
-    return current_month_data
-
-def parse_log_data_by(csv_file, day=None, week=None, month=None, year=None):
-    """
-    Method to parse the csv_data from work log data, returning a new pandas data with the required information
-    """
-    if day:
-        return csv_file[csv_file['day'] == day]
-    elif week:
-        return csv_file[csv_file['week'] == week]
-    elif month:
-        return csv_file[csv_file['month'] == month]
-    else:
-        return csv_file[csv_file['year'] == year]
-
-
 def  get_total_time_from(csv_file, week=None, month=None):
     """
     Method to return the total time by month or week
@@ -211,6 +151,25 @@ def  get_total_time_from(csv_file, week=None, month=None):
         if temp_df.iloc[i]['total_time']:
             temp_list.append(temp_df.iloc[i]['total_time'])
     return sum_times_list(temp_list)
+
+def get_start_end_dates(year_input, week_input):
+    """
+    Method to return the fist and last date from a given week from a given year
+    """
+    date_input = datetime.date(year_input, 1, 1)
+    if date_input.weekday() <= 3:
+        date_input = date_input - datetime.timedelta(date_input.weekday())
+    else:
+        date_input = date_input + datetime.timedelta(7-date_input.weekday())
+    delta = datetime.timedelta(days=(week_input-1)*7)
+    return date_input + delta, date_input + delta + datetime.timedelta(days=6)
+
+def sort_dates_list(input_list):
+    """
+    Method to sort a list of dates with the "yyyy-xx-xx" format
+    """
+    splitup = input_list.split('-')
+    return splitup[0], splitup[1], splitup[2]
 
 def get_month_from_week(year, week):
     """
@@ -245,7 +204,7 @@ def get_work_time_status(times_list):
     """
     if '00:00' in times_list:
         return "color : gray"
-    total_time = change_to_minutes(total_worked_time(input_list=times_list))
+    total_time = change_to_minutes(total_worked_time(times_list))
     if 300 < total_time < 480:
         return "color : orange"
     if total_time == 480:
@@ -287,3 +246,12 @@ def set_in_dict(data_dict, map_list, extra_key, value):
     """
     # get_from_dict(data_dict, map_list[:-1])[map_list[-1]] = value
     get_from_dict(data_dict, map_list)[extra_key] = value
+
+def get_week_total_time(my_dict, week_days_list):
+    """
+    Method to calculate and return the total worked time from a given week
+    """
+    total_time_list = []
+    for y, m, d in week_days_list:
+        total_time_list.append(my_dict[y][m][d]['total_time'])
+    return sum_times_list(total_time_list)
