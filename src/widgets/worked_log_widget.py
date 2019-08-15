@@ -554,20 +554,6 @@ class WorkedLogWidget(QWidget):
                                                                                      "background-color : gray"]
         self.update_log_data()
 
-    def check_work_days(self, year, month):
-        """
-        Method to check the amount of work days in a month
-        """
-        counter = 0
-        for day in self.data_dict[year][month][day]:
-            try:
-                if self.data_dict[year][month][day]['work_day']:
-                    counter += 1
-            except:
-                pass
-
-
-
     def calculate_total_time(self, text, day, time):
         """
         Method to calculate the total worked time on monday
@@ -588,7 +574,7 @@ class WorkedLogWidget(QWidget):
                 if day_status:
                     ij_status = list(utils.get_ij_status(times_list))
                     utils.get_from_dict(self.data_dict, self.curr_week[day])['ij_status'] = ij_status
-                utils.get_total_time_from(self.data_dict, month=self.month)
+                utils.get_total_time_from(self.data_dict, self.year, month=self.month)
                 self.update_log_data()
 
     def change_week_display(self, value):

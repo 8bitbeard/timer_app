@@ -130,22 +130,22 @@ def count_dict_value(input_dict, key, value):
     values_list = get_dict_values_list(input_dict, key)
     return int(values_list.count(value))
 
-def  get_total_time_from(my_dict, week=None, month=None):
+def  get_total_time_from(my_dict, year, month=None):
     """
     Method to return the total time by month or week
     """
     total_days = []
     if month:
-        for day in my_dict[2019][month]:
+        for day in my_dict[year][month]:
             try:
-                total_days.append(my_dict[2019][month][day]['total_time'])
-            except:
+                total_days.append(my_dict[year][month][day]['total_time'])
+            except TypeError:
                 pass
     total_worked_days = [value for value in total_days if value != '00:00']
     total_worked = sum_times_list(total_worked_days)
     should_work = mult_time('08:00', len(total_worked_days))
     balance = sub_times(should_work, total_worked)
-    my_dict[2019][month]['hours_ban'] = balance
+    my_dict[year][month]['hours_bank'] = balance
 
 def get_start_end_dates(year_input, week_input):
     """
@@ -247,6 +247,6 @@ def get_week_total_time(my_dict, week_days_list):
     Method to calculate and return the total worked time from a given week
     """
     total_time_list = []
-    for y, m, d in week_days_list:
-        total_time_list.append(my_dict[y][m][d]['total_time'])
+    for year, month, day in week_days_list:
+        total_time_list.append(my_dict[year][month][day]['total_time'])
     return sum_times_list(total_time_list)

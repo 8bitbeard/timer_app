@@ -183,8 +183,7 @@ class ScrapperThread(QThread):
                 self.scrapper_status.emit("Processo finalizado!")
                 self.progress_step.emit(True)
                 self.successful_signal.emit(True)
-        except Exception as e:
-            print(e)
+        except:
             msg = "Erro de conexão! Tente novamente mais tarde"
             self.scrapper_status.emit(msg)
             self.failure_signal.emit(msg)
