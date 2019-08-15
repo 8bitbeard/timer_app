@@ -130,27 +130,22 @@ def count_dict_value(input_dict, key, value):
     values_list = get_dict_values_list(input_dict, key)
     return int(values_list.count(value))
 
-def  get_total_time_from(csv_file, week=None, month=None):
+def  get_total_time_from(my_dict, week=None, month=None):
     """
     Method to return the total time by month or week
     """
-    temp_list = []
-    if week:
-        search_type = 'week'
-        value = week
-    elif month:
-        search_type = 'month'
-        value = month
-    else:
-        for i in range(0, csv_file.shape[0]):
-            if csv_file.iloc[i]['total_time']:
-                temp_list.append(csv_file.iloc[i]['total_time'])
-        return sum_times_list(temp_list)
-    temp_df = csv_file[csv_file[search_type] == value]
-    for i in range(0, temp_df.shape[0]):
-        if temp_df.iloc[i]['total_time']:
-            temp_list.append(temp_df.iloc[i]['total_time'])
-    return sum_times_list(temp_list)
+    total_days = []
+    if month:
+        for day in my_dict[2019][month]:
+            try:
+                total_days.append(my_dict[2019][month][day]['total_time'])
+            except:
+                pass
+    total_worked_days = [value for value in total_days if value != '00:00']
+    total_worked = sum_times_list(total_worked_days)
+    should_work = mult_time('08:00', len(total_worked_days))
+    balance = sub_times(should_work, total_worked)
+    my_dict[2019][month]['hours_ban'] = balance
 
 def get_start_end_dates(year_input, week_input):
     """

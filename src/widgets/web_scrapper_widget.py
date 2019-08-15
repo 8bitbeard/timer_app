@@ -23,8 +23,9 @@ class ScrapperThread(QThread):
     """
     progress_step = pyqtSignal(bool)
     finish_signal = pyqtSignal(bool)
-    successful_signal = pyqtSignal(str)
+    successful_signal = pyqtSignal(bool)
     failure_signal = pyqtSignal(str)
+    scrapper_status = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(ScrapperThread, self).__init__(parent)
@@ -47,6 +48,7 @@ class ScrapperThread(QThread):
                       'LogOnModel.Password' : self.password_val}
         try:
             with requests.Session() as session:
+                self.scrapper_status.emit("Scrapping Started!")
                 kairos_url = "https://www.dimepkairos.com.br/Dimep/Account/LogOn?ReturnUrl=%2FDimep"
                 login_request = session.get(kairos_url)
                 login_request = session.post(kairos_url, data=login_data)
@@ -78,6 +80,7 @@ class ScrapperThread(QThread):
                 final_dict = {}
                 ordered_dates = []
                 self.progress_step.emit(True)
+                self.scrapper_status.emit("Buscando dados no Kairos")
                 for value in necessary_data:
                     print(value)
                     periodo_pedidos_url = "https://www.dimepkairos.com.br/Dimep/PedidosJustificativas/Index/" +\
@@ -96,12 +99,14 @@ class ScrapperThread(QThread):
                             ordered_dates.append(data)
                     self.progress_step.emit(True)
                 ordered_dates = sorted(ordered_dates, key=utils.sort_dates_list)
-                first_day = utils.get_start_end_dates(datetime.datetime.strptime(ordered_dates[0], "%Y-%m-%d").date().year,
-                                                    datetime.datetime.strptime(ordered_dates[0], "%Y-%m-%d").date().\
-                                                    isocalendar()[1])[0]
-                last_day = utils.get_start_end_dates(datetime.datetime.strptime(ordered_dates[-1], "%Y-%m-%d").date().year,
-                                                    datetime.datetime.strptime(ordered_dates[-1], "%Y-%m-%d").date().\
-                                                    isocalendar()[1])[1]
+                first_day = utils.get_start_end_dates(datetime.datetime.strptime(ordered_dates[0],
+                                                                                 "%Y-%m-%d").date().year,
+                                                      datetime.datetime.strptime(ordered_dates[0], "%Y-%m-%d").date().\
+                                                      isocalendar()[1])[0]
+                last_day = utils.get_start_end_dates(datetime.datetime.strptime(ordered_dates[-1],
+                                                                                "%Y-%m-%d").date().year,
+                                                     datetime.datetime.strptime(ordered_dates[-1], "%Y-%m-%d").date().\
+                                                     isocalendar()[1])[1]
                 full_datelist = [str(i) for i in pd.date_range(first_day, last_day).tolist()]
                 full_datelist = [date.split(" ")[0] for date in full_datelist]
                 full_datelist = sorted(full_datelist, key=utils.sort_dates_list)
@@ -114,9 +119,10 @@ class ScrapperThread(QThread):
                 data_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(dict))))
                 total_times_list = []
                 counter = 0
+                self.scrapper_status.emit("Organizando dados obtidos")
                 for value in full_datelist:
                     current_date = datetime.date(int(value.split('-')[0]), int(value.split('-')[1]),
-                                                int(value.split('-')[2]))
+                                                 int(value.split('-')[2]))
                     day = int(value.split('-')[2])
                     month = int(value.split('-')[1])
                     year = int(value.split('-')[0])
@@ -174,11 +180,13 @@ class ScrapperThread(QThread):
                 with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.json', 'w') as json_file:
                     json.dump(data_dict, json_file, indent=4)
                 json_file.close()
+                self.scrapper_status.emit("Processo finalizado!")
                 self.progress_step.emit(True)
                 self.successful_signal.emit(True)
         except Exception as e:
-            # print(e)
+            print(e)
             msg = "Erro de conexão! Tente novamente mais tarde"
+            self.scrapper_status.emit(msg)
             self.failure_signal.emit(msg)
         self.finish_signal.emit(True)
 
@@ -191,10 +199,6 @@ class WebScrapperWidget(QWidget):
     def __init__(self, parent=None):
         super(WebScrapperWidget, self).__init__(parent)
 
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setMaximum(100)
-        self.progress_bar.setEnabled(False)
-
         self.title_lbl = QLabel(text='WebScrapper Widget')
         self.login_lbl = QLabel(text='Login:')
         self.password_lbl = QLabel(text='Passowrd:')
@@ -206,11 +210,18 @@ class WebScrapperWidget(QWidget):
         self.sync_btn = QPushButton('Login and Sync', self)
         self.sync_btn.clicked.connect(self.scrapp_data)
 
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setMaximum(100)
+        self.progress_bar.setEnabled(False)
+
+        self.scrapping_status = QLabel()
+
         self.scrapper_thread = ScrapperThread()
         self.scrapper_thread.finish_signal.connect(self.sync_end)
         self.scrapper_thread.progress_step.connect(self.update_progress_bar)
         self.scrapper_thread.successful_signal.connect(self.sync_end)
         self.scrapper_thread.failure_signal.connect(self.sync_failed)
+        self.scrapper_thread.scrapper_status.connect(self.sync_status_text)
 
         self.widget_layout = QGridLayout()
         self.widget_layout.addWidget(self.title_lbl, 0, 0, 1, 3)
@@ -220,6 +231,7 @@ class WebScrapperWidget(QWidget):
         self.widget_layout.addWidget(self.password_val, 2, 1, 1, 2)
         self.widget_layout.addWidget(self.sync_btn, 3, 0, 1, 3)
         self.widget_layout.addWidget(self.progress_bar, 4, 0, 1, 3)
+        self.widget_layout.addWidget(self.scrapping_status, 5, 0, 1, 3)
 
         self.setLayout(self.widget_layout)
 
@@ -242,6 +254,12 @@ class WebScrapperWidget(QWidget):
         if value:
             new_val = float(self.progress_bar.value()) + 17 if float(self.progress_bar.value()) + 17 < 100 else 100
             self.progress_bar.setValue(new_val)
+
+    def sync_status_text(self, text):
+        """
+        Method to sync the webscrapper thread actions with the status text
+        """
+        self.scrapping_status.setText(text)
 
     def sync_failed(self, text):
         """

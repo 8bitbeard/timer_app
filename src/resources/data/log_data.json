@@ -1536,9 +1536,9 @@
             }
         },
         "8": {
-            "total_time": "72:25",
-            "month_work_days": 9,
-            "hours_bank": "00:25",
+            "total_time": "80:11",
+            "month_work_days": 10,
+            "hours_bank": "00:00",
             "1": {
                 "date": "01/08",
                 "day_of_week": 4,
@@ -1776,53 +1776,53 @@
                     "08:44",
                     "11:57",
                     "12:57",
-                    "17:23"
+                    "17:26"
                 ],
                 "ij_status": [
                     "background-color : green",
                     "background-color : green",
                     "background-color : green"
                 ],
-                "total_time": "07:39",
+                "total_time": "07:42",
                 "total_status": "color : orange"
             },
             "14": {
                 "date": "14/08",
                 "day_of_week": 3,
                 "week": 33,
-                "work_day": false,
+                "work_day": true,
                 "times_list": [
-                    "00:00",
-                    "00:00",
-                    "00:00",
-                    "00:00"
+                    "08:58",
+                    "11:57",
+                    "12:57",
+                    "17:44"
                 ],
                 "ij_status": [
-                    "background-color : gray",
-                    "background-color : gray",
-                    "background-color : gray"
+                    "background-color : green",
+                    "background-color : green",
+                    "background-color : green"
                 ],
-                "total_time": "00:00",
-                "total_status": "color : gray"
+                "total_time": "07:46",
+                "total_status": "color : orange"
             },
             "15": {
                 "date": "15/08",
                 "day_of_week": 4,
                 "week": 33,
-                "work_day": false,
+                "work_day": true,
                 "times_list": [
-                    "00:00",
-                    "00:00",
-                    "00:00",
-                    "00:00"
+                    "08:33",
+                    "11:59",
+                    "12:59",
+                    "17:22"
                 ],
                 "ij_status": [
-                    "background-color : gray",
-                    "background-color : gray",
-                    "background-color : gray"
+                    "background-color : green",
+                    "background-color : green",
+                    "background-color : green"
                 ],
-                "total_time": "00:00",
-                "total_status": "color : gray"
+                "total_time": "07:49",
+                "total_status": "color : orange"
             },
             "16": {
                 "date": "16/08",

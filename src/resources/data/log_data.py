@@ -1,3 +1,6 @@
+# pylint: disable=too-many-lines
+# pylint: disable=bad-continuation
+# This file is only for tests, so is is alright to have this many lines
 """
 File to store the python dictionary for tests
 """
@@ -970,7 +973,7 @@ MY_DICT = {
                 'total_time': '08:00',
                 'total_status': 'color : green'
             }
-        },
+       },
         8: {
             'total_time': '48:50',
             1: {
