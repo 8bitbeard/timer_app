@@ -200,10 +200,10 @@ class WebScrapperWidget(QWidget):
 
         self.title_lbl = QLabel(text='WebScrapper Widget')
         self.login_lbl = QLabel(text='Login:')
-        self.password_lbl = QLabel(text='Passowrd:')
+        self.password_lbl = QLabel(text='Password:')
 
-        self.login_val = QLineEdit(text='wilton.souza')
-        self.password_val = QLineEdit('Wf0691@2019.1-2')
+        self.login_val = QLineEdit()
+        self.password_val = QLineEdit()
         self.password_val.setEchoMode(QLineEdit.Password)
 
         self.sync_btn = QPushButton('Login and Sync', self)

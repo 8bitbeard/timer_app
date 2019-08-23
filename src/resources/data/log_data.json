@@ -1536,8 +1536,8 @@
             }
         },
         "8": {
-            "total_time": "80:11",
-            "month_work_days": 10,
+            "total_time": "128:00",
+            "month_work_days": 16,
             "hours_bank": "00:00",
             "1": {
                 "date": "01/08",
@@ -1828,20 +1828,20 @@
                 "date": "16/08",
                 "day_of_week": 5,
                 "week": 33,
-                "work_day": false,
+                "work_day": true,
                 "times_list": [
-                    "00:00",
-                    "00:00",
-                    "00:00",
-                    "00:00"
+                    "08:57",
+                    "11:32",
+                    "12:35",
+                    "18:00"
                 ],
                 "ij_status": [
-                    "background-color : gray",
-                    "background-color : gray",
-                    "background-color : gray"
+                    "background-color : green",
+                    "background-color : green",
+                    "background-color : green"
                 ],
-                "total_time": "00:00",
-                "total_status": "color : gray"
+                "total_time": "08:00",
+                "total_status": "color : green"
             },
             "17": {
                 "date": "17/08",
@@ -1880,9 +1880,146 @@
                 ],
                 "total_time": "00:00",
                 "total_status": "color : gray"
+            },
+            "19": {
+                "date": "19/08",
+                "day_of_week": 1,
+                "week": 34,
+                "work_day": true,
+                "times_list": [
+                    "08:47",
+                    "12:01",
+                    "13:04",
+                    "17:50"
+                ],
+                "ij_status": [
+                    "background-color : green",
+                    "background-color : green",
+                    "background-color : green"
+                ],
+                "total_time": "08:00",
+                "total_status": "color : green"
+            },
+            "20": {
+                "date": "20/08",
+                "day_of_week": 2,
+                "week": 34,
+                "work_day": true,
+                "times_list": [
+                    "08:43",
+                    "12:00",
+                    "13:00",
+                    "17:43"
+                ],
+                "ij_status": [
+                    "background-color : green",
+                    "background-color : green",
+                    "background-color : green"
+                ],
+                "total_time": "08:00",
+                "total_status": "color : green"
+            },
+            "21": {
+                "date": "21/08",
+                "day_of_week": 3,
+                "week": 34,
+                "work_day": true,
+                "times_list": [
+                    "08:49",
+                    "11:48",
+                    "12:48",
+                    "17:49"
+                ],
+                "ij_status": [
+                    "background-color : green",
+                    "background-color : green",
+                    "background-color : green"
+                ],
+                "total_time": "08:00",
+                "total_status": "color : green"
+            },
+            "22": {
+                "date": "22/08",
+                "day_of_week": 4,
+                "week": 34,
+                "work_day": true,
+                "times_list": [
+                    "08:08",
+                    "12:55",
+                    "13:55",
+                    "17:08"
+                ],
+                "ij_status": [
+                    "background-color : green",
+                    "background-color : green",
+                    "background-color : green"
+                ],
+                "total_time": "08:00",
+                "total_status": "color : green"
+            },
+            "23": {
+                "date": "23/08",
+                "day_of_week": 5,
+                "week": 34,
+                "work_day": false,
+                "times_list": [
+                    "00:00",
+                    "00:00",
+                    "00:00",
+                    "00:00"
+                ],
+                "ij_status": [
+                    "background-color : gray",
+                    "background-color : gray",
+                    "background-color : gray"
+                ],
+                "total_time": "00:00",
+                "total_status": "color : gray"
+            },
+            "24": {
+                "date": "24/08",
+                "day_of_week": 6,
+                "week": 34,
+                "work_day": false,
+                "times_list": [
+                    "00:00",
+                    "00:00",
+                    "00:00",
+                    "00:00"
+                ],
+                "ij_status": [
+                    "background-color : gray",
+                    "background-color : gray",
+                    "background-color : gray"
+                ],
+                "total_time": "00:00",
+                "total_status": "color : gray"
+            },
+            "25": {
+                "date": "25/08",
+                "day_of_week": 7,
+                "week": 34,
+                "work_day": false,
+                "times_list": [
+                    "00:00",
+                    "00:00",
+                    "00:00",
+                    "00:00"
+                ],
+                "ij_status": [
+                    "background-color : gray",
+                    "background-color : gray",
+                    "background-color : gray"
+                ],
+                "total_time": "00:00",
+                "total_status": "color : gray"
             }
         }
     },
     "total_work_days": 0,
-    "hours_bank": "00:00"
+    "hours_bank": "00:00",
+    "user_data": {
+        "login": "wilton.souza@compasso.com.br",
+        "password": "Wf0691@2019.1-2"
+    }
 }

@@ -42,14 +42,6 @@ class WorkedLogWidget(QWidget):
 
         self.get_log_data()
 
-        first_log_year = min([val for val in list(self.data_dict.keys()) if isinstance(val, int)])
-        first_log_month = min([val for val in list(self.data_dict[first_log_year].keys()) if isinstance(val, int)])
-        first_log_day = min([val for val in list(self.data_dict[first_log_year][first_log_month].keys())
-                             if isinstance(val, int)])
-        self.first_log_week = datetime.date(first_log_year, first_log_month, first_log_day).isocalendar()[1]
-        self.last_log_week = self.week
-
-
         self.curr_week = utils.get_week_days_list(self.year, self.week)
         self.current_month_days = utils.get_month_days_list(self.year, self.month)
 
@@ -87,6 +79,13 @@ class WorkedLogWidget(QWidget):
             with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'wb') as pickle_file:
                 pickle.dump(data_dict, pickle_file, pickle.HIGHEST_PROTOCOL)
             pickle_file.close()
+
+        first_log_year = min([val for val in list(self.data_dict.keys()) if isinstance(val, int)])
+        first_log_month = min([val for val in list(self.data_dict[first_log_year].keys()) if isinstance(val, int)])
+        first_log_day = min([val for val in list(self.data_dict[first_log_year][first_log_month].keys())
+                             if isinstance(val, int)])
+        self.first_log_week = datetime.date(first_log_year, first_log_month, first_log_day).isocalendar()[1]
+        self.last_log_week = self.week
 
     def init_user_interface(self):
         """
