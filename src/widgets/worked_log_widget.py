@@ -53,7 +53,8 @@ class WorkedLogWidget(QWidget):
         Method to get the log data
         """
         try:
-            with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'rb') as pickle_file:
+            # with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'rb') as pickle_file:
+            with open('log_data.pkl', 'rb') as pickle_file:
                 self.data_dict = pickle.load(pickle_file)
             pickle_file.close()
         except (TypeError, FileNotFoundError):
@@ -76,7 +77,8 @@ class WorkedLogWidget(QWidget):
 
             self.data_dict = data_dict
 
-            with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'wb') as pickle_file:
+            # with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'wb') as pickle_file:
+            with open('log_data.pkl', 'wb') as pickle_file:
                 pickle.dump(data_dict, pickle_file, pickle.HIGHEST_PROTOCOL)
             pickle_file.close()
 
@@ -594,9 +596,10 @@ class WorkedLogWidget(QWidget):
         """
         Method to send the signal to close the worked log widget
         """
-        with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'wb') as pickle_file:
+        # with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'wb') as pickle_file:
+        with open('log_data.pkl', 'wb') as pickle_file:
             pickle.dump(self.data_dict, pickle_file, pickle.HIGHEST_PROTOCOL)
         pickle_file.close()
-        with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.json', 'w') as json_file:
-            json.dump(self.data_dict, json_file, indent=4)
-        json_file.close()
+        # with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.json', 'w') as json_file:
+        #     json.dump(self.data_dict, json_file, indent=4)
+        # json_file.close()

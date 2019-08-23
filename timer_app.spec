@@ -28,3 +28,6 @@ exe = EXE(pyz,
           upx=True,
           runtime_tmpdir=None,
           console=False , icon='src\\resources\\images\\clock.ico')
+
+import shutil
+shutil.copyfile('log_data.pkl', '{0}/log_data.pkl'.format(DISTPATH))
