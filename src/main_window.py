@@ -15,6 +15,7 @@ from src.widgets.settings_widget import SettingsWidget
 from src.widgets.checkout_calculator_widget import CheckoutCalculatorWidget
 from src.widgets.worked_log_widget import WorkedLogWidget
 from src.widgets.web_scrapper_widget import WebScrapperWidget
+from src.widgets.journey_timer_widget import JourneyTimerWidget
 from src.utils import utils
 
 
@@ -66,6 +67,9 @@ class MainWindow(QMainWindow):
         web_scrapper_action = QAction('WebScrapper', self)
         web_scrapper_action.triggered.connect(self.open_web_scrapper)
 
+        journey_timer_action = QAction('Journey Timer', self)
+        journey_timer_action.triggered.connect(self.open_journey_timer)
+
         exit_action = QAction('Exit', self)
         exit_action.triggered.connect(self.close_window)
 
@@ -81,6 +85,7 @@ class MainWindow(QMainWindow):
         file_menu.addMenu(settings_menu)
         file_menu.addAction(worked_log_action)
         file_menu.addAction(web_scrapper_action)
+        file_menu.addAction(journey_timer_action)
         file_menu.addAction(exit_action)
         settings_menu.addMenu(settings_menu_two)
         settings_menu_two.addAction(settings_action_two)
@@ -120,8 +125,10 @@ class MainWindow(QMainWindow):
         self.worked_log_widget = WorkedLogWidget(self)
         self.settings_widget = SettingsWidget(self)
         self.web_scrapper_widget = WebScrapperWidget(self)
+        self.journey_timer_widget = JourneyTimerWidget(self)
         self.checkout_calculator_widget = CheckoutCalculatorWidget(self, self.tray_icon, self.settings_widget,
-                                                                   self.worked_log_widget, self.web_scrapper_widget)
+                                                                   self.worked_log_widget, self.web_scrapper_widget,
+                                                                   self.journey_timer_widget)
         self.central_widget.addWidget(self.checkout_calculator_widget)
         self.central_widget.setCurrentWidget(self.checkout_calculator_widget)
 
@@ -184,6 +191,14 @@ class MainWindow(QMainWindow):
         self.web_scrapper_widget.close_web_scrapper_signal.connect(self.close_widget)
         self.central_widget.addWidget(self.web_scrapper_widget)
         self.central_widget.setCurrentWidget(self.web_scrapper_widget)
+
+    def open_journey_timer(self):
+        """
+        This method handles the "JourneyTimer" press on the Toolbar menu
+        """
+        self.journey_timer_widget.close_journey_timer_signal.connect(self.close_widget)
+        self.central_widget.addWidget(self.journey_timer_widget)
+        self.central_widget.setCurrentWidget(self.journey_timer_widget)
 
     def open_settings(self):
         """

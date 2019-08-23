@@ -24,7 +24,8 @@ class CheckoutCalculatorWidget(QWidget):
     APP_TITLE = "Checkout Timer"
     NOTIFICATION_TEXT = "Hey, time is up, Time to go home!"
 
-    def __init__(self, parent, tray_icon, settings_widget, worked_log_widget, web_scrapper_widget):
+    def __init__(self, parent, tray_icon, settings_widget, worked_log_widget, web_scrapper_widget,
+                 journey_timer_widget):
         super(CheckoutCalculatorWidget, self).__init__(parent)
 
         self.notification_text = self.NOTIFICATION_TEXT
@@ -32,6 +33,7 @@ class CheckoutCalculatorWidget(QWidget):
         self.settings_widget = settings_widget
         self.worked_log_widget = worked_log_widget
         self.web_scrapper_widget = web_scrapper_widget
+        self.journey_timer_widget = journey_timer_widget
         self.tray_icon = tray_icon
 
         self.init_user_interface()
@@ -47,6 +49,7 @@ class CheckoutCalculatorWidget(QWidget):
         self.settings_widget.hide()
         self.worked_log_widget.hide()
         self.web_scrapper_widget.hide()
+        self.journey_timer_widget.hide()
         self.settings_widget.notification_text_signal.connect(self.change_notification_text)
 
         self.textbox_one_label = QLabel(text='Journey time:')
