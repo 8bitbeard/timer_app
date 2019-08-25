@@ -250,3 +250,19 @@ def get_week_total_time(my_dict, week_days_list):
     for year, month, day in week_days_list:
         total_time_list.append(my_dict[year][month][day]['total_time'])
     return sum_times_list(total_time_list)
+
+def increment_time_by_second(input_time):
+    """
+    Method to increment a time string
+    """
+    hours, minutes, seconds = [int(x) for x in input_time.split(":")]
+    seconds += 1
+    if seconds > 59:
+        seconds = 0
+        minutes += 1
+        if minutes > 59:
+            minutes = 0
+            hours += 1
+            if hours > 23:
+                hours = 0
+    return "{:02d}:{:02d}:{:02d}".format(hours, minutes, seconds)
