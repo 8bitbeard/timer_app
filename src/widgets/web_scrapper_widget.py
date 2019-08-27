@@ -176,6 +176,7 @@ class ScrapperThread(QThread):
                 self.scrapper_status.emit("Processo finalizado!")
                 self.progress_step.emit(True)
                 self.successful_signal.emit(True)
+        # pylint: disable=broad-except
         except Exception as exception:
             print(exception)
             msg = "Erro de conexão! Tente novamente mais tarde"
