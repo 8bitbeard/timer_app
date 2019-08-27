@@ -10,8 +10,13 @@ import datetime
 import time
 import calendar
 import operator
-
+import json
 from functools import reduce
+
+import dill as pickle
+
+
+LOG_DATA_PATH = "./src/resources/data/"
 
 
 def convert_to_int(input_time):
@@ -29,13 +34,14 @@ def change_to_minutes(input_time):
     hrs, mins = convert_to_int(input_time)
     return 60 * hrs + mins
 
-def change_to_hours(minutes):
+def change_to_hours(input_minutes):
     """
     This function converts the time from minutes to hrs:mins format
     """
+    minutes = abs(input_minutes)
     mins = minutes % 60
     hrs = (minutes - mins) // 60
-    return "{:02d}:{:02d}".format(hrs, mins)
+    return "-{:02d}:{:02d}".format(hrs, mins) if input_minutes < 0 else "{:02d}:{:02d}".format(hrs, mins)
 
 def time_is_greater(time_one, time_two):
     """
@@ -266,3 +272,25 @@ def increment_time_by_second(input_time):
             if hours > 23:
                 hours = 0
     return "{:02d}:{:02d}:{:02d}".format(hours, minutes, seconds)
+
+def read_file():
+    """
+    Method to open the pickle file
+    """
+    with open(LOG_DATA_PATH + 'log_data.pkl', 'rb') as pickle_file:
+        data_dict = pickle.load(pickle_file)
+    pickle_file.close()
+    return data_dict
+
+def dump_files(input_value):
+    """
+    Method to dump the dictionary to pickle and json files
+    """
+    if not os.path.exists(LOG_DATA_PATH):
+        os.makedirs(LOG_DATA_PATH)
+    with open(LOG_DATA_PATH + 'log_data.pkl', 'wb') as pickle_file:
+        pickle.dump(input_value, pickle_file, pickle.HIGHEST_PROTOCOL)
+    pickle_file.close()
+    with open(LOG_DATA_PATH + 'log_data.json', 'w') as json_file:
+        json.dump(input_value, json_file, indent=4)
+    json_file.close()

@@ -8,9 +8,6 @@ import datetime
 
 from collections import defaultdict
 
-import json
-import dill as pickle
-
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QGridLayout, QPushButton, QCheckBox, QFrame
 from PyQt5.QtCore import QRegExp, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QRegExpValidator
@@ -53,10 +50,7 @@ class WorkedLogWidget(QWidget):
         Method to get the log data
         """
         try:
-            # with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'rb') as pickle_file:
-            with open('log_data.pkl', 'rb') as pickle_file:
-                self.data_dict = pickle.load(pickle_file)
-            pickle_file.close()
+            self.data_dict = utils.read_file()
         except (TypeError, FileNotFoundError):
             data_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(dict))))
             for year, month, day in utils.get_week_days_list(self.year, self.week):
@@ -76,11 +70,7 @@ class WorkedLogWidget(QWidget):
                 data_dict[year][month][day]['total_status'] = "color : gray"
 
             self.data_dict = data_dict
-
-            # with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'wb') as pickle_file:
-            with open('log_data.pkl', 'wb') as pickle_file:
-                pickle.dump(data_dict, pickle_file, pickle.HIGHEST_PROTOCOL)
-            pickle_file.close()
+            utils.dump_files(self.data_dict)
 
         first_log_year = min([val for val in list(self.data_dict.keys()) if isinstance(val, int)])
         first_log_month = min([val for val in list(self.data_dict[first_log_year].keys()) if isinstance(val, int)])
@@ -426,7 +416,6 @@ class WorkedLogWidget(QWidget):
         """
         Method to update the
         """
-        # self.week_total_val.setText(utils.get_from_dict(self.data_dict, self.curr_week[0][1])['total_time'])
         self.week_total_val.setText(utils.get_week_total_time(self.data_dict, self.curr_week))
         self.bank_total_val.setText(self.data_dict[self.year][self.month]['hours_bank'])
 
@@ -596,10 +585,4 @@ class WorkedLogWidget(QWidget):
         """
         Method to send the signal to close the worked log widget
         """
-        # with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'wb') as pickle_file:
-        with open('log_data.pkl', 'wb') as pickle_file:
-            pickle.dump(self.data_dict, pickle_file, pickle.HIGHEST_PROTOCOL)
-        pickle_file.close()
-        # with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.json', 'w') as json_file:
-        #     json.dump(self.data_dict, json_file, indent=4)
-        # json_file.close()
+        utils.dump_files(self.data_dict)

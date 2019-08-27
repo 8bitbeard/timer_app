@@ -5,9 +5,7 @@ WebScrapper widget implementation
 import datetime
 from collections import defaultdict
 
-import json
 import requests
-import dill as pickle
 from bs4 import BeautifulSoup
 
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QGridLayout, QProgressBar
@@ -174,17 +172,12 @@ class ScrapperThread(QThread):
                 total_worked = utils.sum_times_list(total_times_list)
                 data_dict['total_work_days'] = counter
                 data_dict['hours_bank'] = utils.sub_times(total_workable, total_worked)
-                # with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.pkl', 'wb') as pickle_file:
-                with open('log_data.pkl', 'wb') as pickle_file:
-                    pickle.dump(data_dict, pickle_file, pickle.HIGHEST_PROTOCOL)
-                pickle_file.close()
-                # with open(utils.get_absolute_resource_path('resources/data/') + 'log_data.json', 'w') as json_file:
-                #     json.dump(data_dict, json_file, indent=4)
-                # json_file.close()
+                utils.dump_files(data_dict)
                 self.scrapper_status.emit("Processo finalizado!")
                 self.progress_step.emit(True)
                 self.successful_signal.emit(True)
-        except:
+        except Exception as exception:
+            print(exception)
             msg = "Erro de conexão! Tente novamente mais tarde"
             self.scrapper_status.emit(msg)
             self.failure_signal.emit(msg)

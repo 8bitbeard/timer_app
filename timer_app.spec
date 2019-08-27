@@ -29,5 +29,6 @@ exe = EXE(pyz,
           runtime_tmpdir=None,
           console=False , icon='src\\resources\\images\\clock.ico')
 
-import shutil
-shutil.copyfile('log_data.pkl', '{0}/log_data.pkl'.format(DISTPATH))
+# import shutil
+# shutil.copyfile('./src/resources/data/log_data.pkl', '{0}/src/resources/data/log_data.pkl'.format(DISTPATH))
+# shutil.copyfile('./src/resources/data/log_data.json', '{0}/src/resources/data/log_data.json'.format(DISTPATH))
