@@ -12,5 +12,6 @@
           120
       ],
       "editor.tabSize": 4
-  }
+},
+"python.pythonPath": "C:\\Users\\wilton.souza\\envs\\timer_app\\Scripts\\python.exe"
 }
