@@ -8,6 +8,8 @@ from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 
 from src.utils import utils
 
+from src.widgets.custom_widgets.switch import SwitchButton
+
 # pylint: disable=too-many-instance-attributes
 # 10 instance attributes seems to be reasonably ok for this class
 class JourneyTimerWidget(QWidget):
@@ -30,37 +32,42 @@ class JourneyTimerWidget(QWidget):
         This function initiates the Widget items
         """
 
-        self.lbl_first_journey = QLabel(text='First half')
-        self.lbl_lunch_journey = QLabel(text='Lunch')
-        self.lbl_second_journey = QLabel(text='Second half')
+        self.switch_button = SwitchButton(self, 40)
+        self.switch_button.setMode('off_day')
 
-        self.val_first_journey = QLabel(text='00:00:00')
-        self.val_lunch_journey = QLabel(text='00:00:00')
-        self.val_second_journey = QLabel(text='00:00:00')
+        # self.lbl_first_journey = QLabel(text='First half')
+        # self.lbl_lunch_journey = QLabel(text='Lunch')
+        # self.lbl_second_journey = QLabel(text='Second half')
 
-        self.journey_time_text_label = QLabel(text=self.time)
-        self.journey_time_text_label.setAlignment(Qt.AlignCenter)
-        self.journey_time_text_label.setStyleSheet("font: 30pt")
+        # self.val_first_journey = QLabel(text='00:00:00')
+        # self.val_lunch_journey = QLabel(text='00:00:00')
+        # self.val_second_journey = QLabel(text='00:00:00')
 
-        self.play_pause_button = QPushButton(text='Play')
-        self.play_pause_button.clicked.connect(self.start_pause_action)
-        self.reset_button = QPushButton(text='Reset')
-        self.reset_button.clicked.connect(self.reset_action)
-        self.workflow_button = QPushButton(text='Start Day!')
-        self.workflow_button.clicked.connect(self.workflow_action)
+        # self.journey_time_text_label = QLabel(text=self.time)
+        # self.journey_time_text_label.setAlignment(Qt.AlignCenter)
+        # self.journey_time_text_label.setStyleSheet("font: 30pt")
+
+        # self.play_pause_button = QPushButton(text='Play')
+        # self.play_pause_button.clicked.connect(self.start_pause_action)
+        # self.reset_button = QPushButton(text='Reset')
+        # self.reset_button.clicked.connect(self.reset_action)
+        # self.workflow_button = QPushButton(text='Start Day!')
+        # self.workflow_button.clicked.connect(self.workflow_action)
 
         self.journey_layout = QGridLayout()
 
-        self.journey_layout.addWidget(self.lbl_first_journey, 0, 0)
-        self.journey_layout.addWidget(self.lbl_lunch_journey, 0, 1)
-        self.journey_layout.addWidget(self.lbl_second_journey, 0, 2)
-        self.journey_layout.addWidget(self.val_first_journey, 1, 0)
-        self.journey_layout.addWidget(self.val_lunch_journey, 1, 1)
-        self.journey_layout.addWidget(self.val_second_journey, 1, 2)
-        self.journey_layout.addWidget(self.journey_time_text_label, 2, 0, 1, 3)
-        self.journey_layout.addWidget(self.play_pause_button, 3, 0)
-        self.journey_layout.addWidget(self.reset_button, 3, 1)
-        self.journey_layout.addWidget(self.workflow_button, 3, 2)
+        self.journey_layout.addWidget(self.switch_button)
+
+        # self.journey_layout.addWidget(self.lbl_first_journey, 0, 0)
+        # self.journey_layout.addWidget(self.lbl_lunch_journey, 0, 1)
+        # self.journey_layout.addWidget(self.lbl_second_journey, 0, 2)
+        # self.journey_layout.addWidget(self.val_first_journey, 1, 0)
+        # self.journey_layout.addWidget(self.val_lunch_journey, 1, 1)
+        # self.journey_layout.addWidget(self.val_second_journey, 1, 2)
+        # self.journey_layout.addWidget(self.journey_time_text_label, 2, 0, 1, 3)
+        # self.journey_layout.addWidget(self.play_pause_button, 3, 0)
+        # self.journey_layout.addWidget(self.reset_button, 3, 1)
+        # self.journey_layout.addWidget(self.workflow_button, 3, 2)
 
         self.setLayout(self.journey_layout)
 

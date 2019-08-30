@@ -1,0 +1,155 @@
+!!python/object/apply:collections.defaultdict
+args:
+- !!python/name:src.widgets.worked_log_widget.%3Clambda%3E ''
+dictitems:
+    2019: !!python/object/apply:collections.defaultdict
+        args:
+        - !!python/name:src.widgets.worked_log_widget.%3Clambda%3E ''
+        dictitems:
+            8: !!python/object/apply:collections.defaultdict
+                args:
+                - !!python/name:src.widgets.worked_log_widget.%3Clambda%3E ''
+                dictitems:
+                    total_time: 00:00
+                    month_work_days: 0
+                    hours_bank: 00:00
+                    26: !!python/object/apply:collections.defaultdict
+                        args:
+                        - &id001 !!python/name:builtins.dict ''
+                        dictitems:
+                            date: 26/08
+                            day_of_week: 1
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 35
+                            work_day: false
+                    27: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 27/08
+                            day_of_week: 2
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 35
+                            work_day: false
+                    28: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 28/08
+                            day_of_week: 3
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 35
+                            work_day: false
+                    29: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 29/08
+                            day_of_week: 4
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 35
+                            work_day: false
+                    30: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 30/08
+                            day_of_week: 5
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 35
+                            work_day: false
+                    31: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 31/08
+                            day_of_week: 6
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 35
+                            work_day: false
+            9: !!python/object/apply:collections.defaultdict
+                args:
+                - !!python/name:src.widgets.worked_log_widget.%3Clambda%3E ''
+                dictitems:
+                    total_time: 00:00
+                    month_work_days: 0
+                    hours_bank: 00:00
+                    1: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 01/09
+                            day_of_week: 7
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 35
+                            work_day: false

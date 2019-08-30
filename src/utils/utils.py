@@ -11,6 +11,7 @@ import time
 import calendar
 import operator
 import json
+import yaml
 from functools import reduce
 
 import dill as pickle
@@ -193,9 +194,9 @@ def get_ij_status(list_of_times):
     lunch_ij = change_to_minutes(sub_times(list_of_times[1], list_of_times[2]))
     work_two_ij = change_to_minutes(sub_times(list_of_times[2], list_of_times[3]))
 
-    work_one_ij_status = "background-color : green" if 0 < work_one_ij <= 360 else "background-color : red"
-    lunch_ij_status = "background-color : green" if 0 < lunch_ij <= 120 else "background-color : red"
-    work_two_ij_status = "background-color : green" if 0 < work_two_ij <= 360 else "background-color : red"
+    work_one_ij_status = "background-color : green" if 180 < work_one_ij <= 360 else "background-color : red"
+    lunch_ij_status = "background-color : green" if 60 < lunch_ij <= 120 else "background-color : red"
+    work_two_ij_status = "background-color : green" if 180 < work_two_ij <= 360 else "background-color : red"
 
     return work_one_ij_status, lunch_ij_status, work_two_ij_status
 
@@ -294,3 +295,6 @@ def dump_files(input_value):
     with open(LOG_DATA_PATH + 'log_data.json', 'w') as json_file:
         json.dump(input_value, json_file, indent=4)
     json_file.close()
+    with open(LOG_DATA_PATH + 'log_data.yaml', 'w') as yaml_file:
+        yaml.dump(input_value, yaml_file, indent=4)
+    yaml_file.close()
