@@ -134,27 +134,32 @@ class ScrapperThread(QThread):
                     value_two = ''
                     value_three = ''
                     value_four = ''
-                    work_day = False
+                    day_type = 0
                     if total_time == '00:00':
                         value_one = 'background-color : gray'
                         value_two = 'background-color : gray'
                         value_three = 'background-color : gray'
                         value_four = 'color : gray'
-                        work_day = False
+                        day_type = 0
                     else:
-                        value_one, value_two, value_three = utils.get_ij_status(final_dict[value])
-                        value_four = utils.get_work_time_status(final_dict[value])
-                        work_day = True
+                        if dow < 6:
+                            value_one, value_two, value_three = utils.get_ij_status(final_dict[value])
+                            value_four = utils.get_work_time_status(final_dict[value])
+                            day_type = 1
+                        else:
+                            value_one, value_two, value_three = utils.get_ij_status(final_dict[value])
+                            value_four = utils.get_work_time_status(final_dict[value])
+                            day_type = 2
                     if data_dict[year][month]['total_time']:
                         data_dict[year][month]['total_time'] = utils.sum_times(data_dict[year][month]['total_time'],
                                                                                total_time)
                     else:
                         data_dict[year][month]['total_time'] = total_time
-                    if data_dict[year][month]['month_work_days'] and work_day:
+                    if data_dict[year][month]['month_work_days'] and day_type%2:
                         data_dict[year][month]['month_work_days'] += 1
-                    elif not data_dict[year][month]['month_work_days'] and work_day:
+                    elif not data_dict[year][month]['month_work_days'] and day_type%2:
                         data_dict[year][month]['month_work_days'] = 1
-                    elif not data_dict[year][month]['month_work_days'] and not work_day:
+                    elif not data_dict[year][month]['month_work_days'] and not day_type:
                         data_dict[year][month]['month_work_days'] = 0
                     total_workable = utils.mult_time('08:00', data_dict[year][month]['month_work_days'])
                     data_dict[year][month]['hours_bank'] = utils.sub_times(total_workable,
@@ -162,7 +167,7 @@ class ScrapperThread(QThread):
                     data_dict[year][month][day]['date'] = date
                     data_dict[year][month][day]['day_of_week'] = dow
                     data_dict[year][month][day]['week'] = week
-                    data_dict[year][month][day]['work_day'] = work_day
+                    data_dict[year][month][day]['day_type'] = day_type
                     data_dict[year][month][day]['times_list'] = final_dict[value]
                     data_dict[year][month][day]['ij_status'] = [value_one, value_two, value_three]
                     data_dict[year][month][day]['total_time'] = total_time

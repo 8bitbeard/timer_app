@@ -8,13 +8,13 @@ import datetime
 
 from collections import defaultdict
 
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QGridLayout, QPushButton, QCheckBox, QFrame
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QGridLayout, QPushButton, QFrame
 from PyQt5.QtCore import QRegExp, QSize, Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QRegExpValidator
 
 from src.utils import utils
 
-from src.widgets.custom_widgets.switch import SwitchButton
+from src.widgets.custom_widgets.toggle_switch import SwitchButton
 
 # pylint: disable=too-many-instance-attributes
 # 10 instance attributes seems to be reasonably ok for this class
@@ -63,7 +63,7 @@ class WorkedLogWidget(QWidget):
                 data_dict[year][month][day]['date'] = str(day).zfill(2) + '/' + str(month).zfill(2)
                 data_dict[year][month][day]['day_of_week'] = day_of_week
                 data_dict[year][month][day]['week'] = week
-                data_dict[year][month][day]['work_day'] = False
+                data_dict[year][month][day]['day_type'] = 0
                 data_dict[year][month][day]['times_list'] = ['00:00', '00:00', '00:00', '00:00']
                 data_dict[year][month][day]['ij_status'] = ["background-color : gray",
                                                             "background-color : gray",
@@ -114,17 +114,8 @@ class WorkedLogWidget(QWidget):
         worked_time_range = QRegExp("^" + hour_time_range + "\\:" + minute_time_range + "$")
         worked_time_validator = QRegExpValidator(worked_time_range, self)
 
-        self.mon_toggle_switch = SwitchButton(self, 50)
-        self.mon_checkbox = QCheckBox(text='Mon')
-        self.mon_checkbox.setLayoutDirection(Qt.LeftToRight)
-        self.mon_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 0))
-        self.mon_btn_day_type = QPushButton()
-        self.mon_btn_day_type.setFixedSize(22, 22)
-        self.mon_btn_day_type.clicked.connect(lambda day: self.day_type_change(day=0))
-        self.mon_lbl_day_type = QLabel(text='WD')
-        self.mon_checkbox_he = QCheckBox(text='HE')
-        self.mon_checkbox_he.setLayoutDirection(Qt.LeftToRight)
-        self.mon_checkbox_he.stateChanged.connect(lambda check: self.he_checkbox_change_stat(check, 0))
+        self.mon_toggle_switch = SwitchButton(self)
+        self.mon_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 0))
         self.mon_date_lbl = QLabel()
         self.mon_workin_lbl = QLineEdit()
         self.mon_workin_lbl.setValidator(worked_time_validator)
@@ -151,13 +142,8 @@ class WorkedLogWidget(QWidget):
         self.mon_afternoon_stat = QFrame()
         self.mon_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.tue_toggle_switch = SwitchButton(self, 50)
-        self.tue_checkbox = QCheckBox(text='Tue')
-        self.tue_checkbox.setLayoutDirection(Qt.LeftToRight)
-        self.tue_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 1))
-        self.tue_checkbox_he = QCheckBox(text='HE')
-        self.tue_checkbox_he.setLayoutDirection(Qt.LeftToRight)
-        self.tue_checkbox_he.stateChanged.connect(lambda check: self.he_checkbox_change_stat(check, 1))
+        self.tue_toggle_switch = SwitchButton(self)
+        self.tue_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 1))
         self.tue_date_lbl = QLabel()
         self.tue_checkin_lbl = QLineEdit()
         self.tue_checkin_lbl.setValidator(worked_time_validator)
@@ -184,13 +170,8 @@ class WorkedLogWidget(QWidget):
         self.tue_afternoon_stat = QFrame()
         self.tue_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.wed_toggle_switch = SwitchButton(self, 50)
-        self.wed_checkbox = QCheckBox(text='Wed')
-        self.wed_checkbox.setLayoutDirection(Qt.LeftToRight)
-        self.wed_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 2))
-        self.wed_checkbox_he = QCheckBox(text='HE')
-        self.wed_checkbox_he.setLayoutDirection(Qt.LeftToRight)
-        self.wed_checkbox_he.stateChanged.connect(lambda check: self.he_checkbox_change_stat(check, 2))
+        self.wed_toggle_switch = SwitchButton(self)
+        self.wed_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 2))
         self.wed_date_lbl = QLabel()
         self.wed_workin_lbl = QLineEdit()
         self.wed_workin_lbl.setValidator(worked_time_validator)
@@ -217,13 +198,8 @@ class WorkedLogWidget(QWidget):
         self.wed_afternoon_stat = QFrame()
         self.wed_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.thu_toggle_switch = SwitchButton(self, 50)
-        self.thu_checkbox = QCheckBox(text='Thu')
-        self.thu_checkbox.setLayoutDirection(Qt.LeftToRight)
-        self.thu_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 3))
-        self.thu_checkbox_he = QCheckBox(text='HE')
-        self.thu_checkbox_he.setLayoutDirection(Qt.LeftToRight)
-        self.thu_checkbox_he.stateChanged.connect(lambda check: self.he_checkbox_change_stat(check, 3))
+        self.thu_toggle_switch = SwitchButton(self)
+        self.thu_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 3))
         self.thu_date_lbl = QLabel()
         self.thu_workin_lbl = QLineEdit()
         self.thu_workin_lbl.setValidator(worked_time_validator)
@@ -250,13 +226,8 @@ class WorkedLogWidget(QWidget):
         self.thu_afternoon_stat = QFrame()
         self.thu_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.fri_toggle_switch = SwitchButton(self, 50)
-        self.fri_checkbox = QCheckBox(text='Fri')
-        self.fri_checkbox.setLayoutDirection(Qt.LeftToRight)
-        self.fri_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 4))
-        self.fri_checkbox_he = QCheckBox(text='HE')
-        self.fri_checkbox_he.setLayoutDirection(Qt.LeftToRight)
-        self.fri_checkbox_he.stateChanged.connect(lambda check: self.he_checkbox_change_stat(check, 4))
+        self.fri_toggle_switch = SwitchButton(self)
+        self.fri_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 4))
         self.fri_date_lbl = QLabel()
         self.fri_workin_lbl = QLineEdit()
         self.fri_workin_lbl.setValidator(worked_time_validator)
@@ -283,13 +254,8 @@ class WorkedLogWidget(QWidget):
         self.fri_afternoon_stat = QFrame()
         self.fri_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.sat_toggle_switch = SwitchButton(self, 50)
-        self.sat_checkbox = QCheckBox(text='Sat')
-        self.sat_checkbox.setLayoutDirection(Qt.LeftToRight)
-        self.sat_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 5))
-        self.sat_checkbox_he = QCheckBox(text='HE')
-        self.sat_checkbox_he.setLayoutDirection(Qt.LeftToRight)
-        self.sat_checkbox_he.stateChanged.connect(lambda check: self.he_checkbox_change_stat(check, 5))
+        self.sat_toggle_switch = SwitchButton(self)
+        self.sat_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 5))
         self.sat_date_lbl = QLabel()
         self.sat_workin_lbl = QLineEdit()
         self.sat_workin_lbl.setValidator(worked_time_validator)
@@ -316,14 +282,8 @@ class WorkedLogWidget(QWidget):
         self.sat_afternoon_stat = QFrame()
         self.sat_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
-        self.sun_toggle_switch = SwitchButton(self, 50)
-        self.sun_toggle_switch.setMode('extra_day')
-        self.sun_checkbox = QCheckBox(text='Sun')
-        self.sun_checkbox.setLayoutDirection(Qt.LeftToRight)
-        self.sun_checkbox.stateChanged.connect(lambda check: self.checkbox_change_stat(check, 6))
-        self.sun_checkbox_he = QCheckBox(text='HE')
-        self.sun_checkbox_he.setLayoutDirection(Qt.LeftToRight)
-        self.sun_checkbox_he.stateChanged.connect(lambda check: self.he_checkbox_change_stat(check, 6))
+        self.sun_toggle_switch = SwitchButton(self)
+        self.sun_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 6))
         self.sun_date_lbl = QLabel()
         self.sun_workin_lbl = QLineEdit()
         self.sun_workin_lbl.setValidator(worked_time_validator)
@@ -365,9 +325,6 @@ class WorkedLogWidget(QWidget):
         self.widget_layout.addWidget(self.bank_total_val, 0, 5)
 
         self.widget_layout.addWidget(self.mon_date_lbl, 1, 0, Qt.AlignCenter)
-        # self.widget_layout.addWidget(self.mon_btn_day_type, 1, 0)
-        # self.widget_layout.addWidget(self.mon_lbl_day_type, 1, 1)
-        # self.widget_layout.addWidget(self.mon_checkbox, 2, 0)
         self.widget_layout.addWidget(self.mon_toggle_switch, 2, 0, Qt.AlignCenter)
         self.widget_layout.addWidget(self.mon_workin_lbl, 3, 0)
         self.widget_layout.addWidget(self.mon_morning_stat, 4, 0)
@@ -379,7 +336,6 @@ class WorkedLogWidget(QWidget):
         self.widget_layout.addWidget(self.mon_total_lbl, 10, 0)
 
         self.widget_layout.addWidget(self.tue_date_lbl, 1, 1, Qt.AlignCenter)
-        # self.widget_layout.addWidget(self.tue_checkbox, 2, 1)
         self.widget_layout.addWidget(self.tue_toggle_switch, 2, 1, Qt.AlignCenter)
         self.widget_layout.addWidget(self.tue_checkin_lbl, 3, 1)
         self.widget_layout.addWidget(self.tue_morning_stat, 4, 1)
@@ -391,7 +347,6 @@ class WorkedLogWidget(QWidget):
         self.widget_layout.addWidget(self.tue_total_lbl, 10, 1)
 
         self.widget_layout.addWidget(self.wed_date_lbl, 1, 2, Qt.AlignCenter)
-        # self.widget_layout.addWidget(self.wed_checkbox, 2, 2)
         self.widget_layout.addWidget(self.wed_toggle_switch, 2, 2, Qt.AlignCenter)
         self.widget_layout.addWidget(self.wed_workin_lbl, 3, 2)
         self.widget_layout.addWidget(self.wed_morning_stat, 4, 2)
@@ -403,7 +358,6 @@ class WorkedLogWidget(QWidget):
         self.widget_layout.addWidget(self.wed_total_lbl, 10, 2)
 
         self.widget_layout.addWidget(self.thu_date_lbl, 1, 3, Qt.AlignCenter)
-        # self.widget_layout.addWidget(self.thu_checkbox, 2, 3)
         self.widget_layout.addWidget(self.thu_toggle_switch, 2, 3, Qt.AlignCenter)
         self.widget_layout.addWidget(self.thu_workin_lbl, 3, 3)
         self.widget_layout.addWidget(self.thu_morning_stat, 4, 3)
@@ -415,7 +369,6 @@ class WorkedLogWidget(QWidget):
         self.widget_layout.addWidget(self.thu_total_lbl, 10, 3)
 
         self.widget_layout.addWidget(self.fri_date_lbl, 1, 4, Qt.AlignCenter)
-        # self.widget_layout.addWidget(self.fri_checkbox, 2, 4)
         self.widget_layout.addWidget(self.fri_toggle_switch, 2, 4, Qt.AlignCenter)
         self.widget_layout.addWidget(self.fri_workin_lbl, 3, 4)
         self.widget_layout.addWidget(self.fri_morning_stat, 4, 4)
@@ -427,7 +380,6 @@ class WorkedLogWidget(QWidget):
         self.widget_layout.addWidget(self.fri_total_lbl, 10, 4)
 
         self.widget_layout.addWidget(self.sat_date_lbl, 1, 5, Qt.AlignCenter)
-        # self.widget_layout.addWidget(self.sat_checkbox, 2, 5)
         self.widget_layout.addWidget(self.sat_toggle_switch, 2, 5, Qt.AlignCenter)
         self.widget_layout.addWidget(self.sat_workin_lbl, 3, 5)
         self.widget_layout.addWidget(self.sat_morning_stat, 4, 5)
@@ -439,7 +391,6 @@ class WorkedLogWidget(QWidget):
         self.widget_layout.addWidget(self.sat_total_lbl, 10, 5)
 
         self.widget_layout.addWidget(self.sun_date_lbl, 1, 6, Qt.AlignCenter)
-        # self.widget_layout.addWidget(self.sun_checkbox, 2, 6)
         self.widget_layout.addWidget(self.sun_toggle_switch, 2, 6, Qt.AlignCenter)
         self.widget_layout.addWidget(self.sun_workin_lbl, 3, 6)
         self.widget_layout.addWidget(self.sun_morning_stat, 4, 6)
@@ -456,6 +407,18 @@ class WorkedLogWidget(QWidget):
 
         self.setLayout(self.widget_layout)
 
+    def initialize_toggle_switches(self):
+        """
+        Method to initialize the toggle switches status
+        """
+        self.mon_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[0], 'day_type'))
+        self.tue_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[1], 'day_type'))
+        self.wed_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[2], 'day_type'))
+        self.thu_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[3], 'day_type'))
+        self.fri_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[4], 'day_type'))
+        self.sat_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[5], 'day_type'))
+        self.sun_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[6], 'day_type'))
+
     def update_log_data(self):
         """
         Method to update the
@@ -463,138 +426,125 @@ class WorkedLogWidget(QWidget):
         self.week_total_val.setText(utils.get_week_total_time(self.data_dict, self.curr_week))
         self.bank_total_val.setText(self.data_dict[self.year][self.month]['hours_bank'])
 
-        self.mon_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[0], 'work_day'))
+        self.mon_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[0], 'day_type'))
         self.mon_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'date'))
         self.mon_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[0])
-        self.mon_workin_lbl.setEnabled(self.mon_checkbox.isChecked())
+        self.mon_workin_lbl.setEnabled(self.mon_toggle_switch.isActive())
         self.mon_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[1])
-        self.mon_lunchin_lbl.setEnabled(self.mon_checkbox.isChecked())
+        self.mon_lunchin_lbl.setEnabled(self.mon_toggle_switch.isActive())
         self.mon_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[2])
-        self.mon_lunchout_lbl.setEnabled(self.mon_checkbox.isChecked())
+        self.mon_lunchout_lbl.setEnabled(self.mon_toggle_switch.isActive())
         self.mon_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[3])
-        self.mon_workout_lbl.setEnabled(self.mon_checkbox.isChecked())
+        self.mon_workout_lbl.setEnabled(self.mon_toggle_switch.isActive())
         self.mon_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'total_time'))
         self.mon_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'total_status'))
         self.mon_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'ij_status')[0])
         self.mon_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'ij_status')[1])
         self.mon_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'ij_status')[2])
-        self.tue_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[1], 'work_day'))
+        self.tue_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[1], 'day_type'))
         self.tue_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'date'))
         self.tue_checkin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[0])
-        self.tue_checkin_lbl.setEnabled(self.tue_checkbox.isChecked())
+        self.tue_checkin_lbl.setEnabled(self.tue_toggle_switch.isActive())
         self.tue_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[1])
-        self.tue_lunchin_lbl.setEnabled(self.tue_checkbox.isChecked())
+        self.tue_lunchin_lbl.setEnabled(self.tue_toggle_switch.isActive())
         self.tue_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[2])
-        self.tue_lunchout_lbl.setEnabled(self.tue_checkbox.isChecked())
+        self.tue_lunchout_lbl.setEnabled(self.tue_toggle_switch.isActive())
         self.tue_checkout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[3])
-        self.tue_checkout_lbl.setEnabled(self.tue_checkbox.isChecked())
+        self.tue_checkout_lbl.setEnabled(self.tue_toggle_switch.isActive())
         self.tue_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'total_time'))
         self.tue_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'total_status'))
         self.tue_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'ij_status')[0])
         self.tue_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'ij_status')[1])
         self.tue_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'ij_status')[2])
-        self.wed_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[2], 'work_day'))
+        self.wed_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[2], 'day_type'))
         self.wed_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'date'))
         self.wed_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[0])
-        self.wed_workin_lbl.setEnabled(self.wed_checkbox.isChecked())
+        self.wed_workin_lbl.setEnabled(self.wed_toggle_switch.isActive())
         self.wed_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[1])
-        self.wed_lunchin_lbl.setEnabled(self.wed_checkbox.isChecked())
+        self.wed_lunchin_lbl.setEnabled(self.wed_toggle_switch.isActive())
         self.wed_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[2])
-        self.wed_lunchout_lbl.setEnabled(self.wed_checkbox.isChecked())
+        self.wed_lunchout_lbl.setEnabled(self.wed_toggle_switch.isActive())
         self.wed_checkout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[3])
-        self.wed_checkout_lbl.setEnabled(self.wed_checkbox.isChecked())
+        self.wed_checkout_lbl.setEnabled(self.wed_toggle_switch.isActive())
         self.wed_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'total_time'))
         self.wed_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'total_status'))
         self.wed_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'ij_status')[0])
         self.wed_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'ij_status')[1])
         self.wed_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'ij_status')[2])
-        self.thu_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[3], 'work_day'))
+        self.thu_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[3], 'day_type'))
         self.thu_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'date'))
         self.thu_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[0])
-        self.thu_workin_lbl.setEnabled(self.thu_checkbox.isChecked())
+        self.thu_workin_lbl.setEnabled(self.thu_toggle_switch.isActive())
         self.thu_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[1])
-        self.thu_lunchin_lbl.setEnabled(self.thu_checkbox.isChecked())
+        self.thu_lunchin_lbl.setEnabled(self.thu_toggle_switch.isActive())
         self.thu_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[2])
-        self.thu_lunchout_lbl.setEnabled(self.thu_checkbox.isChecked())
+        self.thu_lunchout_lbl.setEnabled(self.thu_toggle_switch.isActive())
         self.thu_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[3])
-        self.thu_workout_lbl.setEnabled(self.thu_checkbox.isChecked())
+        self.thu_workout_lbl.setEnabled(self.thu_toggle_switch.isActive())
         self.thu_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'total_time'))
         self.thu_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'total_status'))
         self.thu_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'ij_status')[0])
         self.thu_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'ij_status')[1])
         self.thu_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'ij_status')[2])
-        self.fri_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[4], 'work_day'))
+        self.fri_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[4], 'day_type'))
         self.fri_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'date'))
         self.fri_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[0])
-        self.fri_workin_lbl.setEnabled(self.fri_checkbox.isChecked())
+        self.fri_workin_lbl.setEnabled(self.fri_toggle_switch.isActive())
         self.fri_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[1])
-        self.fri_lunchin_lbl.setEnabled(self.fri_checkbox.isChecked())
+        self.fri_lunchin_lbl.setEnabled(self.fri_toggle_switch.isActive())
         self.fri_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[2])
-        self.fri_lunchout_lbl.setEnabled(self.fri_checkbox.isChecked())
+        self.fri_lunchout_lbl.setEnabled(self.fri_toggle_switch.isActive())
         self.fri_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[3])
-        self.fri_workout_lbl.setEnabled(self.fri_checkbox.isChecked())
+        self.fri_workout_lbl.setEnabled(self.fri_toggle_switch.isActive())
         self.fri_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'total_time'))
         self.fri_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'total_status'))
         self.fri_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'ij_status')[0])
         self.fri_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'ij_status')[1])
         self.fri_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'ij_status')[2])
-        self.sat_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[5], 'work_day'))
+        self.sat_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[5], 'day_type'))
         self.sat_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'date'))
         self.sat_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[0])
-        self.sat_workin_lbl.setEnabled(self.sat_checkbox.isChecked())
+        self.sat_workin_lbl.setEnabled(self.sat_toggle_switch.isActive())
         self.sat_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[1])
-        self.sat_lunchin_lbl.setEnabled(self.sat_checkbox.isChecked())
+        self.sat_lunchin_lbl.setEnabled(self.sat_toggle_switch.isActive())
         self.sat_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[2])
-        self.sat_lunchout_lbl.setEnabled(self.sat_checkbox.isChecked())
+        self.sat_lunchout_lbl.setEnabled(self.sat_toggle_switch.isActive())
         self.sat_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[3])
-        self.sat_workout_lbl.setEnabled(self.sat_checkbox.isChecked())
+        self.sat_workout_lbl.setEnabled(self.sat_toggle_switch.isActive())
         self.sat_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'total_time'))
         self.sat_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'total_status'))
         self.sat_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'ij_status')[0])
         self.sat_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'ij_status')[1])
         self.sat_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'ij_status')[2])
-        self.sun_checkbox.setChecked(utils.get_from_dict(self.data_dict, self.curr_week[6], 'work_day'))
+        self.sun_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[6], 'day_type'))
         self.sun_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'date'))
         self.sun_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[0])
-        self.sun_workin_lbl.setEnabled(self.sun_checkbox.isChecked())
+        self.sun_workin_lbl.setEnabled(self.sun_toggle_switch.isActive())
         self.sun_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[1])
-        self.sun_lunchin_lbl.setEnabled(self.sun_checkbox.isChecked())
+        self.sun_lunchin_lbl.setEnabled(self.sun_toggle_switch.isActive())
         self.sun_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[2])
-        self.sun_lunchout_lbl.setEnabled(self.sun_checkbox.isChecked())
+        self.sun_lunchout_lbl.setEnabled(self.sun_toggle_switch.isActive())
         self.sun_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[3])
-        self.sun_workout_lbl.setEnabled(self.sun_checkbox.isChecked())
+        self.sun_workout_lbl.setEnabled(self.sun_toggle_switch.isActive())
         self.sun_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'total_time'))
         self.sun_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'total_status'))
         self.sun_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[0])
         self.sun_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[1])
         self.sun_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[2])
 
-    def day_type_change(self, day):
-        """
-        Method to handle the day type button
-        """
-        print(day)
-
-    def he_checkbox_change_stat(self, value, day):
-        """
-        Method to activate or deactivate the extra hour state
-        """
-        print(value)
-        print(day)
-
     def checkbox_change_stat(self, value, day):
         """
         Method to activate or deactivate the day labels
         """
+        utils.get_from_dict(self.data_dict, self.curr_week[day])['day_type'] = value
         if value:
-            utils.get_from_dict(self.data_dict, self.curr_week[day])['work_day'] = True
+            utils.get_from_dict(self.data_dict, self.curr_week[day])['day_type'] = value
             times_list = utils.get_from_dict(self.data_dict, self.curr_week[day])['times_list']
             ij_status = list(utils.get_ij_status(times_list))
             total_status = utils.get_work_time_status(times_list)
             utils.get_from_dict(self.data_dict, self.curr_week[day])['ij_status'] = ij_status
             utils.get_from_dict(self.data_dict, self.curr_week[day])['total_status'] = total_status
         else:
-            utils.get_from_dict(self.data_dict, self.curr_week[day])['work_day'] = False
             utils.get_from_dict(self.data_dict, self.curr_week[day])['total_status'] = "color : gray"
             utils.get_from_dict(self.data_dict, self.curr_week[day])['ij_status'] = ["background-color : gray",
                                                                                      "background-color : gray",
@@ -615,7 +565,7 @@ class WorkedLogWidget(QWidget):
             utils.get_from_dict(self.data_dict, self.curr_week[day])['times_list'][time] = text
             utils.get_from_dict(self.data_dict, self.curr_week[day])['total_time'] = total
             times_list = utils.get_from_dict(self.data_dict, self.curr_week[day])['times_list']
-            day_status = utils.get_from_dict(self.data_dict, self.curr_week[day])['work_day']
+            day_status = utils.get_from_dict(self.data_dict, self.curr_week[day])['day_type']
             utils.get_from_dict(self.data_dict, self.curr_week[day])['total_status'] =\
                 utils.get_work_time_status(times_list)
             if day_status:

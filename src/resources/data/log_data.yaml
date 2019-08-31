@@ -1,24 +1,120 @@
 !!python/object/apply:collections.defaultdict
 args:
-- !!python/name:src.widgets.worked_log_widget.%3Clambda%3E ''
+- !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
 dictitems:
     2019: !!python/object/apply:collections.defaultdict
         args:
-        - !!python/name:src.widgets.worked_log_widget.%3Clambda%3E ''
+        - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
         dictitems:
-            8: !!python/object/apply:collections.defaultdict
+            5: !!python/object/apply:collections.defaultdict
                 args:
-                - !!python/name:src.widgets.worked_log_widget.%3Clambda%3E ''
+                - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
                 dictitems:
-                    total_time: 00:00
-                    month_work_days: 0
-                    hours_bank: 00:00
-                    26: !!python/object/apply:collections.defaultdict
+                    total_time: '120:01'
+                    month_work_days: 15
+                    hours_bank: 00:01
+                    13: !!python/object/apply:collections.defaultdict
                         args:
                         - &id001 !!python/name:builtins.dict ''
                         dictitems:
-                            date: 26/08
+                            date: 13/05
                             day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 09:01
+                            - '12:02'
+                            - '13:03'
+                            - '18:02'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 20
+                    14: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 14/05
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 09:00
+                            - '12:04'
+                            - '13:08'
+                            - '17:59'
+                            total_status: 'color : orange'
+                            total_time: 07:55
+                            week: 20
+                    15: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 15/05
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:17
+                            - '12:46'
+                            - '13:48'
+                            - '17:20'
+                            total_status: 'color : blue'
+                            total_time: 08:01
+                            week: 20
+                    16: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 16/05
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:47
+                            - '12:12'
+                            - '13:13'
+                            - '17:53'
+                            total_status: 'color : blue'
+                            total_time: 08:05
+                            week: 20
+                    17: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 17/05
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:27
+                            - '12:19'
+                            - '13:21'
+                            - '17:29'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 20
+                    18: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 18/05
+                            day_of_week: 6
+                            day_type: 0
                             ij_status:
                             - 'background-color : gray'
                             - 'background-color : gray'
@@ -30,90 +126,2011 @@ dictitems:
                             - 00:00
                             total_status: 'color : gray'
                             total_time: 00:00
+                            week: 20
+                    19: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 19/05
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 20
+                    20: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 20/05
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:36
+                            - '12:17'
+                            - '13:20'
+                            - '17:39'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 21
+                    21: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 21/05
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:51
+                            - '12:09'
+                            - '13:24'
+                            - '18:06'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 21
+                    22: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 22/05
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:56
+                            - '12:01'
+                            - '13:12'
+                            - '18:07'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 21
+                    23: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 23/05
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:29
+                            - '11:55'
+                            - '13:13'
+                            - '17:47'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 21
+                    24: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 24/05
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:52
+                            - '11:30'
+                            - '12:34'
+                            - '17:56'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 21
+                    25: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 25/05
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 21
+                    26: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 26/05
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 21
+                    27: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 27/05
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:49
+                            - '11:56'
+                            - '12:56'
+                            - '17:49'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 22
+                    28: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 28/05
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:33
+                            - '11:57'
+                            - '13:00'
+                            - '17:36'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 22
+                    29: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 29/05
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:48
+                            - '12:02'
+                            - '13:05'
+                            - '17:51'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 22
+                    30: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 30/05
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:42
+                            - '11:59'
+                            - '13:03'
+                            - '17:46'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 22
+                    31: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 31/05
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:44
+                            - '11:57'
+                            - '13:02'
+                            - '17:49'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 22
+            6: !!python/object/apply:collections.defaultdict
+                args:
+                - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
+                dictitems:
+                    total_time: '152:00'
+                    month_work_days: 19
+                    hours_bank: 00:00
+                    1: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 01/06
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 22
+                    2: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 02/06
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 22
+                    3: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 03/06
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:43
+                            - '11:50'
+                            - '12:50'
+                            - '17:43'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 23
+                    4: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 04/06
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 09:03
+                            - '12:08'
+                            - '13:17'
+                            - '18:12'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 23
+                    5: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 05/06
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:32
+                            - '12:05'
+                            - '13:08'
+                            - '17:35'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 23
+                    6: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 06/06
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:36
+                            - '12:03'
+                            - '13:04'
+                            - '17:37'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 23
+                    7: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 07/06
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:32
+                            - '11:55'
+                            - '13:06'
+                            - '17:43'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 23
+                    8: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 08/06
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 23
+                    9: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 09/06
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 23
+                    10: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 10/06
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:24
+                            - '11:46'
+                            - '12:57'
+                            - '17:35'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 24
+                    11: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 11/06
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:30
+                            - '11:50'
+                            - '13:05'
+                            - '17:45'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 24
+                    12: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 12/06
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:44
+                            - '12:04'
+                            - '13:08'
+                            - '17:48'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 24
+                    13: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 13/06
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:49
+                            - '12:22'
+                            - '13:23'
+                            - '17:50'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 24
+                    14: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 14/06
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:55
+                            - '12:26'
+                            - '13:26'
+                            - '17:55'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 24
+                    15: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 15/06
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 24
+                    16: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 16/06
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 24
+                    17: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 17/06
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:31
+                            - '12:24'
+                            - '13:27'
+                            - '17:34'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 25
+                    18: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 18/06
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : red'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 09:48
+                            - '12:00'
+                            - '13:00'
+                            - '18:48'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 25
+                    19: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 19/06
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:41
+                            - '12:20'
+                            - '13:20'
+                            - '17:41'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 25
+                    20: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 20/06
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:19
+                            - '11:43'
+                            - '13:01'
+                            - '17:37'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 25
+                    21: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 21/06
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:09
+                            - '12:05'
+                            - '13:21'
+                            - '17:25'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 25
+                    22: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 22/06
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 25
+                    23: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 23/06
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 25
+                    24: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 24/06
+                            day_of_week: 1
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 26
+                    25: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 25/06
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:33
+                            - '12:24'
+                            - '13:24'
+                            - '17:33'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 26
+                    26: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 26/06
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:28
+                            - '13:25'
+                            - '14:26'
+                            - '17:29'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 26
+                    27: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 27/06
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:18
+                            - '12:00'
+                            - '13:00'
+                            - '17:18'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 26
+                    28: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 28/06
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:36
+                            - '12:07'
+                            - '13:07'
+                            - '17:36'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 26
+                    29: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 29/06
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 26
+                    30: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 30/06
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 26
+            7: !!python/object/apply:collections.defaultdict
+                args:
+                - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
+                dictitems:
+                    total_time: '183:01'
+                    month_work_days: 22
+                    hours_bank: 07:01
+                    1: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 01/07
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:27
+                            - '12:57'
+                            - '13:57'
+                            - '17:27'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 27
+                    2: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 02/07
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:14
+                            - '12:05'
+                            - '13:05'
+                            - '17:45'
+                            total_status: 'color : blue'
+                            total_time: 08:31
+                            week: 27
+                    3: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 03/07
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : red'
+                            times_list:
+                            - '12:02'
+                            - '17:41'
+                            - '18:41'
+                            - '19:52'
+                            total_status: 'color : orange'
+                            total_time: 06:50
+                            week: 27
+                    4: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 04/07
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : red'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 09:00
+                            - '11:47'
+                            - '12:47'
+                            - '18:08'
+                            total_status: 'color : blue'
+                            total_time: 08:08
+                            week: 27
+                    5: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 05/07
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:35
+                            - '11:57'
+                            - '12:59'
+                            - '17:54'
+                            total_status: 'color : blue'
+                            total_time: 08:17
+                            week: 27
+                    6: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 06/07
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 27
+                    7: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 07/07
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 27
+                    8: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 08/07
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:22
+                            - '12:01'
+                            - '13:07'
+                            - '17:28'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 28
+                    9: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 09/07
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:56
+                            - '12:02'
+                            - '13:04'
+                            - '17:58'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 28
+                    10: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 10/07
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:21
+                            - '11:56'
+                            - '12:56'
+                            - '17:21'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 28
+                    11: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 11/07
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:26
+                            - '11:57'
+                            - '13:02'
+                            - '18:00'
+                            total_status: 'color : blue'
+                            total_time: 08:29
+                            week: 28
+                    12: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 12/07
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:41
+                            - '11:54'
+                            - '13:12'
+                            - '17:59'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 28
+                    13: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 13/07
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 28
+                    14: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 14/07
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 28
+                    15: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 15/07
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:30
+                            - '12:44'
+                            - '13:44'
+                            - '17:30'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 29
+                    16: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 16/07
+                            day_of_week: 2
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 29
+                    17: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 17/07
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:41
+                            - '11:46'
+                            - '12:46'
+                            - '17:41'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 29
+                    18: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 18/07
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:19
+                            - '11:58'
+                            - '12:58'
+                            - '17:04'
+                            total_status: 'color : orange'
+                            total_time: 07:45
+                            week: 29
+                    19: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 19/07
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:39
+                            - '12:06'
+                            - '14:00'
+                            - '18:33'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 29
+                    20: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 20/07
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 29
+                    21: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 21/07
+                            day_of_week: 7
+                            day_type: 2
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : red'
+                            times_list:
+                            - '10:20'
+                            - '14:20'
+                            - '15:20'
+                            - '18:20'
+                            total_status: 'color : orange'
+                            total_time: 07:00
+                            week: 29
+                    22: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 22/07
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:40
+                            - '12:00'
+                            - '13:22'
+                            - '18:02'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 30
+                    23: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 23/07
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:42
+                            - '12:05'
+                            - '13:25'
+                            - '18:02'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 30
+                    24: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 24/07
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:35
+                            - '12:06'
+                            - '13:37'
+                            - '18:06'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 30
+                    25: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 25/07
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:35
+                            - '11:53'
+                            - '13:24'
+                            - '18:06'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 30
+                    26: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 26/07
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:40
+                            - '13:00'
+                            - '14:00'
+                            - '17:15'
+                            total_status: 'color : orange'
+                            total_time: 07:35
+                            week: 30
+                    27: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 27/07
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 30
+                    28: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 28/07
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 30
+                    29: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 29/07
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:28
+                            - '11:59'
+                            - '13:00'
+                            - '17:54'
+                            total_status: 'color : blue'
+                            total_time: 08:25
+                            week: 31
+                    30: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 30/07
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 09:00
+                            - '12:01'
+                            - '13:01'
+                            - '18:01'
+                            total_status: 'color : blue'
+                            total_time: 08:01
+                            week: 31
+                    31: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 31/07
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:39
+                            - '12:00'
+                            - '13:21'
+                            - '18:00'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 31
+            8: !!python/object/apply:collections.defaultdict
+                args:
+                - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
+                dictitems:
+                    total_time: '176:00'
+                    month_work_days: 22
+                    hours_bank: 00:00
+                    1: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 01/08
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:55
+                            - '12:02'
+                            - '13:02'
+                            - '17:55'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 31
+                    2: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 02/08
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 09:06
+                            - '12:01'
+                            - '13:04'
+                            - '18:09'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 31
+                    3: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 03/08
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 31
+                    4: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 04/08
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 31
+                    5: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 05/08
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:51
+                            - '12:02'
+                            - '13:02'
+                            - '17:51'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 32
+                    6: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 06/08
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:30
+                            - '12:00'
+                            - '13:03'
+                            - '18:01'
+                            total_status: 'color : blue'
+                            total_time: 08:28
+                            week: 32
+                    7: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 07/08
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:06
+                            - '12:00'
+                            - '13:04'
+                            - '17:01'
+                            total_status: 'color : orange'
+                            total_time: 07:51
+                            week: 32
+                    8: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 08/08
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:19
+                            - '12:04'
+                            - '13:17'
+                            - '18:03'
+                            total_status: 'color : blue'
+                            total_time: 08:31
+                            week: 32
+                    9: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 09/08
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:11
+                            - '12:02'
+                            - '13:02'
+                            - '17:09'
+                            total_status: 'color : orange'
+                            total_time: 07:58
+                            week: 32
+                    10: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 10/08
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 32
+                    11: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 11/08
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 32
+                    12: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 12/08
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:50
+                            - '12:32'
+                            - '13:32'
+                            - '17:45'
+                            total_status: 'color : orange'
+                            total_time: 07:55
+                            week: 33
+                    13: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 13/08
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:44
+                            - '11:57'
+                            - '12:57'
+                            - '17:26'
+                            total_status: 'color : orange'
+                            total_time: 07:42
+                            week: 33
+                    14: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 14/08
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : red'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:58
+                            - '11:57'
+                            - '12:57'
+                            - '17:44'
+                            total_status: 'color : orange'
+                            total_time: 07:46
+                            week: 33
+                    15: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 15/08
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:33
+                            - '11:59'
+                            - '12:59'
+                            - '17:22'
+                            total_status: 'color : orange'
+                            total_time: 07:49
+                            week: 33
+                    16: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 16/08
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:57
+                            - '11:32'
+                            - '12:35'
+                            - '18:00'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 33
+                    17: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 17/08
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 33
+                    18: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 18/08
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 33
+                    19: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 19/08
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:47
+                            - '12:01'
+                            - '13:04'
+                            - '17:50'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 34
+                    20: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 20/08
+                            day_of_week: 2
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:43
+                            - '12:00'
+                            - '13:00'
+                            - '17:43'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 34
+                    21: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 21/08
+                            day_of_week: 3
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : red'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:49
+                            - '11:48'
+                            - '12:48'
+                            - '17:49'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 34
+                    22: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 22/08
+                            day_of_week: 4
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:08
+                            - '12:55'
+                            - '13:55'
+                            - '17:08'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 34
+                    23: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 23/08
+                            day_of_week: 5
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : red'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 09:00
+                            - '11:53'
+                            - '12:53'
+                            - '18:00'
+                            total_status: 'color : green'
+                            total_time: 08:00
+                            week: 34
+                    24: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 24/08
+                            day_of_week: 6
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 34
+                    25: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 25/08
+                            day_of_week: 7
+                            day_type: 0
+                            ij_status:
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            - 'background-color : gray'
+                            times_list:
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            - 00:00
+                            total_status: 'color : gray'
+                            total_time: 00:00
+                            week: 34
+                    26: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            date: 26/08
+                            day_of_week: 1
+                            day_type: 1
+                            ij_status:
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
+                            times_list:
+                            - 08:39
+                            - '11:52'
+                            - '12:52'
+                            - '17:39'
+                            total_status: 'color : green'
+                            total_time: 08:00
                             week: 35
-                            work_day: false
                     27: !!python/object/apply:collections.defaultdict
                         args:
                         - *id001
                         dictitems:
                             date: 27/08
                             day_of_week: 2
+                            day_type: 1
                             ij_status:
-                            - 'background-color : gray'
-                            - 'background-color : gray'
-                            - 'background-color : gray'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
                             times_list:
-                            - 00:00
-                            - 00:00
-                            - 00:00
-                            - 00:00
-                            total_status: 'color : gray'
-                            total_time: 00:00
+                            - 08:37
+                            - '11:58'
+                            - '13:03'
+                            - '17:42'
+                            total_status: 'color : green'
+                            total_time: 08:00
                             week: 35
-                            work_day: false
                     28: !!python/object/apply:collections.defaultdict
                         args:
                         - *id001
                         dictitems:
                             date: 28/08
                             day_of_week: 3
+                            day_type: 1
                             ij_status:
-                            - 'background-color : gray'
-                            - 'background-color : gray'
-                            - 'background-color : gray'
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
                             times_list:
-                            - 00:00
-                            - 00:00
-                            - 00:00
-                            - 00:00
-                            total_status: 'color : gray'
-                            total_time: 00:00
+                            - 08:31
+                            - '11:54'
+                            - '12:54'
+                            - '17:31'
+                            total_status: 'color : green'
+                            total_time: 08:00
                             week: 35
-                            work_day: false
                     29: !!python/object/apply:collections.defaultdict
                         args:
                         - *id001
                         dictitems:
                             date: 29/08
                             day_of_week: 4
+                            day_type: 1
                             ij_status:
-                            - 'background-color : gray'
-                            - 'background-color : gray'
-                            - 'background-color : gray'
+                            - 'background-color : green'
+                            - 'background-color : green'
+                            - 'background-color : green'
                             times_list:
-                            - 00:00
-                            - 00:00
-                            - 00:00
-                            - 00:00
-                            total_status: 'color : gray'
-                            total_time: 00:00
+                            - 08:04
+                            - '12:00'
+                            - '13:03'
+                            - '17:07'
+                            total_status: 'color : green'
+                            total_time: 08:00
                             week: 35
-                            work_day: false
                     30: !!python/object/apply:collections.defaultdict
                         args:
                         - *id001
                         dictitems:
                             date: 30/08
                             day_of_week: 5
+                            day_type: 1
                             ij_status:
-                            - 'background-color : gray'
-                            - 'background-color : gray'
-                            - 'background-color : gray'
+                            - 'background-color : green'
+                            - 'background-color : red'
+                            - 'background-color : green'
                             times_list:
-                            - 00:00
-                            - 00:00
-                            - 00:00
-                            - 00:00
-                            total_status: 'color : gray'
-                            total_time: 00:00
+                            - 08:33
+                            - '12:08'
+                            - '13:08'
+                            - '17:33'
+                            total_status: 'color : green'
+                            total_time: 08:00
                             week: 35
-                            work_day: false
                     31: !!python/object/apply:collections.defaultdict
                         args:
                         - *id001
                         dictitems:
                             date: 31/08
                             day_of_week: 6
+                            day_type: 0
                             ij_status:
                             - 'background-color : gray'
                             - 'background-color : gray'
@@ -126,10 +2143,9 @@ dictitems:
                             total_status: 'color : gray'
                             total_time: 00:00
                             week: 35
-                            work_day: false
             9: !!python/object/apply:collections.defaultdict
                 args:
-                - !!python/name:src.widgets.worked_log_widget.%3Clambda%3E ''
+                - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
                 dictitems:
                     total_time: 00:00
                     month_work_days: 0
@@ -140,6 +2156,7 @@ dictitems:
                         dictitems:
                             date: 01/09
                             day_of_week: 7
+                            day_type: 0
                             ij_status:
                             - 'background-color : gray'
                             - 'background-color : gray'
@@ -152,4 +2169,5 @@ dictitems:
                             total_status: 'color : gray'
                             total_time: 00:00
                             week: 35
-                            work_day: false
+    total_work_days: 0
+    hours_bank: 00:00
