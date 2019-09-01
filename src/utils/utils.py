@@ -11,8 +11,8 @@ import time
 import calendar
 import operator
 import json
-import yaml
 from functools import reduce
+import yaml
 
 import dill as pickle
 
@@ -152,7 +152,7 @@ def  get_total_time_from(my_dict, year, month=None):
     total_worked = sum_times_list(total_worked_days)
     should_work = mult_time('08:00', len(total_worked_days))
     balance = sub_times(should_work, total_worked)
-    my_dict[year][month]['hours_bank'] = balance
+    my_dict[year][month]['month_balance'] = balance
 
 def get_start_end_dates(year_input, week_input):
     """
@@ -194,9 +194,9 @@ def get_ij_status(list_of_times):
     lunch_ij = change_to_minutes(sub_times(list_of_times[1], list_of_times[2]))
     work_two_ij = change_to_minutes(sub_times(list_of_times[2], list_of_times[3]))
 
-    work_one_ij_status = "background-color : green" if 180 < work_one_ij <= 360 else "background-color : red"
-    lunch_ij_status = "background-color : green" if 60 < lunch_ij <= 120 else "background-color : red"
-    work_two_ij_status = "background-color : green" if 180 < work_two_ij <= 360 else "background-color : red"
+    work_one_ij_status = "background-color : green" if 0 < work_one_ij <= 360 else "background-color : red"
+    lunch_ij_status = "background-color : green" if 60 <= lunch_ij <= 120 else "background-color : red"
+    work_two_ij_status = "background-color : green" if 0 < work_two_ij <= 360 else "background-color : red"
 
     return work_one_ij_status, lunch_ij_status, work_two_ij_status
 
@@ -230,7 +230,8 @@ def get_month_days_list(year, month):
     Method to return a list of lists containg the days of a given month
     """
     num_days = calendar.monthrange(year, month)[1]
-    days = [datetime.date(year, month, day) for day in range(1, num_days+1)]
+    days = [[year, month, day] for day in range(1, num_days+1)]
+    # days = [datetime.date(year, month, day) for day in range(1, num_days+1)]
     return days
 
 def get_from_dict(data_dict, map_list, extra_key=None):
@@ -248,6 +249,48 @@ def set_in_dict(data_dict, map_list, extra_key, value):
     """
     # get_from_dict(data_dict, map_list[:-1])[map_list[-1]] = value
     get_from_dict(data_dict, map_list)[extra_key] = value
+
+def get_month_worked_days(my_dict, month_list):
+    """
+    Temp
+    """
+    counter = 0
+    for year, month, day in month_list:
+        if my_dict[year][month][day]['day_type']:
+            counter += 1
+    print(counter)
+    return counter
+
+def get_month_balance(my_dict, year, month):
+    """
+    T
+    """
+    # input_year = month_list[0][0]
+    # input_month = month_list[0][1]
+    total_time_list = []
+    total_extra_list = []
+    total_extra = '00:00'
+    counter_normal = 0
+    counter_extra = 0
+    for day in my_dict[year][month].keys():
+        try:
+            if my_dict[year][month][day]['day_type'] == 1:
+                counter_normal += 1
+                total_time_list.append(my_dict[year][month][day]['total_time'])
+            elif my_dict[year][month][day]['day_type'] == 2:
+                counter_extra += 1
+                total_extra_list.append(my_dict[year][month][day]['total_time'])
+        except:
+            pass
+    total_time = sum_times_list(total_time_list)
+    total_extra = sum_times_list(total_extra_list)
+    total_should = mult_time('08:00', counter_normal)
+    balance_normal = sub_times(total_should, total_time)
+    balance = sum_times(balance_normal, total_extra)
+    my_dict[year][month]['month_work_days'] = counter_normal
+    my_dict[year][month]['month_extra_days'] = counter_extra
+    my_dict[year][month]['month_balance'] = balance
+    return balance
 
 def get_week_total_time(my_dict, week_days_list):
     """
