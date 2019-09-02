@@ -10,9 +10,9 @@ dictitems:
                 args:
                 - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
                 dictitems:
-                    total_time: '120:01'
                     month_work_days: 15
-                    hours_bank: 00:01
+                    month_extra_days: 0
+                    month_balance: 00:01
                     13: !!python/object/apply:collections.defaultdict
                         args:
                         - &id001 !!python/name:builtins.dict ''
@@ -230,7 +230,7 @@ dictitems:
                             day_of_week: 5
                             day_type: 1
                             ij_status:
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             - 'background-color : green'
                             times_list:
@@ -288,7 +288,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:49
@@ -378,9 +378,9 @@ dictitems:
                 args:
                 - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
                 dictitems:
-                    total_time: '152:00'
                     month_work_days: 19
-                    hours_bank: 00:00
+                    month_extra_days: 0
+                    month_balance: 00:00
                     1: !!python/object/apply:collections.defaultdict
                         args:
                         - *id001
@@ -428,7 +428,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:43
@@ -637,7 +637,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:55
@@ -712,8 +712,8 @@ dictitems:
                             day_of_week: 2
                             day_type: 1
                             ij_status:
-                            - 'background-color : red'
-                            - 'background-color : red'
+                            - 'background-color : green'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 09:48
@@ -732,7 +732,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:41
@@ -846,7 +846,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:33
@@ -884,7 +884,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:18
@@ -903,7 +903,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:36
@@ -955,9 +955,9 @@ dictitems:
                 args:
                 - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
                 dictitems:
-                    total_time: '183:01'
                     month_work_days: 22
-                    hours_bank: 07:01
+                    month_extra_days: 1
+                    month_balance: 07:01
                     1: !!python/object/apply:collections.defaultdict
                         args:
                         - *id001
@@ -967,7 +967,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:27
@@ -986,7 +986,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:14
@@ -1005,8 +1005,8 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
-                            - 'background-color : red'
+                            - 'background-color : green'
+                            - 'background-color : green'
                             times_list:
                             - '12:02'
                             - '17:41'
@@ -1023,8 +1023,8 @@ dictitems:
                             day_of_week: 4
                             day_type: 1
                             ij_status:
-                            - 'background-color : red'
-                            - 'background-color : red'
+                            - 'background-color : green'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 09:00
@@ -1138,7 +1138,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:21
@@ -1233,7 +1233,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:30
@@ -1271,7 +1271,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:41
@@ -1290,7 +1290,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:19
@@ -1347,8 +1347,8 @@ dictitems:
                             day_type: 2
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
-                            - 'background-color : red'
+                            - 'background-color : green'
+                            - 'background-color : green'
                             times_list:
                             - '10:20'
                             - '14:20'
@@ -1442,7 +1442,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:40
@@ -1518,7 +1518,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 09:00
@@ -1551,9 +1551,9 @@ dictitems:
                 args:
                 - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
                 dictitems:
-                    total_time: '176:00'
                     month_work_days: 22
-                    hours_bank: 00:00
+                    month_extra_days: 0
+                    month_balance: 00:00
                     1: !!python/object/apply:collections.defaultdict
                         args:
                         - *id001
@@ -1563,7 +1563,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:55
@@ -1581,7 +1581,7 @@ dictitems:
                             day_of_week: 5
                             day_type: 1
                             ij_status:
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             - 'background-color : green'
                             times_list:
@@ -1639,7 +1639,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:51
@@ -1715,7 +1715,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:11
@@ -1772,7 +1772,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:50
@@ -1791,7 +1791,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:44
@@ -1809,8 +1809,8 @@ dictitems:
                             day_of_week: 3
                             day_type: 1
                             ij_status:
-                            - 'background-color : red'
-                            - 'background-color : red'
+                            - 'background-color : green'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:58
@@ -1829,7 +1829,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:33
@@ -1847,7 +1847,7 @@ dictitems:
                             day_of_week: 5
                             day_type: 1
                             ij_status:
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             - 'background-color : green'
                             times_list:
@@ -1924,7 +1924,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:43
@@ -1942,8 +1942,8 @@ dictitems:
                             day_of_week: 3
                             day_type: 1
                             ij_status:
-                            - 'background-color : red'
-                            - 'background-color : red'
+                            - 'background-color : green'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:49
@@ -1962,7 +1962,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:08
@@ -1980,8 +1980,8 @@ dictitems:
                             day_of_week: 5
                             day_type: 1
                             ij_status:
-                            - 'background-color : red'
-                            - 'background-color : red'
+                            - 'background-color : green'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 09:00
@@ -2038,7 +2038,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:39
@@ -2076,7 +2076,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:31
@@ -2114,7 +2114,7 @@ dictitems:
                             day_type: 1
                             ij_status:
                             - 'background-color : green'
-                            - 'background-color : red'
+                            - 'background-color : green'
                             - 'background-color : green'
                             times_list:
                             - 08:33
@@ -2147,9 +2147,9 @@ dictitems:
                 args:
                 - !!python/name:src.widgets.web_scrapper_widget.%3Clambda%3E ''
                 dictitems:
-                    total_time: 00:00
                     month_work_days: 0
-                    hours_bank: 00:00
+                    month_extra_days: 0
+                    month_balance: 00:00
                     1: !!python/object/apply:collections.defaultdict
                         args:
                         - *id001
@@ -2169,5 +2169,177 @@ dictitems:
                             total_status: 'color : gray'
                             total_time: 00:00
                             week: 35
-    total_work_days: 0
-    hours_bank: 00:00
+                    2: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    3: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    4: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    5: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    6: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    7: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    8: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    9: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    10: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    11: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    12: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    13: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    14: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    15: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    16: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    17: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    18: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    19: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    20: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    21: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    22: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    23: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    24: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    25: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    26: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    27: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    28: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    29: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}
+                    30: !!python/object/apply:collections.defaultdict
+                        args:
+                        - *id001
+                        dictitems:
+                            day_type: {}
+                            week: {}

@@ -32,7 +32,6 @@ class WorkedLogWidget(QWidget):
         super(WorkedLogWidget, self).__init__(parent)
 
         actual_day = datetime.date.today()
-        self.month = actual_day.month
         self.day = actual_day.day
         self.year, self.week, self.day_of_week = actual_day.isocalendar()
 
@@ -42,7 +41,8 @@ class WorkedLogWidget(QWidget):
         self.get_log_data()
 
         self.curr_week = utils.get_week_days_list(self.year, self.week)
-        self.current_month_days = utils.get_month_days_list(self.year, self.month)
+        self.month = self.curr_week[3][1]
+        self.curr_month_days = utils.get_month_days_list(self.year, self.month)
 
         self.init_user_interface()
         self.update_log_data()
@@ -57,9 +57,9 @@ class WorkedLogWidget(QWidget):
             data_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(dict))))
             for year, month, day in utils.get_week_days_list(self.year, self.week):
                 __, week, day_of_week = datetime.date(year, month, day).isocalendar()
-                data_dict[year][month]['total_time'] = "00:00"
                 data_dict[year][month]['month_work_days'] = 0
-                data_dict[year][month]['hours_bank'] = '00:00'
+                data_dict[year][month]['month_extra_days'] = 0
+                data_dict[year][month]['month_balance'] = '00:00'
                 data_dict[year][month][day]['date'] = str(day).zfill(2) + '/' + str(month).zfill(2)
                 data_dict[year][month][day]['day_of_week'] = day_of_week
                 data_dict[year][month][day]['week'] = week
@@ -115,7 +115,7 @@ class WorkedLogWidget(QWidget):
         worked_time_validator = QRegExpValidator(worked_time_range, self)
 
         self.mon_toggle_switch = SwitchButton(self)
-        self.mon_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 0))
+        self.mon_toggle_switch.clicked.connect(lambda value: self.switch_changed(value, 0))
         self.mon_date_lbl = QLabel()
         self.mon_workin_lbl = QLineEdit()
         self.mon_workin_lbl.setValidator(worked_time_validator)
@@ -143,7 +143,7 @@ class WorkedLogWidget(QWidget):
         self.mon_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
         self.tue_toggle_switch = SwitchButton(self)
-        self.tue_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 1))
+        self.tue_toggle_switch.clicked.connect(lambda value: self.switch_changed(value, 1))
         self.tue_date_lbl = QLabel()
         self.tue_checkin_lbl = QLineEdit()
         self.tue_checkin_lbl.setValidator(worked_time_validator)
@@ -171,7 +171,7 @@ class WorkedLogWidget(QWidget):
         self.tue_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
         self.wed_toggle_switch = SwitchButton(self)
-        self.wed_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 2))
+        self.wed_toggle_switch.clicked.connect(lambda value: self.switch_changed(value, 2))
         self.wed_date_lbl = QLabel()
         self.wed_workin_lbl = QLineEdit()
         self.wed_workin_lbl.setValidator(worked_time_validator)
@@ -199,7 +199,7 @@ class WorkedLogWidget(QWidget):
         self.wed_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
         self.thu_toggle_switch = SwitchButton(self)
-        self.thu_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 3))
+        self.thu_toggle_switch.clicked.connect(lambda value: self.switch_changed(value, 3))
         self.thu_date_lbl = QLabel()
         self.thu_workin_lbl = QLineEdit()
         self.thu_workin_lbl.setValidator(worked_time_validator)
@@ -227,7 +227,7 @@ class WorkedLogWidget(QWidget):
         self.thu_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
         self.fri_toggle_switch = SwitchButton(self)
-        self.fri_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 4))
+        self.fri_toggle_switch.clicked.connect(lambda value: self.switch_changed(value, 4))
         self.fri_date_lbl = QLabel()
         self.fri_workin_lbl = QLineEdit()
         self.fri_workin_lbl.setValidator(worked_time_validator)
@@ -255,7 +255,7 @@ class WorkedLogWidget(QWidget):
         self.fri_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
         self.sat_toggle_switch = SwitchButton(self)
-        self.sat_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 5))
+        self.sat_toggle_switch.clicked.connect(lambda value: self.switch_changed(value, 5))
         self.sat_date_lbl = QLabel()
         self.sat_workin_lbl = QLineEdit()
         self.sat_workin_lbl.setValidator(worked_time_validator)
@@ -283,7 +283,7 @@ class WorkedLogWidget(QWidget):
         self.sat_afternoon_stat.setFixedSize(self.COLOR_FRAME_SIZE)
 
         self.sun_toggle_switch = SwitchButton(self)
-        self.sun_toggle_switch.clicked.connect(lambda value: self.checkbox_change_stat(value, 6))
+        self.sun_toggle_switch.clicked.connect(lambda value: self.switch_changed(value, 6))
         self.sun_date_lbl = QLabel()
         self.sun_workin_lbl = QLineEdit()
         self.sun_workin_lbl.setValidator(worked_time_validator)
@@ -423,8 +423,8 @@ class WorkedLogWidget(QWidget):
         """
         Method to update the
         """
-        self.week_total_val.setText(utils.get_week_total_time(self.data_dict, self.curr_week))
-        self.bank_total_val.setText(self.data_dict[self.year][self.month]['hours_bank'])
+        self.week_total_val.setText(utils.get_week_balance(self.data_dict, self.year, self.week))
+        self.bank_total_val.setText(utils.get_month_balance(self.data_dict, self.year, self.month))
 
         self.mon_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[0], 'day_type'))
         self.mon_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'date'))
@@ -532,7 +532,7 @@ class WorkedLogWidget(QWidget):
         self.sun_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[1])
         self.sun_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[2])
 
-    def checkbox_change_stat(self, value, day):
+    def switch_changed(self, value, day):
         """
         Method to activate or deactivate the day labels
         """
@@ -571,7 +571,7 @@ class WorkedLogWidget(QWidget):
             if day_status:
                 ij_status = list(utils.get_ij_status(times_list))
                 utils.get_from_dict(self.data_dict, self.curr_week[day])['ij_status'] = ij_status
-            utils.get_total_time_from(self.data_dict, self.year, month=self.month)
+            # utils.get_total_time_from(self.data_dict, self.year, month=self.month)
             self.update_log_data()
 
     def change_week_display(self, value):

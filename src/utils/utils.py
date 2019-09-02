@@ -24,16 +24,18 @@ def convert_to_int(input_time):
     """
     This function gets the time string and return the hrs and minutes as integers
     """
-    hrs = int(input_time[0:input_time.index(':')])
-    mins = int(input_time[input_time.index(':') + 1 :])
-    return(hrs, mins)
+    hrs = abs(int(input_time[0:input_time.index(':')]))
+    mins = abs(int(input_time[input_time.index(':') + 1 :]))
+    negative = bool('-' in input_time)
+    return(hrs, mins, negative)
 
 def change_to_minutes(input_time):
     """
     This function converts the time from hrs:mins to minutes
     """
-    hrs, mins = convert_to_int(input_time)
-    return 60 * hrs + mins
+    hrs, mins, negative = convert_to_int(input_time)
+    result = 60 * hrs + mins
+    return -result if (negative) else result
 
 def change_to_hours(input_minutes):
     """
@@ -258,15 +260,28 @@ def get_month_worked_days(my_dict, month_list):
     for year, month, day in month_list:
         if my_dict[year][month][day]['day_type']:
             counter += 1
-    print(counter)
     return counter
+
+def get_week_balance(my_dict, year, week):
+    """
+    T
+    """
+    total_time_list = []
+    for month in my_dict[year]:
+        for day in my_dict[year][month]:
+            try:
+                if my_dict[year][month][day]['week'] == week:
+                    if my_dict[year][month][day]['day_type']:
+                        total_time_list.append(my_dict[year][month][day]['total_time'])
+            except TypeError:
+                pass
+    return sum_times_list(total_time_list)
+
 
 def get_month_balance(my_dict, year, month):
     """
     T
     """
-    # input_year = month_list[0][0]
-    # input_month = month_list[0][1]
     total_time_list = []
     total_extra_list = []
     total_extra = '00:00'
@@ -280,7 +295,7 @@ def get_month_balance(my_dict, year, month):
             elif my_dict[year][month][day]['day_type'] == 2:
                 counter_extra += 1
                 total_extra_list.append(my_dict[year][month][day]['total_time'])
-        except:
+        except TypeError:
             pass
     total_time = sum_times_list(total_time_list)
     total_extra = sum_times_list(total_extra_list)
