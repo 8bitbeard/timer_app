@@ -179,6 +179,7 @@ class MainWindow(QMainWindow):
         This method handles the "Work log" press on the Toolbar menu
         """
         self.worked_log_widget.close_worked_log_signal.connect(self.close_widget)
+        self.worked_log_widget.get_actual_day_data()
         self.worked_log_widget.get_log_data()
         self.worked_log_widget.update_log_data()
         self.central_widget.addWidget(self.worked_log_widget)

@@ -115,8 +115,6 @@ class ScrapperThread(QThread):
                     while len(final_dict[date]) < 4:
                         final_dict[date].append('00:00')
                 data_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(dict))))
-                # total_times_list = []
-                # counter = 0
                 self.scrapper_status.emit("Organizando dados obtidos")
                 for value in full_datelist:
                     current_date = datetime.date(int(value.split('-')[0]), int(value.split('-')[1]),
@@ -150,26 +148,12 @@ class ScrapperThread(QThread):
                             value_one, value_two, value_three = utils.get_ij_status(final_dict[value])
                             value_four = utils.get_work_time_status(final_dict[value])
                             day_type = 2
-                    # if data_dict[year][month]['total_time']:
-                    #     data_dict[year][month]['total_time'] = utils.sum_times(data_dict[year][month]['total_time'],
-                    #                                                            total_time)
                     if not data_dict[year][month]['month_work_days']:
                         data_dict[year][month]['month_work_days'] = 0
                     if not data_dict[year][month]['month_extra_days']:
                         data_dict[year][month]['month_extra_days'] = 0
                     if not data_dict[year][month]['month_balance']:
                         data_dict[year][month]['month_balance'] = '00:00'
-                    # else:
-                    #     data_dict[year][month]['total_time'] = total_time
-                    # if data_dict[year][month]['month_work_days'] and day_type%2:
-                    #     data_dict[year][month]['month_work_days'] += 1
-                    # elif not data_dict[year][month]['month_work_days'] and day_type%2:
-                    #     data_dict[year][month]['month_work_days'] = 1
-                    # elif not data_dict[year][month]['month_work_days'] and not day_type:
-                    #     data_dict[year][month]['month_work_days'] = 0
-                    # total_workable = utils.mult_time('08:00', data_dict[year][month]['month_work_days'])
-                    # data_dict[year][month]['hours_bank'] = utils.sub_times(total_workable,
-                    #                                                        data_dict[year][month]['total_time'])
                     data_dict[year][month][day]['date'] = date
                     data_dict[year][month][day]['day_of_week'] = dow
                     data_dict[year][month][day]['week'] = week
@@ -179,10 +163,6 @@ class ScrapperThread(QThread):
                     data_dict[year][month][day]['total_time'] = total_time
                     data_dict[year][month][day]['total_status'] = value_four
 
-                # total_workable = utils.mult_time('08:00', counter)
-                # total_worked = utils.sum_times_list(total_times_list)
-                # data_dict['total_work_days'] = counter
-                # data_dict['hours_bank'] = utils.sub_times(total_workable, total_worked)
                 utils.dump_files(data_dict)
                 self.scrapper_status.emit("Processo finalizado!")
                 self.progress_step.emit(True)

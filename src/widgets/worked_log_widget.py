@@ -31,21 +31,28 @@ class WorkedLogWidget(QWidget):
     def __init__(self, parent=None):
         super(WorkedLogWidget, self).__init__(parent)
 
-        actual_day = datetime.date.today()
-        self.day = actual_day.day
-        self.year, self.week, self.day_of_week = actual_day.isocalendar()
+        self.day = None
+        self.day_of_week = None
+        self.week = None
+        self.month = None
+        self.year = None
 
+        self.curr_week = None
         self.data_dict = None
         self.week_total = []
 
+        self.get_actual_day_data()
         self.get_log_data()
-
-        self.curr_week = utils.get_week_days_list(self.year, self.week)
-        self.month = self.curr_week[3][1]
-        self.curr_month_days = utils.get_month_days_list(self.year, self.month)
-
         self.init_user_interface()
         self.update_log_data()
+
+    def get_actual_day_data(self):
+        """
+        Method to get the actual day data
+        """
+        actual_day = datetime.date.today()
+        self.day = actual_day.day
+        self.year, self.week, self.day_of_week = actual_day.isocalendar()
 
     def get_log_data(self):
         """
@@ -80,6 +87,8 @@ class WorkedLogWidget(QWidget):
                              if isinstance(val, int)])
         self.first_log_week = datetime.date(first_log_year, first_log_month, first_log_day).isocalendar()[1]
         self.last_log_week = self.week
+        self.curr_week = utils.get_week_days_list(self.year, self.week)
+        self.month = self.curr_week[3][1]
 
     def init_user_interface(self):
         """

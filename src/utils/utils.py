@@ -12,7 +12,6 @@ import calendar
 import operator
 import json
 from functools import reduce
-import yaml
 
 import dill as pickle
 
@@ -353,6 +352,3 @@ def dump_files(input_value):
     with open(LOG_DATA_PATH + 'log_data.json', 'w') as json_file:
         json.dump(input_value, json_file, indent=4)
     json_file.close()
-    with open(LOG_DATA_PATH + 'log_data.yaml', 'w') as yaml_file:
-        yaml.dump(input_value, yaml_file, indent=4)
-    yaml_file.close()
