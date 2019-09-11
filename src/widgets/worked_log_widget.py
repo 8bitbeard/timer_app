@@ -62,22 +62,7 @@ class WorkedLogWidget(QWidget):
             self.data_dict = utils.read_file()
         except (TypeError, FileNotFoundError):
             data_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(dict))))
-            for year, month, day in utils.get_week_days_list(self.year, self.week):
-                __, week, day_of_week = datetime.date(year, month, day).isocalendar()
-                data_dict[year][month]['month_work_days'] = 0
-                data_dict[year][month]['month_extra_days'] = 0
-                data_dict[year][month]['month_balance'] = '00:00'
-                data_dict[year][month][day]['date'] = str(day).zfill(2) + '/' + str(month).zfill(2)
-                data_dict[year][month][day]['day_of_week'] = day_of_week
-                data_dict[year][month][day]['week'] = week
-                data_dict[year][month][day]['day_type'] = 0
-                data_dict[year][month][day]['times_list'] = ['00:00', '00:00', '00:00', '00:00']
-                data_dict[year][month][day]['ij_status'] = ["background-color : gray",
-                                                            "background-color : gray",
-                                                            "background-color : gray"]
-                data_dict[year][month][day]['total_time'] = "00:00"
-                data_dict[year][month][day]['total_status'] = "color : gray"
-
+            utils.add_week_to_data(data_dict, self.year, self.week)
             self.data_dict = data_dict
             utils.dump_files(self.data_dict)
 
@@ -432,114 +417,170 @@ class WorkedLogWidget(QWidget):
         """
         Method to update the
         """
-        self.week_total_val.setText(utils.get_week_balance(self.data_dict, self.year, self.week))
-        self.bank_total_val.setText(utils.get_month_balance(self.data_dict, self.year, self.month))
+        for i in range(0, 10):
+            while i < 10:
+                try:
+                    self.week_total_val.setText(utils.get_week_balance(self.data_dict, self.year, self.week))
+                    self.bank_total_val.setText(utils.get_month_balance(self.data_dict, self.year, self.month))
 
-        self.mon_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[0], 'day_type'))
-        self.mon_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'date'))
-        self.mon_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[0])
-        self.mon_workin_lbl.setEnabled(self.mon_toggle_switch.isActive())
-        self.mon_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[1])
-        self.mon_lunchin_lbl.setEnabled(self.mon_toggle_switch.isActive())
-        self.mon_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[2])
-        self.mon_lunchout_lbl.setEnabled(self.mon_toggle_switch.isActive())
-        self.mon_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[3])
-        self.mon_workout_lbl.setEnabled(self.mon_toggle_switch.isActive())
-        self.mon_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'total_time'))
-        self.mon_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'total_status'))
-        self.mon_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'ij_status')[0])
-        self.mon_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'ij_status')[1])
-        self.mon_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0], 'ij_status')[2])
-        self.tue_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[1], 'day_type'))
-        self.tue_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'date'))
-        self.tue_checkin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[0])
-        self.tue_checkin_lbl.setEnabled(self.tue_toggle_switch.isActive())
-        self.tue_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[1])
-        self.tue_lunchin_lbl.setEnabled(self.tue_toggle_switch.isActive())
-        self.tue_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[2])
-        self.tue_lunchout_lbl.setEnabled(self.tue_toggle_switch.isActive())
-        self.tue_checkout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'times_list')[3])
-        self.tue_checkout_lbl.setEnabled(self.tue_toggle_switch.isActive())
-        self.tue_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'total_time'))
-        self.tue_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'total_status'))
-        self.tue_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'ij_status')[0])
-        self.tue_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'ij_status')[1])
-        self.tue_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1], 'ij_status')[2])
-        self.wed_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[2], 'day_type'))
-        self.wed_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'date'))
-        self.wed_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[0])
-        self.wed_workin_lbl.setEnabled(self.wed_toggle_switch.isActive())
-        self.wed_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[1])
-        self.wed_lunchin_lbl.setEnabled(self.wed_toggle_switch.isActive())
-        self.wed_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[2])
-        self.wed_lunchout_lbl.setEnabled(self.wed_toggle_switch.isActive())
-        self.wed_checkout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[3])
-        self.wed_checkout_lbl.setEnabled(self.wed_toggle_switch.isActive())
-        self.wed_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'total_time'))
-        self.wed_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'total_status'))
-        self.wed_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'ij_status')[0])
-        self.wed_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'ij_status')[1])
-        self.wed_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2], 'ij_status')[2])
-        self.thu_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[3], 'day_type'))
-        self.thu_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'date'))
-        self.thu_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[0])
-        self.thu_workin_lbl.setEnabled(self.thu_toggle_switch.isActive())
-        self.thu_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[1])
-        self.thu_lunchin_lbl.setEnabled(self.thu_toggle_switch.isActive())
-        self.thu_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[2])
-        self.thu_lunchout_lbl.setEnabled(self.thu_toggle_switch.isActive())
-        self.thu_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[3])
-        self.thu_workout_lbl.setEnabled(self.thu_toggle_switch.isActive())
-        self.thu_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'total_time'))
-        self.thu_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'total_status'))
-        self.thu_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'ij_status')[0])
-        self.thu_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'ij_status')[1])
-        self.thu_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3], 'ij_status')[2])
-        self.fri_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[4], 'day_type'))
-        self.fri_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'date'))
-        self.fri_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[0])
-        self.fri_workin_lbl.setEnabled(self.fri_toggle_switch.isActive())
-        self.fri_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[1])
-        self.fri_lunchin_lbl.setEnabled(self.fri_toggle_switch.isActive())
-        self.fri_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[2])
-        self.fri_lunchout_lbl.setEnabled(self.fri_toggle_switch.isActive())
-        self.fri_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[3])
-        self.fri_workout_lbl.setEnabled(self.fri_toggle_switch.isActive())
-        self.fri_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'total_time'))
-        self.fri_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'total_status'))
-        self.fri_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'ij_status')[0])
-        self.fri_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'ij_status')[1])
-        self.fri_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4], 'ij_status')[2])
-        self.sat_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[5], 'day_type'))
-        self.sat_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'date'))
-        self.sat_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[0])
-        self.sat_workin_lbl.setEnabled(self.sat_toggle_switch.isActive())
-        self.sat_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[1])
-        self.sat_lunchin_lbl.setEnabled(self.sat_toggle_switch.isActive())
-        self.sat_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[2])
-        self.sat_lunchout_lbl.setEnabled(self.sat_toggle_switch.isActive())
-        self.sat_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[3])
-        self.sat_workout_lbl.setEnabled(self.sat_toggle_switch.isActive())
-        self.sat_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'total_time'))
-        self.sat_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'total_status'))
-        self.sat_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'ij_status')[0])
-        self.sat_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'ij_status')[1])
-        self.sat_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5], 'ij_status')[2])
-        self.sun_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[6], 'day_type'))
-        self.sun_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'date'))
-        self.sun_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[0])
-        self.sun_workin_lbl.setEnabled(self.sun_toggle_switch.isActive())
-        self.sun_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[1])
-        self.sun_lunchin_lbl.setEnabled(self.sun_toggle_switch.isActive())
-        self.sun_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[2])
-        self.sun_lunchout_lbl.setEnabled(self.sun_toggle_switch.isActive())
-        self.sun_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[3])
-        self.sun_workout_lbl.setEnabled(self.sun_toggle_switch.isActive())
-        self.sun_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'total_time'))
-        self.sun_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'total_status'))
-        self.sun_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[0])
-        self.sun_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[1])
-        self.sun_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6], 'ij_status')[2])
+                    self.mon_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[0], 'day_type'))
+                    self.mon_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'date'))
+                    self.mon_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'times_list')[0])
+                    self.mon_workin_lbl.setEnabled(self.mon_toggle_switch.isActive())
+                    self.mon_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0],
+                                                                     'times_list')[1])
+                    self.mon_lunchin_lbl.setEnabled(self.mon_toggle_switch.isActive())
+                    self.mon_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0],
+                                                                      'times_list')[2])
+                    self.mon_lunchout_lbl.setEnabled(self.mon_toggle_switch.isActive())
+                    self.mon_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0],
+                                                                     'times_list')[3])
+                    self.mon_workout_lbl.setEnabled(self.mon_toggle_switch.isActive())
+                    self.mon_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[0], 'total_time'))
+                    self.mon_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0],
+                                                                         'total_status'))
+                    self.mon_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0],
+                                                                            'ij_status')[0])
+                    self.mon_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0],
+                                                                          'ij_status')[1])
+                    self.mon_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[0],
+                                                                              'ij_status')[2])
+                    self.tue_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[1], 'day_type'))
+                    self.tue_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'date'))
+                    self.tue_checkin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1],
+                                                                     'times_list')[0])
+                    self.tue_checkin_lbl.setEnabled(self.tue_toggle_switch.isActive())
+                    self.tue_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1],
+                                                                     'times_list')[1])
+                    self.tue_lunchin_lbl.setEnabled(self.tue_toggle_switch.isActive())
+                    self.tue_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1],
+                                                                      'times_list')[2])
+                    self.tue_lunchout_lbl.setEnabled(self.tue_toggle_switch.isActive())
+                    self.tue_checkout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1],
+                                                                      'times_list')[3])
+                    self.tue_checkout_lbl.setEnabled(self.tue_toggle_switch.isActive())
+                    self.tue_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[1], 'total_time'))
+                    self.tue_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1],
+                                                                         'total_status'))
+                    self.tue_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1],
+                                                                            'ij_status')[0])
+                    self.tue_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1],
+                                                                          'ij_status')[1])
+                    self.tue_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[1],
+                                                                              'ij_status')[2])
+                    self.wed_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[2], 'day_type'))
+                    self.wed_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'date'))
+                    self.wed_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'times_list')[0])
+                    self.wed_workin_lbl.setEnabled(self.wed_toggle_switch.isActive())
+                    self.wed_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2],
+                                                                     'times_list')[1])
+                    self.wed_lunchin_lbl.setEnabled(self.wed_toggle_switch.isActive())
+                    self.wed_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2],
+                                                                      'times_list')[2])
+                    self.wed_lunchout_lbl.setEnabled(self.wed_toggle_switch.isActive())
+                    self.wed_checkout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2],
+                                                                      'times_list')[3])
+                    self.wed_checkout_lbl.setEnabled(self.wed_toggle_switch.isActive())
+                    self.wed_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[2], 'total_time'))
+                    self.wed_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2],
+                                                                         'total_status'))
+                    self.wed_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2],
+                                                                            'ij_status')[0])
+                    self.wed_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2],
+                                                                          'ij_status')[1])
+                    self.wed_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[2],
+                                                                              'ij_status')[2])
+                    self.thu_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[3], 'day_type'))
+                    self.thu_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'date'))
+                    self.thu_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'times_list')[0])
+                    self.thu_workin_lbl.setEnabled(self.thu_toggle_switch.isActive())
+                    self.thu_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3],
+                                                                     'times_list')[1])
+                    self.thu_lunchin_lbl.setEnabled(self.thu_toggle_switch.isActive())
+                    self.thu_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3],
+                                                                      'times_list')[2])
+                    self.thu_lunchout_lbl.setEnabled(self.thu_toggle_switch.isActive())
+                    self.thu_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3],
+                                                                     'times_list')[3])
+                    self.thu_workout_lbl.setEnabled(self.thu_toggle_switch.isActive())
+                    self.thu_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[3], 'total_time'))
+                    self.thu_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3],
+                                                                         'total_status'))
+                    self.thu_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3],
+                                                                            'ij_status')[0])
+                    self.thu_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3],
+                                                                          'ij_status')[1])
+                    self.thu_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[3],
+                                                                              'ij_status')[2])
+                    self.fri_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[4], 'day_type'))
+                    self.fri_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'date'))
+                    self.fri_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'times_list')[0])
+                    self.fri_workin_lbl.setEnabled(self.fri_toggle_switch.isActive())
+                    self.fri_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4],
+                                                                     'times_list')[1])
+                    self.fri_lunchin_lbl.setEnabled(self.fri_toggle_switch.isActive())
+                    self.fri_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4],
+                                                                      'times_list')[2])
+                    self.fri_lunchout_lbl.setEnabled(self.fri_toggle_switch.isActive())
+                    self.fri_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4],
+                                                                     'times_list')[3])
+                    self.fri_workout_lbl.setEnabled(self.fri_toggle_switch.isActive())
+                    self.fri_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[4], 'total_time'))
+                    self.fri_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4],
+                                                                         'total_status'))
+                    self.fri_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4],
+                                                                            'ij_status')[0])
+                    self.fri_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4],
+                                                                          'ij_status')[1])
+                    self.fri_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[4],
+                                                                              'ij_status')[2])
+                    self.sat_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[5], 'day_type'))
+                    self.sat_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'date'))
+                    self.sat_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'times_list')[0])
+                    self.sat_workin_lbl.setEnabled(self.sat_toggle_switch.isActive())
+                    self.sat_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5],
+                                                                     'times_list')[1])
+                    self.sat_lunchin_lbl.setEnabled(self.sat_toggle_switch.isActive())
+                    self.sat_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5],
+                                                                      'times_list')[2])
+                    self.sat_lunchout_lbl.setEnabled(self.sat_toggle_switch.isActive())
+                    self.sat_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5],
+                                                                     'times_list')[3])
+                    self.sat_workout_lbl.setEnabled(self.sat_toggle_switch.isActive())
+                    self.sat_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[5], 'total_time'))
+                    self.sat_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5],
+                                                                         'total_status'))
+                    self.sat_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5],
+                                                                            'ij_status')[0])
+                    self.sat_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5],
+                                                                          'ij_status')[1])
+                    self.sat_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[5],
+                                                                              'ij_status')[2])
+                    self.sun_toggle_switch.setMode(utils.get_from_dict(self.data_dict, self.curr_week[6], 'day_type'))
+                    self.sun_date_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'date'))
+                    self.sun_workin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'times_list')[0])
+                    self.sun_workin_lbl.setEnabled(self.sun_toggle_switch.isActive())
+                    self.sun_lunchin_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6],
+                                                                     'times_list')[1])
+                    self.sun_lunchin_lbl.setEnabled(self.sun_toggle_switch.isActive())
+                    self.sun_lunchout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6],
+                                                                      'times_list')[2])
+                    self.sun_lunchout_lbl.setEnabled(self.sun_toggle_switch.isActive())
+                    self.sun_workout_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6],
+                                                                     'times_list')[3])
+                    self.sun_workout_lbl.setEnabled(self.sun_toggle_switch.isActive())
+                    self.sun_total_lbl.setText(utils.get_from_dict(self.data_dict, self.curr_week[6], 'total_time'))
+                    self.sun_total_lbl.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6],
+                                                                         'total_status'))
+                    self.sun_morning_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6],
+                                                                            'ij_status')[0])
+                    self.sun_lunch_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6],
+                                                                          'ij_status')[1])
+                    self.sun_afternoon_stat.setStyleSheet(utils.get_from_dict(self.data_dict, self.curr_week[6],
+                                                                              'ij_status')[2])
+                except TypeError:
+                    utils.add_week_to_data(self.data_dict, self.year, self.week)
+                break
 
     def switch_changed(self, value, day):
         """

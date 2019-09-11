@@ -352,3 +352,23 @@ def dump_files(input_value):
     with open(LOG_DATA_PATH + 'log_data.json', 'w') as json_file:
         json.dump(input_value, json_file, indent=4)
     json_file.close()
+
+def add_week_to_data(data_dict, input_year, input_week):
+    """
+    Method to add a new week to the input dict
+    """
+    for year, month, day in get_week_days_list(input_year, input_week):
+        __, week, day_of_week = datetime.date(year, month, day).isocalendar()
+        data_dict[year][month]['month_work_days'] = 0
+        data_dict[year][month]['month_extra_days'] = 0
+        data_dict[year][month]['month_balance'] = '00:00'
+        data_dict[year][month][day]['date'] = str(day).zfill(2) + '/' + str(month).zfill(2)
+        data_dict[year][month][day]['day_of_week'] = day_of_week
+        data_dict[year][month][day]['week'] = week
+        data_dict[year][month][day]['day_type'] = 0
+        data_dict[year][month][day]['times_list'] = ['00:00', '00:00', '00:00', '00:00']
+        data_dict[year][month][day]['ij_status'] = ["background-color : gray",
+                                                    "background-color : gray",
+                                                    "background-color : gray"]
+        data_dict[year][month][day]['total_time'] = "00:00"
+        data_dict[year][month][day]['total_status'] = "color : gray"
